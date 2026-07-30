@@ -69,19 +69,30 @@ export async function renderHome(container) {
           </div>
         </div>
 
-        <!-- Gomoku Card -->
-        <div class="game-card game-card-coming animate-fade-in-up stagger-3">
+        <!-- Tetris Battle Card (WebAssembly Enabled) -->
+        <div class="game-card animate-fade-in-up stagger-3" id="card-tetris">
           <div class="game-card-banner">
-            <img src="/carrot-games/assets/images/icon_gomoku.png" alt="五子棋" class="game-card-img" />
+            <img src="/carrot-games/assets/images/icon_gomoku.png" alt="俄羅斯方塊對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-warning game-card-status">研發中</span>
+            <span class="badge badge-success game-card-status">WASM 引擎</span>
           </div>
           <div class="game-card-content">
-            <h3>五子棋 (GOMOKU)</h3>
-            <p>連珠攻防對決，支援深度計算與連線對戰。</p>
+            <h3>俄羅斯方塊 (TETRIS BATTLE 2P)</h3>
+            <p>經典 2 分鐘 Tetris Battle 對決！WASM 核心引擎、K.O. 擊倒機制與垃圾行攻擊反制。</p>
+
             <div class="game-card-tags">
-              <span class="tag">MCTS AI</span>
-              <span class="tag">P2P Room</span>
+              <span class="tag">${SVG_ICONS.cpu} WebAssembly</span>
+              <span class="tag">${SVG_ICONS.globe} 2P Battle</span>
+              <span class="tag">${SVG_ICONS.storage} KO System</span>
+            </div>
+
+            <div class="game-card-actions">
+              <button class="btn btn-primary" id="btn-tetris-ai">
+                ${SVG_ICONS.bot} WASM Bot
+              </button>
+              <button class="btn btn-cyan" id="btn-tetris-online">
+                ${SVG_ICONS.globe} P2P 對戰
+              </button>
             </div>
           </div>
         </div>
@@ -110,7 +121,7 @@ export async function renderHome(container) {
         <div class="home-tech-grid">
           <div class="tech-item">
             <span class="tech-icon">${SVG_ICONS.cpu}</span>
-            <span>WebAssembly</span>
+            <span>WebAssembly Engine</span>
           </div>
           <div class="tech-item">
             <span class="tech-icon">${SVG_ICONS.storage}</span>
@@ -150,6 +161,14 @@ export async function renderHome(container) {
 
   document.getElementById('btn-xiangqi-online')?.addEventListener('click', () => {
     navigate('/xiangqi/online');
+  });
+
+  document.getElementById('btn-tetris-ai')?.addEventListener('click', () => {
+    navigate('/tetris/ai');
+  });
+
+  document.getElementById('btn-tetris-online')?.addEventListener('click', () => {
+    navigate('/tetris/online');
   });
 
   // Initialize storage badge
