@@ -1,5 +1,5 @@
 /* ============================================
-   Tetris Battle 2P Tactical HUD Styles
+   Tetris Battle 2P Tactical HUD & Mobile RWD
    ============================================ */
 
 .tetris-page {
@@ -20,6 +20,11 @@
   z-index: var(--z-sticky);
 }
 
+.tetris-topbar-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
 .tetris-main {
   flex: 1;
   display: flex;
@@ -37,13 +42,54 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  min-height: 540px;
+  min-height: 480px;
+  width: 100%;
 }
 
 #tetris-canvas {
   border-radius: var(--radius-xl);
   border: 2px solid var(--color-border);
   box-shadow: var(--shadow-lg), var(--shadow-glow-orange);
+  touch-action: manipulation;
+}
+
+/* Mobile Virtual Touch Controller */
+.mobile-touch-controller {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+}
+
+.touch-row {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.touch-btn {
+  flex: 1;
+  min-height: 48px;
+  font-size: var(--font-size-sm);
+  touch-action: manipulation;
+  user-select: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-mono);
+}
+
+.touch-btn:active {
+  transform: scale(0.95);
+  background: var(--color-accent-primary);
+  color: white;
+}
+
+.touch-btn-harddrop {
+  font-size: var(--font-size-base);
+  font-weight: bold;
 }
 
 .tetris-sidebar {
@@ -120,13 +166,20 @@
   border-radius: var(--radius-sm);
 }
 
-@media (max-width: 1024px) {
+/* RWD Media Queries */
+@media (max-width: 768px) {
   .tetris-main {
     flex-direction: column;
     align-items: center;
+    padding: var(--space-3);
+  }
+  .mobile-touch-controller {
+    display: flex;
+  }
+  .controls-guide {
+    display: none;
   }
   .tetris-sidebar {
     width: 100%;
-    max-width: 740px;
   }
 }

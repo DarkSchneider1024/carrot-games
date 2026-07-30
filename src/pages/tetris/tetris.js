@@ -1,5 +1,5 @@
 /**
- * Tetris Battle 2P (Trace Battle) Page
+ * Tetris Battle 2P (Trace Battle) Page with Mobile Touch Controls & RWD
  */
 
 import { navigate } from '../../router.js';
@@ -29,6 +29,9 @@ export async function renderTetris(container, params) {
           </span>
         </div>
         <div class="tetris-topbar-actions">
+          <button class="btn btn-ghost btn-sm" id="btn-pwa-help" title="PWA 安裝指南">
+            ${SVG_ICONS.smartphone}
+          </button>
           <button class="btn btn-ghost btn-sm" id="btn-settings" title="SETTINGS">
             ${SVG_ICONS.settings}
           </button>
@@ -54,7 +57,26 @@ export async function renderTetris(container, params) {
           </div>
         </div>
 
-        <!-- Controls Sidebar -->
+        <!-- Mobile Touch Virtual Controller -->
+        <div class="mobile-touch-controller glass">
+          <div class="touch-row">
+            <button class="btn btn-secondary touch-btn" id="tbtn-hold">HOLD</button>
+            <button class="btn btn-secondary touch-btn" id="tbtn-rot-ccw">↺ 逆旋</button>
+            <button class="btn btn-secondary touch-btn" id="tbtn-rot-cw">↻ 順旋</button>
+          </div>
+          <div class="touch-row">
+            <button class="btn btn-secondary touch-btn" id="tbtn-left">← 左</button>
+            <button class="btn btn-secondary touch-btn" id="tbtn-down">↓ 軟降</button>
+            <button class="btn btn-secondary touch-btn" id="tbtn-right">右 →</button>
+          </div>
+          <div class="touch-row">
+            <button class="btn btn-primary touch-btn touch-btn-harddrop" id="tbtn-harddrop">
+              ⚡ 硬降 (HARD DROP)
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls Sidebar (Desktop & Tablet) -->
         <div class="tetris-sidebar">
           ${mode === 'ai' ? _renderAIPanel() : _renderOnlinePanel()}
 
@@ -75,7 +97,7 @@ export async function renderTetris(container, params) {
     </div>
   `;
 
-  // Initialize Canvas & Engine
+  // Canvas Responsive Setup
   const canvas = document.getElementById('tetris-canvas');
   _resizeCanvas(canvas);
 
@@ -84,7 +106,7 @@ export async function renderTetris(container, params) {
 
   await game.init();
 
-  // Set callbacks
+  // Callbacks
   game.onStateChange = (state) => {
     renderer.draw(state, game.engine, game.opponentBoard);
     _updateUIStats(state);
@@ -100,8 +122,12 @@ export async function renderTetris(container, params) {
   };
   window.addEventListener('resize', resizeHandler);
 
-  // Button handlers
+  // Bind Mobile Touch Controls
+  _bindTouchControls(game);
+
+  // Navigation handlers
   document.getElementById('btn-back')?.addEventListener('click', () => navigate('/'));
+  document.getElementById('btn-pwa-help')?.addEventListener('click', () => navigate('/pwa-guide'));
   document.getElementById('btn-settings')?.addEventListener('click', () => _showSettingsModal());
   document.getElementById('btn-tetris-home')?.addEventListener('click', () => navigate('/'));
   document.getElementById('btn-tetris-restart')?.addEventListener('click', () => {
@@ -116,7 +142,6 @@ export async function renderTetris(container, params) {
     _setupOnlineMode(game, room);
   }
 
-  // Auto start AI match
   game.startMatch({ mode: mode === 'ai' ? TETRIS_MODE.VS_AI : TETRIS_MODE.VS_HUMAN_ONLINE, difficulty: 'medium' });
 
   return () => {
@@ -127,8 +152,37 @@ export async function renderTetris(container, params) {
 }
 
 function _resizeCanvas(canvas) {
-  canvas.style.width = '740px';
-  canvas.style.height = '540px';
+  const container = canvas.parentElement;
+  const rect = container.getBoundingClientRect();
+  const width = Math.min(rect.width, 740);
+  const height = Math.min(width * (540 / 740), 540);
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
+}
+
+function _bindTouchControls(game) {
+  const bindTouch = (id, fn) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+
+    const handler = (e) => {
+      e.preventDefault();
+      if (!game.gameOver) {
+        fn();
+        game._notifyState();
+      }
+    };
+    btn.addEventListener('touchstart', handler, { passive: false });
+    btn.addEventListener('click', handler);
+  };
+
+  bindTouch('tbtn-left', () => game.engine.move(-1, 0));
+  bindTouch('tbtn-right', () => game.engine.move(1, 0));
+  bindTouch('tbtn-down', () => game.engine.move(0, 1));
+  bindTouch('tbtn-rot-cw', () => game.engine.rotate(1));
+  bindTouch('tbtn-rot-ccw', () => game.engine.rotate(-1));
+  bindTouch('tbtn-hold', () => game.engine.hold());
+  bindTouch('tbtn-harddrop', () => game.doHardDrop());
 }
 
 function _renderAIPanel() {
@@ -211,7 +265,7 @@ function _setupAIMode(game) {
 }
 
 function _setupOnlineMode(game, room) {
-  room.onRoomStatus = (status, msg) => {
+  room.onRoomStatus = (status) => {
     const statusEl = document.getElementById('connection-status');
     if (status === 'connected' || status === 'playing') {
       if (statusEl) statusEl.innerHTML = `<span style="color:var(--color-success);">${SVG_ICONS.check} 對手已連線</span>`;
@@ -280,7 +334,7 @@ function _showSettingsModal() {
       <div style="font-size:0.875rem;display:flex;flex-direction:column;gap:0.5rem;">
         <p><strong>Core Engine:</strong> WebAssembly C Compiled Binary (tetris-engine.wasm)</p>
         <p><strong>Rules:</strong> Tetris Battle 2P (120s Match, KO System, Red Danger Gauge)</p>
-        <p><strong>Combos:</strong> Back-to-Back Tetris (+2 Attack), Garbage Counter</p>
+        <p><strong>PWA Offline:</strong> Full Standalone Support</p>
       </div>
     `,
     actions: [{ text: '關閉', onClick: closeModal }],

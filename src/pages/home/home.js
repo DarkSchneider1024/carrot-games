@@ -21,21 +21,26 @@ export async function renderHome(container) {
             <p class="home-subtitle">PURE FRONTEND BATTLE PLATFORM</p>
           </div>
         </div>
-        <div class="home-storage-badge" id="storage-badge">
-          <span class="badge badge-info">${SVG_ICONS.storage} 初始化中...</span>
+        <div class="home-header-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-pwa-guide">
+            ${SVG_ICONS.smartphone} PWA 安裝指南
+          </button>
+          <div class="home-storage-badge" id="storage-badge">
+            <span class="badge badge-info">${SVG_ICONS.storage} 初始化中...</span>
+          </div>
         </div>
       </header>
 
       <!-- Hero Section -->
       <section class="home-hero animate-fade-in-up">
         <div class="hero-tagline">
-          <span class="badge badge-warning">NEXT-GEN WEB TECH</span>
+          <span class="badge badge-warning">NEXT-GEN WEB TECH & PWA</span>
         </div>
         <h2 class="home-hero-title">
           戰術棋藝 <span class="gradient-text">即時對決</span>
         </h2>
         <p class="home-hero-desc">
-          極速 WebAssembly 深度引擎 ✕ WebRTC 無伺服器 P2P 對戰 ✕ OPFS 高效本機存儲
+          極速 WebAssembly 深度引擎 ✕ WebRTC 無伺服器 P2P 對戰 ✕ OPFS 高效本機存儲 ✕ PWA 全螢幕 App
         </p>
       </section>
 
@@ -83,7 +88,7 @@ export async function renderHome(container) {
             <div class="game-card-tags">
               <span class="tag">${SVG_ICONS.cpu} WebAssembly</span>
               <span class="tag">${SVG_ICONS.globe} 2P Battle</span>
-              <span class="tag">${SVG_ICONS.storage} KO System</span>
+              <span class="tag">${SVG_ICONS.smartphone} Mobile Touch</span>
             </div>
 
             <div class="game-card-actions">
@@ -124,6 +129,10 @@ export async function renderHome(container) {
             <span>WebAssembly Engine</span>
           </div>
           <div class="tech-item">
+            <span class="tech-icon">${SVG_ICONS.smartphone}</span>
+            <span>PWA & Offline Support</span>
+          </div>
+          <div class="tech-item">
             <span class="tech-icon">${SVG_ICONS.storage}</span>
             <span>OPFS Filesystem</span>
           </div>
@@ -136,12 +145,8 @@ export async function renderHome(container) {
             <span>WebRTC P2P Room</span>
           </div>
           <div class="tech-item">
-            <span class="tech-icon">${SVG_ICONS.cpu}</span>
-            <span>Web Workers Engine</span>
-          </div>
-          <div class="tech-item">
             <span class="tech-icon">${SVG_ICONS.settings}</span>
-            <span>Canvas 2D HUD</span>
+            <span>Mobile RWD Touch</span>
           </div>
         </div>
       </section>
@@ -155,6 +160,10 @@ export async function renderHome(container) {
   `;
 
   // Event handlers
+  document.getElementById('btn-pwa-guide')?.addEventListener('click', () => {
+    navigate('/pwa-guide');
+  });
+
   document.getElementById('btn-xiangqi-ai')?.addEventListener('click', () => {
     navigate('/xiangqi/ai');
   });

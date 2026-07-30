@@ -49,6 +49,12 @@
   object-fit: cover;
 }
 
+.home-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .home-title {
   font-size: var(--font-size-2xl);
   color: var(--color-text-primary);
@@ -276,6 +282,10 @@
 }
 
 @media (max-width: 768px) {
+  .home-header {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
   .home-hero-title {
     font-size: var(--font-size-3xl);
   }

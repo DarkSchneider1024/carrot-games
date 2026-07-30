@@ -1,0 +1,25 @@
+{
+  "name": "Carrot Games 對戰平台",
+  "short_name": "CarrotGames",
+  "description": "頂級純前端對戰遊戲平台：中國象棋、俄羅斯方塊 Tetris Battle 2P",
+  "start_url": "/carrot-games/",
+  "scope": "/carrot-games/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070a0f",
+  "theme_color": "#f97316",
+  "icons": [
+    {
+      "src": "/carrot-games/assets/images/icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/carrot-games/assets/images/icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
