@@ -1,0 +1,440 @@
+/* ============================================
+   Xiangqi Tactical Gaming HUD Styles
+   ============================================ */
+
+.xiangqi-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top Bar ── */
+.xiangqi-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: var(--glass-blur);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+.mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-sm);
+  color: var(--color-accent-gold);
+  letter-spacing: 0.1em;
+}
+
+/* ── Main Layout ── */
+.xiangqi-main {
+  flex: 1;
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* ── Panels ── */
+.xiangqi-panel {
+  width: 290px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Player Cards ── */
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+}
+
+.player-avatar {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-chess);
+  font-size: 1.25rem;
+  font-weight: bold;
+  border: 2px solid transparent;
+}
+
+.avatar-red {
+  background: var(--color-chess-red-bg);
+  color: var(--color-chess-red);
+  border-color: var(--color-chess-red);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+.avatar-black {
+  background: #0f172a;
+  color: #f1f5f9;
+  border-color: #475569;
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.2);
+}
+
+.player-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.player-name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.player-timer {
+  font-family: var(--font-family-mono);
+  font-size: 1.35rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.player-turn-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-text-muted);
+  transition: all var(--transition-fast);
+}
+
+.player-turn-indicator.active {
+  background: var(--color-success);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+  animation: pulse 1.5s infinite;
+}
+
+/* ── Move History ── */
+.move-history {
+  flex: 1;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  min-height: 220px;
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+}
+
+.move-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.move-history-title {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+}
+
+.move-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  align-content: flex-start;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-mono);
+}
+
+.move-item {
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  transition: background var(--transition-fast);
+}
+
+.move-item:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.move-red {
+  color: #f87171;
+}
+
+.move-black {
+  color: #38bdf8;
+}
+
+.move-num {
+  color: var(--color-text-muted);
+  margin-right: 4px;
+}
+
+/* ── Board Stage ── */
+.xiangqi-board-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 520px;
+  max-height: 82vh;
+}
+
+.board-frame {
+  position: relative;
+  padding: 10px;
+  background: #1e170d;
+  border: 2px solid #5c4033;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+#xiangqi-canvas {
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  max-width: 100%;
+  max-height: 80vh;
+}
+
+/* ── AI Thinking Overlay ── */
+.ai-thinking {
+  position: absolute;
+  top: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background: rgba(14, 20, 32, 0.9);
+  border: 1px solid var(--color-accent-cyan);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-glow-cyan);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xs);
+  color: var(--color-accent-cyan);
+  z-index: 10;
+}
+
+/* ── Game Over Overlay ── */
+.game-over-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(7, 10, 15, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-xl);
+  z-index: 20;
+}
+
+.game-over-content {
+  text-align: center;
+  padding: var(--space-8);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-accent-gold);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.game-over-content h2 {
+  font-size: var(--font-size-3xl);
+  color: var(--color-accent-gold);
+  margin-bottom: var(--space-3);
+}
+
+.game-over-content p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+  font-size: var(--font-size-base);
+}
+
+.game-over-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+/* ── Action Panel ── */
+.action-panel {
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+}
+
+.action-title {
+  font-size: var(--font-size-xs);
+  color: var(--color-accent-gold);
+  letter-spacing: 0.1em;
+}
+
+.action-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.action-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+}
+
+.difficulty-selector,
+.side-selector {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.difficulty-selector .btn,
+.side-selector .btn {
+  flex: 1;
+  font-size: var(--font-size-xs);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.game-status {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  text-align: center;
+  background: var(--color-bg-secondary);
+}
+
+.status-text {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+/* ── Connection Room Area ── */
+.connection-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.divider-text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.divider-text::before,
+.divider-text::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.join-room-form {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.join-room-form .input {
+  flex: 1;
+  text-align: center;
+  font-size: var(--font-size-base);
+  letter-spacing: 0.15em;
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.room-id-display {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.room-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.room-id-text {
+  flex: 1;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.15em;
+  color: var(--color-accent-primary);
+  text-align: center;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  padding: var(--space-2);
+}
+
+/* Responsive Breakdown */
+@media (max-width: 1024px) {
+  .xiangqi-main {
+    flex-direction: column;
+    align-items: center;
+  }
+  .xiangqi-panel {
+    width: 100%;
+    max-width: 520px;
+  }
+  .xiangqi-panel-left {
+    order: -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .xiangqi-panel-left .player-info {
+    flex: 1;
+  }
+  .xiangqi-panel-left .move-history {
+    width: 100%;
+    max-height: 160px;
+  }
+  .xiangqi-board-container {
+    width: 100%;
+    max-width: 520px;
+  }
+}

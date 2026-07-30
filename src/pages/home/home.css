@@ -1,0 +1,285 @@
+/* ============================================
+   Home Page Tactical Cyberpunk Styles
+   ============================================ */
+
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-6) var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+.home-grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249, 115, 22, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ── Header ── */
+.home-header {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.home-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.home-logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-accent-primary);
+  box-shadow: var(--shadow-glow-orange);
+  object-fit: cover;
+}
+
+.home-title {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-primary);
+}
+
+.accent-text {
+  color: var(--color-accent-primary);
+}
+
+.home-subtitle {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.15em;
+  margin-top: 2px;
+}
+
+/* ── Hero ── */
+.home-hero {
+  text-align: center;
+  padding: var(--space-10) 0 var(--space-6);
+}
+
+.hero-tagline {
+  margin-bottom: var(--space-3);
+}
+
+.home-hero-title {
+  font-size: var(--font-size-4xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.gradient-text {
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.home-hero-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: var(--line-height-relaxed);
+}
+
+/* ── Game Cards Showcase ── */
+.home-games {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-6);
+  width: 100%;
+  max-width: 1100px;
+  padding: var(--space-6) 0;
+}
+
+.game-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-normal);
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-accent-primary);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-orange);
+}
+
+.game-card-banner {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.game-card:hover .game-card-img {
+  transform: scale(1.05);
+}
+
+.game-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--color-bg-tertiary) 0%, transparent 80%);
+}
+
+.game-card-status {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 2;
+}
+
+.game-card-content {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--space-3);
+  background: var(--color-bg-tertiary);
+}
+
+.game-card-content h3 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+}
+
+.game-card-content p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.game-card-tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.game-card-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.game-card-actions .btn {
+  flex: 1;
+}
+
+.game-card-coming {
+  opacity: 0.7;
+}
+
+.game-card-coming:hover {
+  transform: none;
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+
+/* ── Tech Stack ── */
+.home-tech {
+  width: 100%;
+  max-width: 1100px;
+  padding: var(--space-8) 0;
+}
+
+.home-tech-title {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.2em;
+  margin-bottom: var(--space-5);
+}
+
+.home-tech-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+.tech-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.05em;
+  transition: all var(--transition-fast);
+}
+
+.tech-item:hover {
+  border-color: var(--color-accent-cyan);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.tech-icon {
+  display: flex;
+  align-items: center;
+  color: var(--color-accent-cyan);
+}
+
+/* ── Footer ── */
+.home-footer {
+  width: 100%;
+  max-width: 1100px;
+  text-align: center;
+  padding: var(--space-6) 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  border-top: 1px solid var(--color-border);
+}
+
+.home-footer-sub {
+  margin-top: var(--space-1);
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .home-hero-title {
+    font-size: var(--font-size-3xl);
+  }
+  .game-card-actions {
+    flex-direction: column;
+  }
+}
