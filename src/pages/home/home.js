@@ -241,12 +241,16 @@ export async function renderHome(container) {
   // Chat Form Submission
   const chatForm = document.getElementById('chat-form');
   if (chatForm) {
-    chatForm.addEventListener('submit', (e) => {
+    chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const input = document.getElementById('chat-text');
       if (input && input.value.trim()) {
-        sendGlobalChatMessage('玩家', input.value);
-        input.value = '';
+        const result = await sendGlobalChatMessage('大廳玩家', input.value);
+        if (result && !result.success) {
+          showToast(result.reason, 'warning');
+        } else {
+          input.value = '';
+        }
       }
     });
   }

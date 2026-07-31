@@ -147,7 +147,7 @@ export async function renderXiangqi(container, params) {
     _setupAIMode(game);
   } else {
     room = new RoomManager(game);
-    _setupOnlineMode(game, room);
+    _setupOnlineMode(game, room, params);
   }
 
   // Cleanup handler
@@ -322,7 +322,7 @@ function _setupAIMode(game) {
   });
 }
 
-function _setupOnlineMode(game, room) {
+function _setupOnlineMode(game, room, params) {
   room.onRoomStatus = (status, message) => {
     const statusEl = document.getElementById('connection-status');
     const roomInfo = document.getElementById('room-info');
@@ -391,7 +391,9 @@ function _setupOnlineMode(game, room) {
   // Create Room
   document.getElementById('btn-create-room')?.addEventListener('click', async () => {
     try {
-      const roomId = await room.createRoom('玩家', RED);
+      const roomId = await room.createRoom('玩家', RED, 'xiangqi', '中國象棋');
+      document.getElementById('connection-area').style.display = 'none';
+      document.getElementById('room-info').style.display = 'flex';
       const roomText = document.getElementById('room-id-text');
       if (roomText) roomText.textContent = roomId;
       showToast(`房間已建立: ${roomId}`, 'success');
@@ -421,6 +423,15 @@ function _setupOnlineMode(game, room) {
       document.getElementById('room-info').style.display = 'none';
     }
   });
+
+  // Auto join room if room ID parameter is passed from Lobby
+  if (typeof params !== 'undefined' && params && params.room) {
+    const input = document.getElementById('input-room-id');
+    if (input) input.value = params.room;
+    setTimeout(() => {
+      document.getElementById('btn-join-room')?.click();
+    }, 300);
+  }
 
   // Copy Room ID
   document.getElementById('btn-copy-room')?.addEventListener('click', () => {

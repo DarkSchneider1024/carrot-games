@@ -35,11 +35,16 @@ function getCurrentPath() {
 }
 
 /**
- * Route matching — extract params from the path
+ * Route matching — extract params from path & query string
  */
-function matchRoute(path) {
+function matchRoute(fullPath) {
+  const [path, queryString] = fullPath.split('?');
+  const searchParams = new URLSearchParams(queryString || '');
+  const queryObj = {};
+  searchParams.forEach((val, key) => queryObj[key] = val);
+
   // Exact match first
-  if (routes[path]) return { handler: routes[path], params: {} };
+  if (routes[path]) return { handler: routes[path], params: { ...queryObj } };
 
   // Pattern matching (e.g., /xiangqi/:mode, /poker/:mode)
   for (const [pattern, handler] of Object.entries(routes)) {
@@ -48,7 +53,7 @@ function matchRoute(path) {
 
     if (patternParts.length !== pathParts.length) continue;
 
-    const params = {};
+    const params = { ...queryObj };
     let match = true;
 
     for (let i = 0; i < patternParts.length; i++) {
@@ -82,7 +87,6 @@ async function renderRoute() {
   const match = matchRoute(path);
 
   if (match) {
-    // Fade out
     app.style.opacity = '0';
     app.style.transition = 'opacity 0.15s ease';
 
@@ -91,7 +95,6 @@ async function renderRoute() {
 
     currentCleanup = await match.handler(app, match.params);
 
-    // Fade in
     requestAnimationFrame(() => {
       app.style.opacity = '1';
     });

@@ -181,7 +181,7 @@ export async function renderTetris(container, params) {
     _setupAIMode(game);
   } else {
     room = new RoomManager(null);
-    _setupOnlineMode(game, room);
+    _setupOnlineMode(game, room, params);
   }
 
   game.startMatch({ mode: mode === 'ai' ? TETRIS_MODE.VS_AI : TETRIS_MODE.VS_HUMAN_ONLINE, difficulty: 'medium' });
@@ -458,7 +458,7 @@ function _setupAIMode(game) {
   });
 }
 
-function _setupOnlineMode(game, room) {
+function _setupOnlineMode(game, room, params) {
   room.onRoomStatus = (status) => {
     const statusEl = document.getElementById('connection-status');
     if (status === 'connected' || status === 'playing') {
@@ -469,7 +469,7 @@ function _setupOnlineMode(game, room) {
 
   document.getElementById('btn-create-room')?.addEventListener('click', async () => {
     try {
-      const roomId = await room.createRoom('Player', 1);
+      const roomId = await room.createRoom('玩家', 1, 'tetris', '俄羅斯方塊');
       document.getElementById('room-id-text').textContent = roomId;
       document.getElementById('connection-area').style.display = 'none';
       document.getElementById('room-info').style.display = 'flex';
@@ -491,6 +491,14 @@ function _setupOnlineMode(game, room) {
       showToast('加入失敗: ' + e.message, 'error');
     }
   });
+
+  if (params && params.room) {
+    const input = document.getElementById('input-room-id');
+    if (input) input.value = params.room;
+    setTimeout(() => {
+      document.getElementById('btn-join-room')?.click();
+    }, 300);
+  }
 }
 
 function _updateUIStats(state) {
