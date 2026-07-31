@@ -353,3 +353,41 @@
   .poker-action-buttons { flex-wrap: wrap; }
   .action-btn { min-width: 45%; }
 }
+
+/* ── Stakes Selector Bar ── */
+.stakes-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-secondary);
+  border: 1.5px solid var(--color-border);
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.stakes-title {
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.stakes-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stakes-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.stakes-btn.active {
+  box-shadow: var(--shadow-sm);
+}

@@ -119,6 +119,25 @@ export async function renderPoker(container, params) {
           </div>
         </div>
 
+        <!-- Stakes Selector Bar -->
+        <div class="stakes-bar glass">
+          <span class="stakes-title">💰 盲注層級 (STAKES):</span>
+          <div class="stakes-options">
+            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="5" data-bb="10" data-buyin="500" data-label="新手場">
+              🐣 新手 $5/$10
+            </button>
+            <button class="btn btn-primary btn-xs stakes-btn active" data-sb="10" data-bb="20" data-buyin="1000" data-label="標準場">
+              ⚖️ 標準 $10/$20
+            </button>
+            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="50" data-bb="100" data-buyin="5000" data-label="高額場">
+              🚀 高額 $50/$100
+            </button>
+            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="100" data-bb="200" data-buyin="10000" data-label="豪客場">
+              🔥 豪客 $100/$200
+            </button>
+          </div>
+        </div>
+
         <!-- Betting Control Action Bar -->
         <div class="poker-action-bar glass">
           <div class="poker-action-buttons">
@@ -204,6 +223,33 @@ export async function renderPoker(container, params) {
     document.getElementById('pbtn-next').style.display = 'none';
     _updatePokerUI(engine);
     _checkAITurn(engine);
+  });
+
+  // Stakes Selector Event Handlers
+  document.querySelectorAll('.stakes-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.stakes-btn').forEach(b => {
+        b.classList.remove('btn-primary', 'active');
+        b.classList.add('btn-ghost');
+      });
+      btn.classList.remove('btn-ghost');
+      btn.classList.add('btn-primary', 'active');
+
+      const sb = parseInt(btn.dataset.sb, 10);
+      const bb = parseInt(btn.dataset.bb, 10);
+      const buyin = parseInt(btn.dataset.buyin, 10);
+      const label = btn.dataset.label;
+
+      engine.setStakes(sb, bb, buyin);
+      const winnerBanner = document.getElementById('winner-banner');
+      const nextBtn = document.getElementById('pbtn-next');
+      if (winnerBanner) winnerBanner.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+
+      _updatePokerUI(engine);
+      showToast(`已切換至【${label}】小盲 $${sb} / 大盲 $${bb}（籌碼 $${buyin}）`, 'success');
+      _checkAITurn(engine);
+    });
   });
 
   document.getElementById('btn-back')?.addEventListener('click', () => navigate('/'));

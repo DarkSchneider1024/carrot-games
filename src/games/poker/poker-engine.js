@@ -176,6 +176,21 @@ export class TexasHoldemEngine {
     this.startNewHand();
   }
 
+  setStakes(smallBlind, bigBlind, defaultBuyIn = 1000) {
+    this.smallBlind = smallBlind;
+    this.bigBlind = bigBlind;
+    if (this.players && this.players.length > 0) {
+      this.players.forEach(p => {
+        p.chips = defaultBuyIn;
+        p.bet = 0;
+        p.folded = false;
+        p.isAllIn = false;
+      });
+      this.log(`📢 盲注層級切換為：小盲 $${smallBlind} / 大盲 $${bigBlind} (攜帶籌碼 $${defaultBuyIn})`, 'system');
+      this.startNewHand();
+    }
+  }
+
   startNewHand() {
     this.deck = shuffleDeck(createDeck());
     this.communityCards = [];
