@@ -7,18 +7,21 @@ import './pages/home/home.css';
 import './pages/xiangqi/xiangqi.css';
 import './pages/tetris/tetris.css';
 import './pages/pwa-guide/pwa-guide.css';
+import './pages/poker/poker.css';
 
 import { registerRoute, initRouter } from './router.js';
 import { renderHome } from './pages/home/home.js';
 import { renderXiangqi } from './pages/xiangqi/xiangqi.js';
 import { renderTetris } from './pages/tetris/tetris.js';
 import { renderPwaGuide } from './pages/pwa-guide/pwa-guide.js';
+import { renderPoker } from './pages/poker/poker.js';
 import { showToast } from './components/toast.js';
 
 // ── Register Routes ──
 registerRoute('/', renderHome);
 registerRoute('/xiangqi/:mode', renderXiangqi);
 registerRoute('/tetris/:mode', renderTetris);
+registerRoute('/poker/:mode', renderPoker);
 registerRoute('/pwa-guide', renderPwaGuide);
 
 // ── PWA Service Worker & Auto-Update Manager ──
@@ -37,15 +40,12 @@ function registerPWA() {
 
   window.addEventListener('load', async () => {
     try {
-      // Register sw.js with update checking
       const reg = await navigator.serviceWorker.register('/carrot-games/sw.js');
       console.log('⚡ [PWA] ServiceWorker registered with scope:', reg.scope);
 
-      // Check for updates periodically & when app comes into focus
       window.addEventListener('focus', () => reg.update());
-      setInterval(() => reg.update(), 10 * 60 * 1000); // Every 10 mins
+      setInterval(() => reg.update(), 10 * 60 * 1000);
 
-      // Handle new worker installing/waiting
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         if (!newWorker) return;
@@ -58,7 +58,6 @@ function registerPWA() {
         });
       });
 
-      // If a worker is already waiting in background
       if (reg.waiting) {
         reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
@@ -73,5 +72,5 @@ registerPWA();
 // ── Initialize App ──
 document.addEventListener('DOMContentLoaded', () => {
   initRouter();
-  console.log('🥕 Carrot Games initialized with WASM, P2P & PWA Auto-Update');
+  console.log('🥕 Carrot Games initialized with Xiangqi, Tetris & Poker');
 });

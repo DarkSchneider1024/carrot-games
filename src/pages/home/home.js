@@ -1,5 +1,5 @@
 /**
- * Home Page — Game Lobby (Tactical Gaming Redesign)
+ * Home Page — Game Lobby (Happy Hues Fresh Cute Redesign)
  */
 
 import { navigate } from '../../router.js';
@@ -93,28 +93,37 @@ export async function renderHome(container) {
 
             <div class="game-card-actions">
               <button class="btn btn-primary" id="btn-tetris-ai">
-                ${SVG_ICONS.bot} WASM Bot
+                ${SVG_ICONS.bot} 對戰 AI
               </button>
               <button class="btn btn-cyan" id="btn-tetris-online">
-                ${SVG_ICONS.globe} P2P 對戰
+                ${SVG_ICONS.globe} 連線開房
               </button>
             </div>
           </div>
         </div>
 
         <!-- Poker Card -->
-        <div class="game-card game-card-coming animate-fade-in-up stagger-4">
+        <div class="game-card animate-fade-in-up stagger-4" id="card-poker">
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_poker.png" alt="德州撲克" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-warning game-card-status">研發中</span>
+            <span class="badge badge-success game-card-status">熱門上線</span>
           </div>
           <div class="game-card-content">
             <h3>德州撲克 (POKER)</h3>
-            <p>多玩家 P2P 心理博弈與籌碼決戰。</p>
+            <p>多玩家 P2P 心理博弈與籌碼決戰。支援 AI 電腦玩家對決與 P2P 連線開房。</p>
             <div class="game-card-tags">
-              <span class="tag">Multi-Peer</span>
-              <span class="tag">WASM Math</span>
+              <span class="tag">${SVG_ICONS.cpu} Poker AI</span>
+              <span class="tag">${SVG_ICONS.globe} Multi-Peer</span>
+            </div>
+
+            <div class="game-card-actions">
+              <button class="btn btn-primary" id="btn-poker-ai">
+                ${SVG_ICONS.bot} 對戰 AI
+              </button>
+              <button class="btn btn-cyan" id="btn-poker-online">
+                ${SVG_ICONS.globe} 連線開房
+              </button>
             </div>
           </div>
         </div>
@@ -178,6 +187,14 @@ export async function renderHome(container) {
 
   document.getElementById('btn-tetris-online')?.addEventListener('click', () => {
     navigate('/tetris/online');
+  });
+
+  document.getElementById('btn-poker-ai')?.addEventListener('click', () => {
+    navigate('/poker/ai');
+  });
+
+  document.getElementById('btn-poker-online')?.addEventListener('click', () => {
+    navigate('/poker/online');
   });
 
   // Initialize storage badge

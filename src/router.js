@@ -24,10 +24,13 @@ export function navigate(path) {
 }
 
 /**
- * Get current route path
+ * Get current route path (with normalized trailing slashes)
  */
 function getCurrentPath() {
-  const hash = window.location.hash.slice(1) || '/';
+  let hash = window.location.hash.slice(1) || '/';
+  if (hash.length > 1 && hash.endsWith('/')) {
+    hash = hash.slice(0, -1);
+  }
   return hash;
 }
 
@@ -38,7 +41,7 @@ function matchRoute(path) {
   // Exact match first
   if (routes[path]) return { handler: routes[path], params: {} };
 
-  // Pattern matching (e.g., /xiangqi/:mode)
+  // Pattern matching (e.g., /xiangqi/:mode, /poker/:mode)
   for (const [pattern, handler] of Object.entries(routes)) {
     const patternParts = pattern.split('/');
     const pathParts = path.split('/');
@@ -95,7 +98,7 @@ async function renderRoute() {
   } else {
     // 404
     app.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;background-color:var(--color-bg-primary);color:var(--color-text-primary);">
         <h1 style="font-size:4rem;">🥕</h1>
         <h2>找不到頁面</h2>
         <p style="color:var(--color-text-secondary)">這裡什麼都沒有...</p>
