@@ -457,10 +457,18 @@ function _setupOnlineMode(game, room, params) {
   document.getElementById('btn-online-resign')?.addEventListener('click', () => {
     showModal({
       title: '確認認輸？',
-      content: '<p>確定要認輸本局嗎？</p>',
+      content: '<p>確定要認輸本局連線對決嗎？</p>',
       actions: [
         { text: '取消', onClick: closeModal },
-        { text: '確認認輸', class: 'btn-primary', onClick: () => { room.resign(); closeModal(); } },
+        {
+          text: '確認認輸',
+          class: 'btn-primary',
+          onClick: () => {
+            if (room) room.resign();
+            game.resign();
+            closeModal();
+          }
+        },
       ],
     });
   });
