@@ -8,6 +8,7 @@ import { PeerManager } from './peer-manager.js';
 import { MSG } from './protocol.js';
 import { RED, BLACK } from '../games/xiangqi/pieces.js';
 import { publishRoom, unpublishRoom, updateRoomPlayerCount } from './firebase-manager.js';
+import { getPlayerName } from '../utils/player-profile.js';
 
 export class RoomManager {
   constructor(gameController) {
@@ -71,7 +72,8 @@ export class RoomManager {
    */
   async createRoom(playerName = '玩家', side = RED, gameType = 'xiangqi', gameName = '中國象棋') {
     this.isHost = true;
-    this.playerName = playerName;
+    const finalName = (playerName && playerName !== '玩家') ? playerName : getPlayerName();
+    this.playerName = finalName;
     this.hostSide = side;
     this.gameType = gameType;
 
@@ -82,7 +84,7 @@ export class RoomManager {
       roomId: this.roomId,
       gameType,
       gameName,
-      hostName: playerName,
+      hostName: finalName,
       maxPlayers: 2,
     });
 

@@ -1,5 +1,5 @@
 /**
- * Home Page — Game Lobby (User-Friendly Friendly Copy & Online Lobby)
+ * Home Page — Game Lobby with Realtime Public Room Directory & Global Chat
  */
 
 import { navigate } from '../../router.js';
@@ -7,6 +7,8 @@ import { storage } from '../../storage/storage-manager.js';
 import { SVG_ICONS } from '../../components/icons.js';
 import { subscribePublicRooms, subscribeGlobalChat, sendGlobalChatMessage } from '../../network/firebase-manager.js';
 import { showToast } from '../../components/toast.js';
+import { showModal, closeModal } from '../../components/modal.js';
+import { getPlayerName, setPlayerName } from '../../utils/player-profile.js';
 
 export async function renderHome(container) {
   let unsubRooms = null;
@@ -27,6 +29,9 @@ export async function renderHome(container) {
           </div>
         </div>
         <div class="home-header-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊修改玩家暱稱">
+            ✏️ <span id="display-player-name">${getPlayerName()}</span>
+          </button>
           <button class="btn btn-secondary btn-sm" id="btn-pwa-guide">
             ${SVG_ICONS.smartphone} 手機安裝指南
           </button>
@@ -116,7 +121,7 @@ export async function renderHome(container) {
           </div>
           <div class="game-card-content">
             <h3>德州撲克 (POKER)</h3>
-            <p>心理博弈與籌碼決戰！支援可愛電腦 AI 對決與好友連線開房。</p>
+            <p>心理博弈與籌碼決戰！支援可愛 AI 電腦對決與好友連線開房。</p>
             <div class="game-card-tags">
               <span class="tag">${SVG_ICONS.cpu} 可愛 AI 對決</span>
               <span class="tag">${SVG_ICONS.globe} 多人同樂</span>
@@ -191,7 +196,7 @@ export async function renderHome(container) {
       <div class="room-row glass">
         <div class="room-row-info">
           <span class="room-game-badge badge badge-info">${room.gameName || room.gameType}</span>
-          <strong class="room-host">${room.hostName || '玩家'} 的房間</strong>
+          <strong class="room-host">${room.hostName || '匿名玩家'} 的房間</strong>
           <span class="room-id">房號: <code>${room.roomId}</code></span>
         </div>
         <div class="room-row-actions">
@@ -208,7 +213,7 @@ export async function renderHome(container) {
       btn.addEventListener('click', () => {
         const roomId = btn.dataset.roomId;
         const gameType = btn.dataset.game || 'xiangqi';
-        showToast(`正在加入房間 ${roomId}...`, 'info');
+        showToast(`正在加入 ${roomId} 房間...`, 'info');
         navigate(`/${gameType}/online?room=${roomId}`);
       });
     });
@@ -238,6 +243,37 @@ export async function renderHome(container) {
     chatEl.scrollTop = chatEl.scrollHeight;
   });
 
+  // Player Profile Nickname Modal
+  document.getElementById('btn-player-profile')?.addEventListener('click', () => {
+    const currentName = getPlayerName();
+    showModal({
+      title: '修改玩家暱稱',
+      content: `
+        <div style="font-size:0.875rem;display:flex;flex-direction:column;gap:0.75rem;">
+          <label style="color:var(--color-text-secondary);">請輸入在大廳與對戰中顯示的玩家名稱 (最多 16 字)：</label>
+          <input type="text" class="input" id="input-nickname" value="${currentName}" maxlength="16" placeholder="輸入玩家暱稱..." />
+        </div>
+      `,
+      actions: [
+        { text: '取消', onClick: closeModal },
+        {
+          text: '儲存暱稱',
+          class: 'btn-primary',
+          onClick: () => {
+            const input = document.getElementById('input-nickname');
+            if (input && input.value.trim()) {
+              const newName = setPlayerName(input.value.trim());
+              const displayEl = document.getElementById('display-player-name');
+              if (displayEl) displayEl.textContent = newName;
+              showToast(`玩家暱稱已更新為：${newName}`, 'success');
+            }
+            closeModal();
+          }
+        }
+      ]
+    });
+  });
+
   // Chat Form Submission
   const chatForm = document.getElementById('chat-form');
   if (chatForm) {
@@ -245,7 +281,8 @@ export async function renderHome(container) {
       e.preventDefault();
       const input = document.getElementById('chat-text');
       if (input && input.value.trim()) {
-        const result = await sendGlobalChatMessage('大廳玩家', input.value);
+        const author = getPlayerName();
+        const result = await sendGlobalChatMessage(author, input.value);
         if (result && !result.success) {
           showToast(result.reason, 'warning');
         } else {
