@@ -71,7 +71,7 @@ export async function renderXiangqi(container, params) {
         </div>
 
         <!-- Board Stage -->
-        <div class="xiangqi-board-container">
+        <div class="xiangqi-board-container" id="board-container">
           <div class="board-frame">
             <canvas id="xiangqi-canvas"></canvas>
           </div>
@@ -103,10 +103,10 @@ export async function renderXiangqi(container, params) {
     </div>
   `;
 
-  // Initialize canvas sizing
+  // Canvas sizing based on outer container
   const canvas = document.getElementById('xiangqi-canvas');
-  const boardContainer = canvas.parentElement;
-  _resizeCanvas(canvas, boardContainer);
+  const outerContainer = document.getElementById('board-container');
+  _resizeCanvas(canvas, outerContainer);
 
   // Initialize game controller
   game.init(canvas);
@@ -121,8 +121,8 @@ export async function renderXiangqi(container, params) {
 
   // Handle window resize
   const resizeHandler = () => {
-    _resizeCanvas(canvas, boardContainer);
-    game.renderer.handleResize();
+    _resizeCanvas(canvas, outerContainer);
+    if (game.renderer) game.renderer.handleResize();
   };
   window.addEventListener('resize', resizeHandler);
 
@@ -158,11 +158,18 @@ export async function renderXiangqi(container, params) {
   };
 }
 
-function _resizeCanvas(canvas, container) {
-  const rect = container.getBoundingClientRect();
-  const size = Math.min(rect.width, rect.height);
-  canvas.style.width = size + 'px';
-  canvas.style.height = size + 'px';
+function _resizeCanvas(canvas, outerContainer) {
+  if (!outerContainer) return;
+  const rect = outerContainer.getBoundingClientRect();
+  const availableWidth = rect.width > 0 ? (rect.width - 20) : (window.innerWidth - 600);
+  const availableHeight = (window.innerHeight * 0.78) - 40;
+  
+  // Calculate size so board is nicely proportioned (aspect ratio 9:10)
+  const maxW = Math.min(availableWidth, availableHeight * (9 / 10));
+  const size = Math.max(340, Math.min(maxW, 640));
+
+  canvas.style.width = Math.round(size) + 'px';
+  canvas.style.height = Math.round(size * (10 / 9)) + 'px';
 }
 
 function _renderAIPanel() {

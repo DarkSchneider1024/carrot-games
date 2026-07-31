@@ -29,7 +29,7 @@ export class RoomManager {
   _setupPeerCallbacks() {
     this.peer.onConnect = () => {
       if (this.isHost) {
-        // Host sends game config
+        // Host sends game config to connected guest
         this.peer.send(MSG.GAME_CONFIG, {
           hostSide: this.hostSide,
           hostName: this.playerName,
@@ -59,7 +59,7 @@ export class RoomManager {
   }
 
   /**
-   * Create a new room
+   * Create a new room (Host)
    */
   async createRoom(playerName = '玩家', side = RED) {
     this.isHost = true;
@@ -71,7 +71,7 @@ export class RoomManager {
   }
 
   /**
-   * Join an existing room
+   * Join an existing room (Guest)
    */
   async joinRoom(roomId, playerName = '玩家') {
     this.isHost = false;
@@ -89,46 +89,62 @@ export class RoomManager {
 
     switch (type) {
       case MSG.HELLO:
-        // Received from host
         break;
 
       case MSG.GAME_CONFIG:
-        // Guest receives game config
+        // Guest receives game config from Host
         this.hostSide = data.hostSide;
         this.opponentName = data.hostName || '對手';
+
         // Guest plays opposite side
         const guestSide = data.hostSide === RED ? BLACK : RED;
-        this.game.newGame({
-          mode: 'vs_human_online',
-          playerSide: guestSide,
-        });
-        // Tell host we're ready
+        if (this.game) {
+          this.game.newGame({
+            mode: 'vs_human_online',
+            playerSide: guestSide,
+          });
+        }
+
+        // Enable move sync on guest side
+        this._setupMoveSync();
+
+        // Tell Host guest is ready
         this.peer.send(MSG.GAME_READY, { name: this.playerName });
         break;
 
       case MSG.GAME_READY:
-        // Host receives guest ready
+        // Host receives GAME_READY from guest
         this.opponentName = data.name || '對手';
-        this.game.newGame({
-          mode: 'vs_human_online',
-          playerSide: this.hostSide,
-        });
-        // Set up move callback
+        if (this.game) {
+          this.game.newGame({
+            mode: 'vs_human_online',
+            playerSide: this.hostSide,
+          });
+        }
+
+        // Enable move sync on host side
         this._setupMoveSync();
+
+        // Notify guest that game starts
+        this.peer.send(MSG.GAME_START, { hostName: this.playerName });
+
         if (this.onRoomStatus) this.onRoomStatus('playing');
         break;
 
       case MSG.GAME_START:
+        // Guest receives GAME_START from host
         this._setupMoveSync();
         if (this.onRoomStatus) this.onRoomStatus('playing');
         break;
 
       case MSG.MOVE:
         // Opponent made a move
-        this.game.receiveNetworkMove(
-          data.from.row, data.from.col,
-          data.to.row, data.to.col
-        );
+        if (this.game && data && data.from && data.to) {
+          this.game.receiveNetworkMove(
+            data.from.row, data.from.col,
+            data.to.row, data.to.col
+          );
+        }
         break;
 
       case MSG.UNDO_REQUEST:
@@ -138,7 +154,7 @@ export class RoomManager {
         break;
 
       case MSG.UNDO_ACCEPT:
-        this.game.undo();
+        if (this.game) this.game.undo();
         break;
 
       case MSG.UNDO_REJECT:
@@ -180,62 +196,43 @@ export class RoomManager {
   }
 
   /**
-   * Set up move synchronization
+   * Set up move synchronization for bidirectional communication
    */
   _setupMoveSync() {
+    if (!this.game) return;
     this.game.onMove = (move) => {
       this.peer.send(MSG.MOVE, move);
     };
   }
 
-  /**
-   * Send undo request
-   */
   requestUndo() {
     this.peer.send(MSG.UNDO_REQUEST);
   }
 
-  /**
-   * Accept undo request
-   */
   acceptUndo() {
     this.peer.send(MSG.UNDO_ACCEPT);
-    this.game.undo();
+    if (this.game) this.game.undo();
   }
 
-  /**
-   * Reject undo request
-   */
   rejectUndo() {
     this.peer.send(MSG.UNDO_REJECT);
   }
 
-  /**
-   * Resign
-   */
   resign() {
     this.peer.send(MSG.RESIGN);
-    this.game.resign();
+    if (this.game) this.game.resign();
   }
 
-  /**
-   * Offer draw
-   */
   offerDraw() {
     this.peer.send(MSG.DRAW_OFFER);
   }
 
-  /**
-   * Send chat message
-   */
   sendChat(message) {
     this.peer.send(MSG.CHAT, { message, name: this.playerName });
   }
 
-  /**
-   * Disconnect
-   */
   disconnect() {
+    if (this.game) this.game.onMove = null;
     this.peer.disconnect();
   }
 }
