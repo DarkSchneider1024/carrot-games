@@ -1,10 +1,7 @@
 /**
  * Hybrid Lobby & Chat Manager — BroadcastChannel + LocalStorage + Firebase Realtime Database
  *
- * Implements Security Defenses:
- * - Client-side XSS HTML entity escaping
- * - 2.5s Anti-spam rate limiting & duplicate message blocking
- * - String length truncation (max 80 chars)
+ * Includes Stale Room Auto-Purging (25s Heartbeat Timeout) & Immediate Disconnect Cleanup
  */
 
 import { initializeApp } from 'firebase/app';
@@ -31,9 +28,6 @@ if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
   broadcastChannel = new BroadcastChannel('carrot-games-lobby');
 }
 
-/**
- * XSS Security Sanitization
- */
 export function escapeHTML(str) {
   if (!str) return '';
   return String(str)
@@ -57,7 +51,6 @@ export function initFirebase() {
   return { app, db };
 }
 
-// Local storage helpers
 function getLocalRooms() {
   try {
     const data = localStorage.getItem('carrot_rooms_cache');
@@ -92,6 +85,7 @@ function saveLocalChat(chatList) {
  * Publish a public room to global lobby
  */
 export async function publishRoom({ roomId, gameType, gameName, hostName = '匿名玩家', maxPlayers = 2 }) {
+  const now = Date.now();
   const roomData = {
     roomId: escapeHTML(roomId),
     gameType: escapeHTML(gameType),
@@ -99,7 +93,8 @@ export async function publishRoom({ roomId, gameType, gameName, hostName = '匿�
     hostName: escapeHTML(hostName).slice(0, 20),
     currentPlayers: 1,
     maxPlayers,
-    createdAt: Date.now(),
+    createdAt: now,
+    lastSeen: now,
   };
 
   const rooms = getLocalRooms();
@@ -123,12 +118,34 @@ export async function publishRoom({ roomId, gameType, gameName, hostName = '匿�
 }
 
 /**
+ * Send Heartbeat to keep room active in lobby
+ */
+export async function updateRoomHeartbeat(roomId) {
+  if (!roomId) return;
+  const now = Date.now();
+  const rooms = getLocalRooms();
+  if (rooms[roomId]) {
+    rooms[roomId].lastSeen = now;
+    saveLocalRooms(rooms);
+  }
+
+  try {
+    const { db } = initFirebase();
+    if (db) {
+      const heartbeatRef = ref(db, `rooms/${roomId}/lastSeen`);
+      await set(heartbeatRef, now);
+    }
+  } catch (e) {}
+}
+
+/**
  * Update player count for a published room
  */
 export async function updateRoomPlayerCount(roomId, currentPlayers) {
   const rooms = getLocalRooms();
   if (rooms[roomId]) {
     rooms[roomId].currentPlayers = currentPlayers;
+    rooms[roomId].lastSeen = Date.now();
     saveLocalRooms(rooms);
     if (broadcastChannel) {
       broadcastChannel.postMessage({ type: 'ROOMS_UPDATED', rooms: Object.values(rooms) });
@@ -145,9 +162,10 @@ export async function updateRoomPlayerCount(roomId, currentPlayers) {
 }
 
 /**
- * Remove room from public lobby
+ * Remove room from public lobby immediately
  */
 export async function unpublishRoom(roomId) {
+  if (!roomId) return;
   const rooms = getLocalRooms();
   delete rooms[roomId];
   saveLocalRooms(rooms);
@@ -166,26 +184,35 @@ export async function unpublishRoom(roomId) {
 }
 
 /**
- * Subscribe to real-time public rooms list
+ * Subscribe to real-time public rooms list with 25s stale room auto-purge
  */
 export function subscribePublicRooms(callback) {
   let firebaseUnsub = null;
 
   const updateRooms = (cloudRooms = null) => {
     const localMap = getLocalRooms();
-
     const now = Date.now();
+
+    // 1. Purge stale local rooms without heartbeat for > 25 seconds
     Object.keys(localMap).forEach(id => {
-      if (now - localMap[id].createdAt > 2 * 3600 * 1000) {
+      const lastSeen = localMap[id].lastSeen || localMap[id].createdAt || 0;
+      if (now - lastSeen > 25000) {
         delete localMap[id];
       }
     });
     saveLocalRooms(localMap);
 
     const merged = { ...localMap };
+
+    // 2. Filter out cloud rooms without recent heartbeat (> 25 seconds)
     if (cloudRooms && Array.isArray(cloudRooms)) {
       cloudRooms.forEach(r => {
-        merged[r.roomId] = r;
+        const lastSeen = r.lastSeen || r.createdAt || 0;
+        if (now - lastSeen <= 25000) {
+          merged[r.roomId] = r;
+        } else if (merged[r.roomId]) {
+          delete merged[r.roomId];
+        }
       });
     }
 
@@ -230,7 +257,7 @@ export function subscribePublicRooms(callback) {
 }
 
 /**
- * Send a message to global lobby chat (with anti-spam rate limiting & XSS prevention)
+ * Send a message to global lobby chat
  */
 export async function sendGlobalChatMessage(author, message) {
   if (!message || !message.trim()) return { success: false, reason: '訊息不能為空' };
@@ -255,7 +282,6 @@ export async function sendGlobalChatMessage(author, message) {
     timestamp: now,
   };
 
-  // 1. Save to local storage & BroadcastChannel
   const chatList = getLocalChat();
   chatList.push(msgData);
   saveLocalChat(chatList);
@@ -264,7 +290,6 @@ export async function sendGlobalChatMessage(author, message) {
     broadcastChannel.postMessage({ type: 'CHAT_UPDATED', chat: chatList });
   }
 
-  // 2. Sync to Firebase
   try {
     const { db } = initFirebase();
     if (db) {

@@ -1,57 +1,34 @@
 /**
- * Room Manager — High-level game room logic with Firebase Global Lobby Publishing
+ * Room Manager — High-level game room logic with Firebase Global Lobby Publishing & Heartbeat
  *
- * Coordinates PeerManager + GameController for online play & publishes to global lobby.
+ * Coordinates PeerManager + GameController for online play & publishes to global lobby with 10s Heartbeat.
  */
 
 import { PeerManager } from './peer-manager.js';
 import { MSG } from './protocol.js';
 import { RED, BLACK } from '../games/xiangqi/pieces.js';
-import { publishRoom, unpublishRoom, updateRoomPlayerCount } from './firebase-manager.js';
+import { publishRoom, unpublishRoom, updateRoomPlayerCount, updateRoomHeartbeat } from './firebase-manager.js';
 import { getPlayerName } from '../utils/player-profile.js';
 
 export class RoomManager {
   constructor(gameController) {
     this.game = gameController;
     this.peer = new PeerManager();
-    this.roomId = '';
+    this.roomId = null;
     this.isHost = false;
-    this.opponentName = '對手';
     this.playerName = '玩家';
-    this.hostSide = RED;
+    this.hostSide = null;
     this.gameType = 'xiangqi';
+    this.onRoomStatus = null; // (status, message) => {}
+    this.heartbeatTimer = null;
+    this._unloadHandler = null;
 
-    // UI Callbacks
-    this.onRoomStatus = null;
-    this.onOpponentAction = null;
-    this.onChat = null;
-
-    this._setupPeerCallbacks();
+    this._setupPeerHandlers();
   }
 
-  _setupPeerCallbacks() {
-    this.peer.onConnect = () => {
-      if (this.isHost) {
-        // Host sends game config to connected guest
-        this.peer.send(MSG.GAME_CONFIG, {
-          hostSide: this.hostSide,
-          hostName: this.playerName,
-        });
-
-        // Update Firebase Lobby room player count to 2
-        updateRoomPlayerCount(this.roomId, 2);
-      }
-    };
-
-    this.peer.onMessage = (msg) => this._handleMessage(msg);
-
-    this.peer.onDisconnect = () => {
-      if (this.isHost) {
-        updateRoomPlayerCount(this.roomId, 1);
-      }
-      if (this.onRoomStatus) {
-        this.onRoomStatus('disconnected', '對手已斷線');
-      }
+  _setupPeerHandlers() {
+    this.peer.onData = (data) => {
+      this._handleNetworkData(data);
     };
 
     this.peer.onError = (err) => {
@@ -68,7 +45,7 @@ export class RoomManager {
   }
 
   /**
-   * Create a new room (Host) & publish to global Firebase lobby
+   * Create a new room (Host) & publish to global Firebase lobby with heartbeat
    */
   async createRoom(playerName = '玩家', side = RED, gameType = 'xiangqi', gameName = '中國象棋') {
     this.isHost = true;
@@ -87,6 +64,22 @@ export class RoomManager {
       hostName: finalName,
       maxPlayers: 2,
     });
+
+    // Start 10s Heartbeat Timer to keep room alive
+    if (this.heartbeatTimer) clearInterval(this.heartbeatTimer);
+    this.heartbeatTimer = setInterval(() => {
+      if (this.isHost && this.roomId) {
+        updateRoomHeartbeat(this.roomId);
+      }
+    }, 10000);
+
+    // Bind window beforeunload handler for instant cleanup on tab close
+    this._unloadHandler = () => {
+      if (this.isHost && this.roomId) {
+        unpublishRoom(this.roomId);
+      }
+    };
+    window.addEventListener('beforeunload', this._unloadHandler);
 
     return this.roomId;
   }
@@ -113,58 +106,64 @@ export class RoomManager {
         break;
 
       case MSG.GAME_CONFIG:
-        this.hostSide = data.hostSide;
-        this.opponentName = data.hostName || '對手';
-
-        const guestSide = data.hostSide === RED ? BLACK : RED;
-        if (this.game && this.game.setPlayerSide) {
-          this.game.setPlayerSide(guestSide);
-        }
-
-        this.peer.send(MSG.READY, { name: this.playerName });
-
-        if (this.onRoomStatus) {
-          this.onRoomStatus('playing', '已進入房間，遊戲開始！');
-        }
-        break;
-
-      case MSG.READY:
-        this.opponentName = data.name || '對手';
-        if (this.onRoomStatus) {
-          this.onRoomStatus('playing', '對手已就緒，遊戲開始！');
-        }
         break;
 
       case MSG.MOVE:
-        if (this.game && this.game.applyRemoteMove) {
-          this.game.applyRemoteMove(data);
-        }
-        if (this.onOpponentAction) {
-          this.onOpponentAction('move', data);
-        }
-        break;
-
-      case MSG.CHAT:
-        if (this.onChat) {
-          this.onChat(data.sender, data.text);
-        }
-        break;
-
-      case MSG.RESTART:
-        if (this.game && this.game.resetGame) {
-          this.game.resetGame();
-        }
-        if (this.onOpponentAction) {
-          this.onOpponentAction('restart');
+        if (this.game && this.game.receiveNetworkMove) {
+          this.game.receiveNetworkMove(data.from.row, data.from.col, data.to.row, data.to.col);
         }
         break;
 
       case MSG.SURRENDER:
-        if (this.onOpponentAction) {
-          this.onOpponentAction('surrender');
-        }
+        if (this.onOpponentAction) this.onOpponentAction('opponent_resigned');
+        break;
+
+      case MSG.REQUEST_UNDO:
+        if (this.onOpponentAction) this.onOpponentAction('undo_request');
+        break;
+
+      case MSG.ACCEPT_UNDO:
+        if (this.game && this.game.undo) this.game.undo();
+        break;
+
+      case MSG.REJECT_UNDO:
+        if (this.onOpponentAction) this.onOpponentAction('undo_rejected');
+        break;
+
+      case MSG.OFFER_DRAW:
+        if (this.onOpponentAction) this.onOpponentAction('draw_offer');
         break;
     }
+  }
+
+  _handleNetworkData(data) {
+    try {
+      const msg = typeof data === 'string' ? JSON.parse(data) : data;
+      this._handleMessage(msg);
+    } catch (e) {
+      console.warn('Network message parse error:', e);
+    }
+  }
+
+  requestUndo() {
+    this.peer.send(MSG.REQUEST_UNDO, {});
+  }
+
+  acceptUndo() {
+    this.peer.send(MSG.ACCEPT_UNDO, {});
+    if (this.game && this.game.undo) this.game.undo();
+  }
+
+  rejectUndo() {
+    this.peer.send(MSG.REJECT_UNDO, {});
+  }
+
+  offerDraw() {
+    this.peer.send(MSG.OFFER_DRAW, {});
+  }
+
+  resign() {
+    this.peer.send(MSG.SURRENDER, {});
   }
 
   sendMove(moveData) {
@@ -187,6 +186,16 @@ export class RoomManager {
   }
 
   disconnect() {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+
+    if (this._unloadHandler) {
+      window.removeEventListener('beforeunload', this._unloadHandler);
+      this._unloadHandler = null;
+    }
+
     if (this.isHost && this.roomId) {
       unpublishRoom(this.roomId);
     }
