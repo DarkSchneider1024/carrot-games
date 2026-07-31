@@ -340,6 +340,7 @@ function _setupOnlineMode(game, room, params) {
         if (statusEl) statusEl.innerHTML = `<span style="color:var(--color-success);">${SVG_ICONS.check} 對手已連線</span>`;
         break;
       case 'playing':
+        game.mode = GAME_MODE.VS_HUMAN_ONLINE;
         if (onlineActions) onlineActions.style.display = 'flex';
         if (statusText) statusText.textContent = '戰鬥進行中';
         showToast('對手已連線，對局開始！', 'success');
@@ -391,6 +392,11 @@ function _setupOnlineMode(game, room, params) {
   // Create Room
   document.getElementById('btn-create-room')?.addEventListener('click', async () => {
     try {
+      game.newGame({ mode: GAME_MODE.VS_HUMAN_ONLINE, difficulty: 'medium', playerSide: RED });
+      game.onMove = (moveData) => {
+        if (room && room.sendMove) room.sendMove(moveData);
+      };
+
       const roomId = await room.createRoom('玩家', RED, 'xiangqi', '中國象棋');
       document.getElementById('connection-area').style.display = 'none';
       document.getElementById('room-info').style.display = 'flex';
@@ -411,6 +417,11 @@ function _setupOnlineMode(game, room, params) {
       return;
     }
     try {
+      game.newGame({ mode: GAME_MODE.VS_HUMAN_ONLINE, difficulty: 'medium', playerSide: BLACK });
+      game.onMove = (moveData) => {
+        if (room && room.sendMove) room.sendMove(moveData);
+      };
+
       document.getElementById('connection-area').style.display = 'none';
       document.getElementById('room-info').style.display = 'flex';
       document.getElementById('room-id-text').textContent = roomId.toUpperCase();
