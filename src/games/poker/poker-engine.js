@@ -1,7 +1,7 @@
 /**
  * Texas Hold'em Poker Engine (德州撲克核心引擎)
  *
- * Implements 52-card deck, betting rounds, pot management, hand evaluation, and action logging.
+ * Implements 52-card deck, betting rounds, pot management, hand evaluation, and strict street turn tracking.
  */
 
 export const SUITS = ['♠', '♥', '♦', '♣'];
@@ -169,6 +169,7 @@ export class TexasHoldemEngine {
       isAllIn: false,
       isAI: p.isAI || false,
       lastAction: null,
+      hasActed: false,
     }));
 
     this.dealerIdx = 0;
@@ -190,6 +191,7 @@ export class TexasHoldemEngine {
       p.folded = p.chips <= 0;
       p.isAllIn = false;
       p.lastAction = null;
+      p.hasActed = false;
     });
 
     this.dealerIdx = (this.dealerIdx + 1) % this.players.length;
@@ -212,7 +214,16 @@ export class TexasHoldemEngine {
     p.bet += actual;
     this.pot += actual;
     if (p.chips === 0) p.isAllIn = true;
-    if (p.bet > this.currentBet) this.currentBet = p.bet;
+
+    if (p.bet > this.currentBet) {
+      this.currentBet = p.bet;
+      // Re-require other active players to match new bet
+      this.players.forEach(other => {
+        if (other !== p && !other.folded && !other.isAllIn) {
+          other.hasActed = false;
+        }
+      });
+    }
 
     if (label) {
       this.log(`${p.name} 下注 ${label} $${actual}`, 'action');
@@ -226,6 +237,8 @@ export class TexasHoldemEngine {
       this.nextTurn();
       return;
     }
+
+    p.hasActed = true;
 
     switch (action) {
       case 'FOLD':
@@ -272,7 +285,8 @@ export class TexasHoldemEngine {
       return;
     }
 
-    const roundComplete = this.players.every(p => p.folded || p.isAllIn || p.bet === this.currentBet);
+    // A betting round is complete iff every active player has acted at least once and matched currentBet (or isAllIn)
+    const roundComplete = this.players.every(p => p.folded || p.isAllIn || (p.hasActed && p.bet === this.currentBet));
 
     if (roundComplete) {
       this.advanceStage();
@@ -284,7 +298,11 @@ export class TexasHoldemEngine {
   }
 
   advanceStage() {
-    this.players.forEach(p => p.bet = 0);
+    // Reset bets & hasActed for new street
+    this.players.forEach(p => {
+      p.bet = 0;
+      p.hasActed = false;
+    });
     this.currentBet = 0;
 
     switch (this.roundStage) {
@@ -309,12 +327,22 @@ export class TexasHoldemEngine {
         return;
     }
 
+    // Set turn to first non-folded, non-allin player after dealer
     let idx = (this.dealerIdx + 1) % this.players.length;
-    while (this.players[idx].folded || this.players[idx].isAllIn) {
+    let checkedCount = 0;
+    while ((this.players[idx].folded || this.players[idx].isAllIn) && checkedCount < this.players.length) {
       idx = (idx + 1) % this.players.length;
-      if (idx === (this.dealerIdx + 1) % this.players.length) break;
+      checkedCount++;
     }
-    this.currentTurnIdx = idx;
+
+    // If all remaining active players are all-in, auto showdown!
+    const nonAllInActive = this.players.filter(p => !p.folded && !p.isAllIn);
+    if (nonAllInActive.length <= 1) {
+      // Auto advance to showdown if everyone is all-in
+      setTimeout(() => this.advanceStage(), 800);
+    } else {
+      this.currentTurnIdx = idx;
+    }
   }
 
   showdown() {

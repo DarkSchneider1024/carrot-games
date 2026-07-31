@@ -171,24 +171,28 @@ export async function renderPoker(container, params) {
 
   // Bind Buttons
   document.getElementById('pbtn-fold')?.addEventListener('click', () => {
+    if (engine.currentTurnIdx !== 0 || engine.gameOver) return;
     engine.playerAction('FOLD');
     _updatePokerUI(engine);
     _checkAITurn(engine);
   });
 
   document.getElementById('pbtn-check')?.addEventListener('click', () => {
+    if (engine.currentTurnIdx !== 0 || engine.gameOver) return;
     engine.playerAction('CHECK');
     _updatePokerUI(engine);
     _checkAITurn(engine);
   });
 
   document.getElementById('pbtn-call')?.addEventListener('click', () => {
+    if (engine.currentTurnIdx !== 0 || engine.gameOver) return;
     engine.playerAction('CALL');
     _updatePokerUI(engine);
     _checkAITurn(engine);
   });
 
   document.getElementById('pbtn-raise')?.addEventListener('click', () => {
+    if (engine.currentTurnIdx !== 0 || engine.gameOver) return;
     engine.playerAction('RAISE');
     _updatePokerUI(engine);
     _checkAITurn(engine);
@@ -241,6 +245,39 @@ function _updatePokerUI(engine) {
         const emptySlot = document.createElement('div');
         emptySlot.className = 'card-slot empty';
         communityEl.appendChild(emptySlot);
+      }
+    }
+  }
+
+  // Local Player Turn Check
+  const isMyTurn = engine.currentTurnIdx === 0 && !engine.gameOver;
+  const localP = engine.players[0];
+  const toCall = engine.currentBet - localP.bet;
+
+  const btnFold = document.getElementById('pbtn-fold');
+  const btnCheck = document.getElementById('pbtn-check');
+  const btnCall = document.getElementById('pbtn-call');
+  const btnRaise = document.getElementById('pbtn-raise');
+
+  if (btnFold && btnCheck && btnCall && btnRaise) {
+    if (!isMyTurn || localP.folded || localP.isAllIn) {
+      btnFold.disabled = true;
+      btnCheck.disabled = true;
+      btnCall.disabled = true;
+      btnRaise.disabled = true;
+    } else {
+      btnFold.disabled = false;
+      btnRaise.disabled = false;
+
+      if (toCall <= 0) {
+        btnCheck.disabled = false;
+        btnCheck.style.display = 'inline-flex';
+        btnCall.style.display = 'none';
+      } else {
+        btnCheck.style.display = 'none';
+        btnCall.disabled = false;
+        btnCall.style.display = 'inline-flex';
+        btnCall.textContent = `跟注 $${toCall} (CALL)`;
       }
     }
   }
