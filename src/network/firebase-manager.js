@@ -8,14 +8,14 @@ import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, set, onValue, remove, onDisconnect, push } from 'firebase/database';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCDqqgI8F3Oi_jvCwa2itUtDFX4xS1ljmc",
-  authDomain: "carrot-games-fd66d.firebaseapp.com",
-  databaseURL: "https://carrot-games-fd66d-default-rtdb.firebaseio.com",
-  projectId: "carrot-games-fd66d",
-  storageBucket: "carrot-games-fd66d.firebasestorage.app",
-  messagingSenderId: "595978973567",
-  appId: "1:595978973567:web:d9bf8c212988ff1d6c2a4a",
-  measurementId: "G-YPY3E8W7HH"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCDqqgI8F3Oi_jvCwa2itUtDFX4xS1ljmc",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "carrot-games-fd66d.firebaseapp.com",
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://carrot-games-fd66d-default-rtdb.firebaseio.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "carrot-games-fd66d",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "carrot-games-fd66d.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "595978973567",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:595978973567:web:d9bf8c212988ff1d6c2a4a",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-YPY3E8W7HH"
 };
 
 let app = null;
