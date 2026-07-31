@@ -204,14 +204,18 @@ export function subscribePublicRooms(callback) {
 
     const merged = { ...localMap };
 
-    // 2. Filter out cloud rooms without recent heartbeat (> 25 seconds)
+    // 2. Filter out cloud rooms without recent heartbeat (> 25 seconds) & auto-sweep legacy ghost rooms
     if (cloudRooms && Array.isArray(cloudRooms)) {
       cloudRooms.forEach(r => {
         const lastSeen = r.lastSeen || r.createdAt || 0;
         if (now - lastSeen <= 25000) {
           merged[r.roomId] = r;
-        } else if (merged[r.roomId]) {
+        } else {
           delete merged[r.roomId];
+          // Auto-sweep legacy ghost room directly from Firebase cloud!
+          if (r.roomId) {
+            unpublishRoom(r.roomId);
+          }
         }
       });
     }
