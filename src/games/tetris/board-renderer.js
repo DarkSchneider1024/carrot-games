@@ -1,24 +1,22 @@
 /**
  * Tetris Battle 2P — Canvas HUD & Dual Board Renderer
  *
- * Renders original Tetris Battle 2P Interface:
- * - Center 2-Minute Match Timer (02:00)
- * - K.O. Count Badges (Player K.O. vs Opponent K.O.)
- * - Pending Garbage Gauge (Vertical Red Danger Meter)
- * - Player Board & Opponent Battle Board
- * - Hold & Next Queues, Ghost Piece, Bevel Blocks
+ * Happy Hues Fresh Pastel Theme:
+ * - Clean bright canvas stage (#fbf7f5)
+ * - Pastel block palette
+ * - Responsive Dual Board Layout (Desktop 1:1 vs Mobile Large Player + Mini Opponent)
  */
 
 const PIECE_COLORS = {
   0: 'transparent',
-  1: '#06b6d4', // I - Cyan
-  2: '#3b82f6', // J - Blue
-  3: '#f97316', // L - Orange
-  4: '#f59e0b', // O - Yellow
-  5: '#22c55e', // S - Green
+  1: '#00b4d8', // I - Cyan
+  2: '#4361ee', // J - Blue
+  3: '#ff7544', // L - Orange
+  4: '#ffb703', // O - Yellow
+  5: '#2ec4b6', // S - Green
   6: '#a855f7', // T - Purple
-  7: '#ef4444', // Z - Red
-  8: '#475569', // Garbage - Gray
+  7: '#ff4d6d', // Z - Red
+  8: '#8d99ae', // Garbage - Slate
 };
 
 export class TetrisBoardRenderer {
@@ -51,92 +49,152 @@ export class TetrisBoardRenderer {
     const rect = this.canvas.getBoundingClientRect();
     ctx.clearRect(0, 0, rect.width, rect.height);
 
-    // Background Stage
-    ctx.fillStyle = '#070a0f';
+    // Background Stage (Happy Hues Fresh Soft Peach)
+    ctx.fillStyle = '#fbf5f2';
     ctx.fillRect(0, 0, rect.width, rect.height);
 
-    // Render 2-Minute Center Match Timer
-    this._drawTopTimer(ctx, rect.width / 2, 25, gameState.matchTime);
+    const isMobile = rect.width < 560;
 
-    // Player Board (Left Center)
-    const playerX = Math.floor(rect.width * 0.22);
-    const playerY = 70;
-    this._drawBoard(ctx, playerX, playerY, playerEngine.board, playerEngine, 'YOU (RED TEAM)', gameState.playerKOs, gameState.playerLinesSent);
+    if (isMobile) {
+      this._drawMobileLayout(ctx, rect, gameState, playerEngine, opponentBoard);
+    } else {
+      this._drawDesktopLayout(ctx, rect, gameState, playerEngine, opponentBoard);
+    }
 
-    // Pending Garbage Gauge (Player)
-    this._drawGarbageMeter(ctx, playerX - 16, playerY, gameState.pendingGarbage);
-
-    // Hold Piece Area
-    this._drawHoldArea(ctx, playerX - 100, playerY, playerEngine.holdPiece);
-
-    // Next Queue
-    this._drawNextQueue(ctx, playerX + 10 * this.cellSize + 15, playerY, playerEngine.nextQueue);
-
-    // Opponent Board (Right Center)
-    const oppX = Math.floor(rect.width * 0.68);
-    const oppY = playerY;
-    this._drawOpponentBoard(ctx, oppX, oppY, opponentBoard, 'OPPONENT (BLUE TEAM)', gameState.opponentKOs, gameState.opponentLinesSent);
-
-    // Pending Garbage Gauge (Opponent)
-    this._drawGarbageMeter(ctx, oppX - 16, oppY, gameState.opponentPendingGarbage);
-
-    // Particles
+    // Update & draw particles
     this._updateAndDrawParticles(ctx);
   }
 
+  /* ─────────────────────────────────────────────────────────────
+     DESKTOP LAYOUT (Side-by-side Dual Boards)
+     ───────────────────────────────────────────────────────────── */
+  _drawDesktopLayout(ctx, rect, gameState, playerEngine, opponentBoard) {
+    // 2-Minute Match Timer
+    this._drawTopTimer(ctx, rect.width / 2, 25, gameState.matchTime);
+
+    // Dynamic cell size
+    const availableW = (rect.width - 240) / 24;
+    const availableH = (rect.height - 90) / 20;
+    this.cellSize = Math.max(14, Math.floor(Math.min(availableW, availableH)));
+
+    const boardW = this.gridWidth * this.cellSize;
+    const playerX = Math.floor(rect.width * 0.24);
+    const playerY = 65;
+
+    // Player Board
+    this._drawBoard(ctx, playerX, playerY, playerEngine.board, playerEngine, 'YOU (RED TEAM)', gameState.playerKOs, gameState.playerLinesSent, this.cellSize);
+
+    // Garbage Gauge (Player)
+    this._drawGarbageMeter(ctx, playerX - 14, playerY, gameState.pendingGarbage, this.cellSize);
+
+    // Hold Piece
+    this._drawHoldArea(ctx, playerX - 85, playerY, playerEngine.holdPiece, 60);
+
+    // Next Queue
+    this._drawNextQueue(ctx, playerX + boardW + 12, playerY, playerEngine.nextQueue, 60);
+
+    // Opponent Board
+    const oppX = Math.floor(rect.width * 0.68);
+    const oppY = playerY;
+    this._drawOpponentBoard(ctx, oppX, oppY, opponentBoard, 'OPPONENT (BLUE TEAM)', gameState.opponentKOs, gameState.opponentLinesSent, this.cellSize);
+
+    // Garbage Gauge (Opponent)
+    this._drawGarbageMeter(ctx, oppX - 14, oppY, gameState.opponentPendingGarbage, this.cellSize);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     MOBILE LAYOUT (Large Player Board + Mini Opponent HUD)
+     ───────────────────────────────────────────────────────────── */
+  _drawMobileLayout(ctx, rect, gameState, playerEngine, opponentBoard) {
+    // Top Bar Match Timer
+    this._drawTopTimer(ctx, rect.width * 0.32, 20, gameState.matchTime);
+
+    // Calculate cell size for main player board
+    const availableW = (rect.width - 110) / 11;
+    const availableH = (rect.height - 50) / 20;
+    this.cellSize = Math.max(12, Math.floor(Math.min(availableW, availableH)));
+
+    const boardW = this.gridWidth * this.cellSize;
+    const playerX = 50;
+    const playerY = 40;
+
+    // 1. Large Player Board
+    this._drawBoard(ctx, playerX, playerY, playerEngine.board, playerEngine, 'YOU', gameState.playerKOs, gameState.playerLinesSent, this.cellSize);
+
+    // 2. Player Garbage Meter
+    this._drawGarbageMeter(ctx, playerX - 10, playerY, gameState.pendingGarbage, this.cellSize);
+
+    // 3. Mobile Hold Area
+    this._drawHoldArea(ctx, playerX - 44, playerY, playerEngine.holdPiece, 36);
+
+    // 4. Mobile Next Queue
+    this._drawNextQueue(ctx, playerX + boardW + 6, playerY, playerEngine.nextQueue, 42);
+
+    // 5. Mini Opponent Battle HUD
+    const miniCellSize = Math.max(5, Math.floor(this.cellSize * 0.42));
+    const oppW = this.gridWidth * miniCellSize;
+    const oppX = Math.floor(rect.width - oppW - 10);
+    const oppY = 40;
+
+    this._drawOpponentMiniHUD(ctx, oppX, oppY, opponentBoard, gameState.opponentKOs, gameState.opponentLinesSent, miniCellSize);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     RENDERERS & HELPERS
+     ───────────────────────────────────────────────────────────── */
   _drawTopTimer(ctx, centerX, y, matchTime) {
     const m = Math.floor(matchTime / 60);
     const s = matchTime % 60;
     const timeStr = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 
-    ctx.fillStyle = '#151d2d';
-    ctx.fillRect(centerX - 60, y - 18, 120, 36);
-    ctx.strokeStyle = (matchTime <= 15) ? '#ef4444' : '#f59e0b';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(centerX - 46, y - 13, 92, 26);
+    ctx.strokeStyle = (matchTime <= 15) ? '#ff4d6d' : '#ff7544';
     ctx.lineWidth = 2;
-    ctx.strokeRect(centerX - 60, y - 18, 120, 36);
+    ctx.strokeRect(centerX - 46, y - 13, 92, 26);
 
-    ctx.fillStyle = (matchTime <= 15) ? '#ef4444' : '#f59e0b';
-    ctx.font = 'bold 20px "Russo One", sans-serif';
+    ctx.fillStyle = (matchTime <= 15) ? '#ff4d6d' : '#ff7544';
+    ctx.font = 'bold 15px "Russo One", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(timeStr, centerX, y);
   }
 
-  _drawBoard(ctx, startX, startY, board, engine, title, kos, linesSent) {
-    const w = this.gridWidth * this.cellSize;
-    const h = this.gridHeight * this.cellSize;
+  _drawBoard(ctx, startX, startY, board, engine, title, kos, linesSent, cellSize) {
+    const w = this.gridWidth * cellSize;
+    const h = this.gridHeight * cellSize;
 
     // Title & KO Badge
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = 'bold 12px "Chakra Petch", sans-serif';
+    ctx.fillStyle = '#272343';
+    ctx.font = 'bold 11px "Chakra Petch", sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(title, startX, startY - 12);
+    ctx.fillText(title, startX, startY - 9);
 
-    ctx.fillStyle = '#ef4444';
-    ctx.font = 'bold 14px "Russo One", sans-serif';
+    ctx.fillStyle = '#ff4d6d';
+    ctx.font = 'bold 13px "Russo One", sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(`K.O. ${kos}`, startX + w, startY - 12);
+    ctx.fillText(`K.O. ${kos}`, startX + w, startY - 9);
 
     // Board Surface
-    ctx.fillStyle = '#0e1420';
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(startX, startY, w, h);
-    ctx.strokeStyle = 'rgba(249, 115, 22, 0.4)';
+    ctx.strokeStyle = 'rgba(255, 117, 68, 0.4)';
     ctx.lineWidth = 2;
     ctx.strokeRect(startX - 2, startY - 2, w + 4, h + 4);
 
     // Grid lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.strokeStyle = 'rgba(39, 35, 67, 0.05)';
     ctx.lineWidth = 1;
     for (let c = 1; c < this.gridWidth; c++) {
       ctx.beginPath();
-      ctx.moveTo(startX + c * this.cellSize, startY);
-      ctx.lineTo(startX + c * this.cellSize, startY + h);
+      ctx.moveTo(startX + c * cellSize, startY);
+      ctx.lineTo(startX + c * cellSize, startY + h);
       ctx.stroke();
     }
     for (let r = 1; r < this.gridHeight; r++) {
       ctx.beginPath();
-      ctx.moveTo(startX, startY + r * this.cellSize);
-      ctx.lineTo(startX + w, startY + r * this.cellSize);
+      ctx.moveTo(startX, startY + r * cellSize);
+      ctx.lineTo(startX + w, startY + r * cellSize);
       ctx.stroke();
     }
 
@@ -145,12 +203,12 @@ export class TetrisBoardRenderer {
       for (let c = 0; c < this.gridWidth; c++) {
         const val = board[r * this.gridWidth + c];
         if (val !== 0) {
-          this._drawBlock(ctx, startX + c * this.cellSize, startY + r * this.cellSize, val, this.cellSize);
+          this._drawBlock(ctx, startX + c * cellSize, startY + r * cellSize, val, cellSize);
         }
       }
     }
 
-    // Active Ghost Piece & Current Piece
+    // Ghost & Current Piece
     if (engine && engine.currentPiece) {
       const ghostY = engine.getGhostY();
       const shape = engine.PIECE_SHAPES[engine.currentPiece][engine.currentRotation];
@@ -160,99 +218,95 @@ export class TetrisBoardRenderer {
         const gx = engine.currentX + dx;
         const gy = ghostY + dy;
         if (gy >= 0 && gy < this.gridHeight && gx >= 0 && gx < this.gridWidth) {
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-          ctx.fillRect(startX + gx * this.cellSize + 1, startY + gy * this.cellSize + 1, this.cellSize - 2, this.cellSize - 2);
+          ctx.fillStyle = 'rgba(39, 35, 67, 0.12)';
+          ctx.fillRect(startX + gx * cellSize + 1, startY + gy * cellSize + 1, cellSize - 2, cellSize - 2);
         }
       }
 
-      // Current
+      // Current Piece
       for (const [dx, dy] of shape) {
         const px = engine.currentX + dx;
         const py = engine.currentY + dy;
         if (py >= 0 && py < this.gridHeight && px >= 0 && px < this.gridWidth) {
-          this._drawBlock(ctx, startX + px * this.cellSize, startY + py * this.cellSize, engine.currentPiece, this.cellSize);
+          this._drawBlock(ctx, startX + px * cellSize, startY + py * cellSize, engine.currentPiece, cellSize);
         }
       }
     }
-
-    // Sent Lines Footer Stat
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px "Chakra Petch", sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(`ATTACK SENT: ${linesSent}`, startX, startY + h + 18);
   }
 
-  _drawOpponentBoard(ctx, startX, startY, board, title, kos, linesSent) {
-    const w = this.gridWidth * this.cellSize;
-    const h = this.gridHeight * this.cellSize;
+  _drawOpponentBoard(ctx, startX, startY, board, title, kos, linesSent, cellSize) {
+    const w = this.gridWidth * cellSize;
+    const h = this.gridHeight * cellSize;
 
-    // Title & KO Badge
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = 'bold 12px "Chakra Petch", sans-serif';
+    ctx.fillStyle = '#272343';
+    ctx.font = 'bold 11px "Chakra Petch", sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(title, startX, startY - 12);
+    ctx.fillText(title, startX, startY - 9);
 
-    ctx.fillStyle = '#3b82f6';
-    ctx.font = 'bold 14px "Russo One", sans-serif';
+    ctx.fillStyle = '#4361ee';
+    ctx.font = 'bold 13px "Russo One", sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(`K.O. ${kos}`, startX + w, startY - 12);
+    ctx.fillText(`K.O. ${kos}`, startX + w, startY - 9);
 
-    // Board Surface
-    ctx.fillStyle = '#0e1420';
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(startX, startY, w, h);
-    ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+    ctx.strokeStyle = 'rgba(67, 97, 238, 0.4)';
     ctx.lineWidth = 2;
     ctx.strokeRect(startX - 2, startY - 2, w + 4, h + 4);
 
-    // Grid lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-    ctx.lineWidth = 1;
-    for (let c = 1; c < this.gridWidth; c++) {
-      ctx.beginPath();
-      ctx.moveTo(startX + c * this.cellSize, startY);
-      ctx.lineTo(startX + c * this.cellSize, startY + h);
-      ctx.stroke();
-    }
-    for (let r = 1; r < this.gridHeight; r++) {
-      ctx.beginPath();
-      ctx.moveTo(startX, startY + r * this.cellSize);
-      ctx.lineTo(startX + w, startY + r * this.cellSize);
-      ctx.stroke();
-    }
-
-    // Blocks
     for (let r = 0; r < this.gridHeight; r++) {
       for (let c = 0; c < this.gridWidth; c++) {
         const val = board[r * this.gridWidth + c];
         if (val !== 0) {
-          this._drawBlock(ctx, startX + c * this.cellSize, startY + r * this.cellSize, val, this.cellSize);
+          this._drawBlock(ctx, startX + c * cellSize, startY + r * cellSize, val, cellSize);
         }
       }
     }
-
-    // Sent Lines Footer Stat
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '11px "Chakra Petch", sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(`ATTACK SENT: ${linesSent}`, startX, startY + h + 18);
   }
 
-  _drawGarbageMeter(ctx, x, y, garbageCount) {
-    const h = this.gridHeight * this.cellSize;
-    const w = 8;
+  _drawOpponentMiniHUD(ctx, startX, startY, board, kos, linesSent, miniCellSize) {
+    const w = this.gridWidth * miniCellSize;
+    const h = this.gridHeight * miniCellSize;
 
-    ctx.fillStyle = '#151d2d';
+    // Header
+    ctx.fillStyle = '#4361ee';
+    ctx.font = 'bold 10px "Russo One", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`OPP KO:${kos}`, startX + w / 2, startY - 7);
+
+    // Mini Frame
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(startX, startY, w, h);
+    ctx.strokeStyle = '#4361ee';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(startX - 1, startY - 1, w + 2, h + 2);
+
+    // Mini Blocks
+    for (let r = 0; r < this.gridHeight; r++) {
+      for (let c = 0; c < this.gridWidth; c++) {
+        const val = board[r * this.gridWidth + c];
+        if (val !== 0) {
+          const color = PIECE_COLORS[val] || '#4361ee';
+          ctx.fillStyle = color;
+          ctx.fillRect(startX + c * miniCellSize, startY + r * miniCellSize, miniCellSize - 0.5, miniCellSize - 0.5);
+        }
+      }
+    }
+  }
+
+  _drawGarbageMeter(ctx, x, y, garbageCount, cellSize) {
+    const h = this.gridHeight * cellSize;
+    const w = 6;
+
+    ctx.fillStyle = '#f4e9e2';
     ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+    ctx.strokeStyle = 'rgba(255, 77, 109, 0.4)';
     ctx.strokeRect(x, y, w, h);
 
     if (garbageCount > 0) {
-      const fillHeight = Math.min(h, garbageCount * 22);
-      ctx.fillStyle = '#ef4444';
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 8;
+      const fillHeight = Math.min(h, garbageCount * cellSize);
+      ctx.fillStyle = '#ff4d6d';
       ctx.fillRect(x, y + h - fillHeight, w, fillHeight);
-      ctx.shadowBlur = 0;
     }
   }
 
@@ -261,39 +315,44 @@ export class TetrisBoardRenderer {
     ctx.fillStyle = color;
     ctx.fillRect(x + 1, y + 1, size - 2, size - 2);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.fillRect(x + 1, y + 1, size - 2, 3);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.fillRect(x + 1, y + size - 4, size - 2, 3);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.fillRect(x + 1, y + 1, size - 2, 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillRect(x + 1, y + size - 3, size - 2, 2);
   }
 
-  _drawHoldArea(ctx, x, y, holdPiece) {
-    ctx.fillStyle = '#151d2d';
-    ctx.fillRect(x, y, 70, 70);
-    ctx.strokeStyle = 'rgba(249, 115, 22, 0.2)';
-    ctx.strokeRect(x, y, 70, 70);
+  _drawHoldArea(ctx, x, y, holdPiece, boxWidth) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, boxWidth, boxWidth);
+    ctx.strokeStyle = 'rgba(255, 117, 68, 0.3)';
+    ctx.strokeRect(x, y, boxWidth, boxWidth);
 
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '10px "Chakra Petch", sans-serif';
-    ctx.fillText('HOLD', x + 6, y + 14);
+    ctx.fillStyle = '#5f6c7b';
+    ctx.font = '9px "Chakra Petch", sans-serif';
+    ctx.fillText('HOLD', x + 3, y + 10);
 
     if (holdPiece > 0) {
-      this._drawMiniPiece(ctx, x + 22, y + 32, holdPiece, 12);
+      const miniSize = Math.max(6, Math.floor(boxWidth * 0.18));
+      this._drawMiniPiece(ctx, x + boxWidth * 0.35, y + boxWidth * 0.48, holdPiece, miniSize);
     }
   }
 
-  _drawNextQueue(ctx, x, y, nextQueue) {
-    ctx.fillStyle = '#151d2d';
-    ctx.fillRect(x, y, 70, 200);
-    ctx.strokeStyle = 'rgba(249, 115, 22, 0.2)';
-    ctx.strokeRect(x, y, 70, 200);
+  _drawNextQueue(ctx, x, y, nextQueue, boxWidth) {
+    const boxHeight = Math.max(130, Math.floor(this.gridHeight * this.cellSize * 0.7));
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x, y, boxWidth, boxHeight);
+    ctx.strokeStyle = 'rgba(255, 117, 68, 0.3)';
+    ctx.strokeRect(x, y, boxWidth, boxHeight);
 
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '10px "Chakra Petch", sans-serif';
-    ctx.fillText('NEXT', x + 6, y + 14);
+    ctx.fillStyle = '#5f6c7b';
+    ctx.font = '9px "Chakra Petch", sans-serif';
+    ctx.fillText('NEXT', x + 3, y + 10);
+
+    const miniSize = Math.max(6, Math.floor(boxWidth * 0.18));
+    const stepY = Math.floor(boxHeight / 4.8);
 
     for (let i = 0; i < Math.min(4, nextQueue.length); i++) {
-      this._drawMiniPiece(ctx, x + 22, y + 38 + i * 40, nextQueue[i], 11);
+      this._drawMiniPiece(ctx, x + boxWidth * 0.35, y + 24 + i * stepY, nextQueue[i], miniSize);
     }
   }
 

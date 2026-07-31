@@ -1,5 +1,6 @@
 /* ============================================
    Tetris Battle 2P Tactical HUD & Mobile RWD
+   Happy Hues Fresh Cute Theme
    ============================================ */
 
 .tetris-page {
@@ -14,7 +15,7 @@
   justify-content: space-between;
   padding: calc(var(--space-3) + var(--safe-top)) calc(var(--space-6) + var(--safe-right)) var(--space-3) calc(var(--space-6) + var(--safe-left));
   background: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1.5px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
@@ -42,27 +43,134 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  min-height: 480px;
+  min-height: 440px;
   width: 100%;
 }
 
 #tetris-canvas {
   border-radius: var(--radius-xl);
   border: 2px solid var(--color-border);
-  box-shadow: var(--shadow-lg), var(--shadow-glow-orange);
+  box-shadow: var(--shadow-md), var(--shadow-glow-orange);
   touch-action: manipulation;
 }
 
-/* Mobile Virtual Touch Controller */
+/* Mobile Virtual Touch Controller & Single-Handed Joystick */
 .mobile-touch-controller {
   display: none;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
   width: 100%;
-  padding: var(--space-4) calc(var(--space-4) + var(--safe-right)) calc(var(--space-4) + var(--safe-bottom)) calc(var(--space-4) + var(--safe-left));
+  padding: var(--space-3) calc(var(--space-3) + var(--safe-right)) calc(var(--space-3) + var(--safe-bottom)) calc(var(--space-3) + var(--safe-left));
   border-radius: var(--radius-xl);
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+/* Controller Mode Switch Bar */
+.ctrl-mode-bar {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: 2px;
+}
+
+.ctrl-mode-btn {
+  flex: 1;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.ctrl-mode-btn.active {
+  background: var(--gradient-hero);
+  color: white;
+  border-color: transparent;
+  box-shadow: var(--shadow-glow-orange);
+}
+
+/* Joystick View Layout */
+.joystick-view {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.joystick-base {
+  width: 115px;
+  height: 115px;
+  border-radius: var(--radius-full);
+  background: #fff8f5;
+  border: 2.5px solid var(--color-accent-primary);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  box-shadow: var(--shadow-sm), inset 0 0 12px rgba(255, 117, 68, 0.15);
+  flex-shrink: 0;
+}
+
+.joystick-knob {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-full);
+  background: var(--gradient-hero);
+  box-shadow: var(--shadow-md), var(--shadow-glow-orange);
+  position: absolute;
+  pointer-events: none;
+  transition: transform 40ms ease-out;
+}
+
+.joy-guide {
+  position: absolute;
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.joy-guide.top { top: 6px; }
+.joy-guide.bottom { bottom: 6px; }
+.joy-guide.left { left: 8px; }
+.joy-guide.right { right: 8px; }
+
+.joystick-actions {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.jaction-btn-harddrop {
+  width: 100%;
+  min-height: 44px;
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  touch-action: manipulation;
+}
+
+.jaction-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.jaction-btn {
+  flex: 1;
+  min-height: 42px;
+  font-size: var(--font-size-xs);
+  touch-action: manipulation;
+}
+
+/* D-Pad View Layout */
+.dpad-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
 }
 
 .touch-row {
@@ -73,12 +181,13 @@
 
 .touch-btn {
   flex: 1;
-  min-height: 52px;
-  font-size: var(--font-size-sm);
+  min-height: 42px;
+  font-size: var(--font-size-xs);
   touch-action: manipulation;
   user-select: none;
   border-radius: var(--radius-md);
   font-family: var(--font-family-mono);
+  padding: var(--space-2);
 }
 
 .touch-btn:active {
@@ -88,8 +197,9 @@
 }
 
 .touch-btn-harddrop {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: bold;
+  min-height: 44px;
 }
 
 .tetris-sidebar {
@@ -107,7 +217,7 @@
   flex-direction: column;
   gap: var(--space-4);
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
 }
 
 .match-stats {
@@ -135,7 +245,7 @@
   padding: var(--space-4);
   border-radius: var(--radius-lg);
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
 }
 
 .guide-title {
@@ -161,7 +271,7 @@
 .guide-item span:first-child {
   font-family: var(--font-family-mono);
   color: var(--color-text-primary);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(39, 35, 67, 0.05);
   padding: 1px 5px;
   border-radius: var(--radius-sm);
 }
@@ -171,7 +281,11 @@
   .tetris-main {
     flex-direction: column;
     align-items: center;
-    padding: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+  .tetris-stage-container {
+    min-height: auto;
   }
   .mobile-touch-controller {
     display: flex;

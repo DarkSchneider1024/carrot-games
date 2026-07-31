@@ -1,5 +1,5 @@
 /**
- * Tetris Battle 2P (Trace Battle) Page with Mobile Touch Controls & RWD
+ * Tetris Battle 2P (Trace Battle) Page with Mobile Virtual Joystick & RWD
  */
 
 import { navigate } from '../../router.js';
@@ -57,22 +57,58 @@ export async function renderTetris(container, params) {
           </div>
         </div>
 
-        <!-- Mobile Touch Virtual Controller -->
+        <!-- Mobile Single-Handed Virtual Controller & Joystick -->
         <div class="mobile-touch-controller glass">
-          <div class="touch-row">
-            <button class="btn btn-secondary touch-btn" id="tbtn-hold">HOLD</button>
-            <button class="btn btn-secondary touch-btn" id="tbtn-rot-ccw">↺ 逆旋</button>
-            <button class="btn btn-secondary touch-btn" id="tbtn-rot-cw">↻ 順旋</button>
-          </div>
-          <div class="touch-row">
-            <button class="btn btn-secondary touch-btn" id="tbtn-left">← 左</button>
-            <button class="btn btn-secondary touch-btn" id="tbtn-down">↓ 軟降</button>
-            <button class="btn btn-secondary touch-btn" id="tbtn-right">右 →</button>
-          </div>
-          <div class="touch-row">
-            <button class="btn btn-primary touch-btn touch-btn-harddrop" id="tbtn-harddrop">
-              ⚡ 硬降 (HARD DROP)
+          <!-- Controller Mode Bar -->
+          <div class="ctrl-mode-bar">
+            <button class="btn btn-sm ctrl-mode-btn active" id="btn-mode-joystick">
+              🕹️ 單手搖桿 (JOYSTICK)
             </button>
+            <button class="btn btn-sm ctrl-mode-btn" id="btn-mode-dpad">
+              📱 虛擬按鍵 (D-PAD)
+            </button>
+          </div>
+
+          <!-- Mode 1: Virtual Thumb Joystick View -->
+          <div class="joystick-view" id="joystick-view">
+            <!-- Left: Virtual Joystick -->
+            <div class="joystick-base" id="joystick-base">
+              <div class="joystick-knob" id="joystick-knob"></div>
+              <span class="joy-guide top">↻</span>
+              <span class="joy-guide left">←</span>
+              <span class="joy-guide right">→</span>
+              <span class="joy-guide bottom">↓</span>
+            </div>
+
+            <!-- Right: Action Buttons -->
+            <div class="joystick-actions">
+              <button class="btn btn-primary jaction-btn-harddrop" id="jbtn-harddrop">
+                ⚡ 硬降 (DROP)
+              </button>
+              <div class="jaction-row">
+                <button class="btn btn-cyan jaction-btn" id="jbtn-rot">↻ 旋轉</button>
+                <button class="btn btn-secondary jaction-btn" id="jbtn-hold">HOLD</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mode 2: Discrete D-Pad View -->
+          <div class="dpad-view" id="dpad-view" style="display:none;">
+            <div class="touch-row">
+              <button class="btn btn-secondary touch-btn" id="tbtn-hold">HOLD</button>
+              <button class="btn btn-secondary touch-btn" id="tbtn-rot-ccw">↺ 逆旋</button>
+              <button class="btn btn-secondary touch-btn" id="tbtn-rot-cw">↻ 順旋</button>
+            </div>
+            <div class="touch-row">
+              <button class="btn btn-secondary touch-btn" id="tbtn-left">← 左</button>
+              <button class="btn btn-secondary touch-btn" id="tbtn-down">↓ 軟降</button>
+              <button class="btn btn-secondary touch-btn" id="tbtn-right">右 →</button>
+            </div>
+            <div class="touch-row">
+              <button class="btn btn-primary touch-btn touch-btn-harddrop" id="tbtn-harddrop">
+                ⚡ 硬降 (HARD DROP)
+              </button>
+            </div>
           </div>
         </div>
 
@@ -122,7 +158,13 @@ export async function renderTetris(container, params) {
   };
   window.addEventListener('resize', resizeHandler);
 
-  // Bind Mobile Touch Controls
+  // Controller Mode Switcher
+  _setupControllerModeToggle();
+
+  // Bind Virtual Joystick Controls
+  _bindJoystickControls(game);
+
+  // Bind Discrete D-Pad Controls
   _bindTouchControls(game);
 
   // Navigation handlers
@@ -153,11 +195,163 @@ export async function renderTetris(container, params) {
 
 function _resizeCanvas(canvas) {
   const container = canvas.parentElement;
+  if (!container) return;
   const rect = container.getBoundingClientRect();
-  const width = Math.min(rect.width, 740);
-  const height = Math.min(width * (540 / 740), 540);
-  canvas.style.width = width + 'px';
-  canvas.style.height = height + 'px';
+  const isMobile = window.innerWidth < 768;
+
+  let width, height;
+  if (isMobile) {
+    // Fit within mobile viewport (leaves 210px for mobile joystick / controller)
+    const availH = Math.min(window.innerHeight - 210, 420);
+    height = Math.max(320, availH);
+    const containerW = rect.width > 0 ? rect.width : (window.innerWidth - 24);
+    width = Math.min(containerW, Math.floor(height * 0.82));
+  } else {
+    width = Math.min(rect.width > 0 ? rect.width : 740, 740);
+    height = Math.min(width * (520 / 740), 520);
+  }
+
+  canvas.style.width = Math.round(width) + 'px';
+  canvas.style.height = Math.round(height) + 'px';
+}
+
+function _setupControllerModeToggle() {
+  const btnJoy = document.getElementById('btn-mode-joystick');
+  const btnDpad = document.getElementById('btn-mode-dpad');
+  const joyView = document.getElementById('joystick-view');
+  const dpadView = document.getElementById('dpad-view');
+
+  if (btnJoy && btnDpad) {
+    btnJoy.addEventListener('click', () => {
+      btnJoy.classList.add('active');
+      btnDpad.classList.remove('active');
+      joyView.style.display = 'flex';
+      dpadView.style.display = 'none';
+    });
+
+    btnDpad.addEventListener('click', () => {
+      btnDpad.classList.add('active');
+      btnJoy.classList.remove('active');
+      joyView.style.display = 'none';
+      dpadView.style.display = 'flex';
+    });
+  }
+}
+
+function _bindJoystickControls(game) {
+  const base = document.getElementById('joystick-base');
+  const knob = document.getElementById('joystick-knob');
+  if (!base || !knob) return;
+
+  let startX = 0, startY = 0;
+  let moveInterval = null;
+  let activeDir = null;
+  let rotTriggered = false;
+
+  const maxRadius = 38;
+
+  const stopAutoRepeat = () => {
+    if (moveInterval) {
+      clearInterval(moveInterval);
+      moveInterval = null;
+    }
+    activeDir = null;
+  };
+
+  const handleTouchStart = (e) => {
+    e.preventDefault();
+    const touch = e.touches ? e.touches[0] : e;
+    const rect = base.getBoundingClientRect();
+    startX = rect.left + rect.width / 2;
+    startY = rect.top + rect.height / 2;
+    rotTriggered = false;
+    handleTouchMove(e);
+  };
+
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    const touch = e.touches ? e.touches[0] : e;
+    let dx = touch.clientX - startX;
+    let dy = touch.clientY - startY;
+
+    const distance = Math.hypot(dx, dy);
+    if (distance > maxRadius) {
+      const angle = Math.atan2(dy, dx);
+      dx = Math.cos(angle) * maxRadius;
+      dy = Math.sin(angle) * maxRadius;
+    }
+
+    knob.style.transform = `translate(${dx}px, ${dy}px)`;
+
+    if (game.gameOver) return;
+
+    // Direction threshold check
+    let newDir = null;
+    if (dx < -14) newDir = 'left';
+    else if (dx > 14) newDir = 'right';
+    else if (dy > 16) newDir = 'down';
+    else if (dy < -20) newDir = 'up';
+
+    if (newDir === 'up') {
+      if (!rotTriggered) {
+        rotTriggered = true;
+        game.engine.rotate(1);
+        game._notifyState();
+      }
+      stopAutoRepeat();
+      return;
+    }
+
+    if (newDir !== activeDir) {
+      stopAutoRepeat();
+      activeDir = newDir;
+
+      if (newDir === 'left') {
+        game.engine.move(-1, 0);
+        game._notifyState();
+        moveInterval = setInterval(() => { game.engine.move(-1, 0); game._notifyState(); }, 90);
+      } else if (newDir === 'right') {
+        game.engine.move(1, 0);
+        game._notifyState();
+        moveInterval = setInterval(() => { game.engine.move(1, 0); game._notifyState(); }, 90);
+      } else if (newDir === 'down') {
+        game.engine.move(0, 1);
+        game._notifyState();
+        moveInterval = setInterval(() => { game.engine.move(0, 1); game._notifyState(); }, 50);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+    knob.style.transform = `translate(0px, 0px)`;
+    stopAutoRepeat();
+    rotTriggered = false;
+  };
+
+  base.addEventListener('touchstart', handleTouchStart, { passive: false });
+  base.addEventListener('touchmove', handleTouchMove, { passive: false });
+  base.addEventListener('touchend', handleTouchEnd);
+  base.addEventListener('touchcancel', handleTouchEnd);
+
+  // Action Buttons
+  const bindBtn = (id, fn) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    const handler = (e) => {
+      e.preventDefault();
+      if (!game.gameOver) {
+        fn();
+        game._notifyState();
+      }
+    };
+    btn.addEventListener('touchstart', handler, { passive: false });
+    btn.addEventListener('click', handler);
+  };
+
+  bindBtn('jbtn-harddrop', () => game.doHardDrop());
+  bindBtn('jbtn-rot', () => game.engine.rotate(1));
+  bindBtn('jbtn-hold', () => game.engine.hold());
 }
 
 function _bindTouchControls(game) {
