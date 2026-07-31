@@ -13,7 +13,7 @@ import { getDatabase, ref, set, onValue, remove, onDisconnect, push } from 'fire
 const firebaseConfig = {
   apiKey: "AIzaSyCDqqgI8F3Oi_jvCwa2itUtDFX4xS1ljmc",
   authDomain: "carrot-games-fd66d.firebaseapp.com",
-  databaseURL: "https://carrot-games-fd66d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "https://carrot-games-fd66d-default-rtdb.firebaseio.com",
   projectId: "carrot-games-fd66d",
   storageBucket: "carrot-games-fd66d.firebasestorage.app",
   messagingSenderId: "595978973567",
