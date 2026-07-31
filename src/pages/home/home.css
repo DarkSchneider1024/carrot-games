@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--space-6) var(--space-4);
+  padding: calc(var(--space-6) + var(--safe-top)) calc(var(--space-4) + var(--safe-right)) calc(var(--space-6) + var(--safe-bottom)) calc(var(--space-4) + var(--safe-left));
   position: relative;
   overflow: hidden;
 }
@@ -270,7 +270,7 @@
   width: 100%;
   max-width: 1100px;
   text-align: center;
-  padding: var(--space-6) 0 var(--space-2);
+  padding: var(--space-6) 0 calc(var(--space-4) + var(--safe-bottom));
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
   border-top: 1px solid var(--color-border);
