@@ -25,7 +25,7 @@ export async function renderTetris(container, params) {
         </button>
         <div class="tetris-topbar-title">
           <span class="mode-badge">
-            ${SVG_ICONS.cpu} TETRIS BATTLE 2P <span class="badge badge-info" style="font-size:10px;margin-left:6px;">WASM ENGINE</span>
+            ${SVG_ICONS.cpu} TETRIS BATTLE 雙人對決
           </span>
         </div>
         <div class="tetris-topbar-actions">
@@ -382,14 +382,14 @@ function _bindTouchControls(game) {
 function _renderAIPanel() {
   return `
     <div class="action-panel glass">
-      <h4 class="action-title">BATTLE 2P ENGINE</h4>
+      <h4 class="action-title">AI 對戰設定</h4>
 
       <div class="action-group">
-        <label class="action-label">AI BOT DIFFICULTY</label>
+        <label class="action-label">AI 難度</label>
         <div class="difficulty-selector">
           <button class="btn btn-sm btn-ghost difficulty-btn" data-diff="easy">初級</button>
           <button class="btn btn-sm btn-secondary difficulty-btn active" data-diff="medium">中級</button>
-          <button class="btn btn-sm btn-ghost difficulty-btn" data-diff="master">大師 (WASM)</button>
+          <button class="btn btn-sm btn-ghost difficulty-btn" data-diff="master">大師</button>
         </div>
       </div>
 
@@ -411,7 +411,7 @@ function _renderAIPanel() {
 function _renderOnlinePanel() {
   return `
     <div class="action-panel glass">
-      <h4 class="action-title">P2P REALTIME ROOM</h4>
+      <h4 class="action-title">即時對戰房間</h4>
 
       <div class="connection-area" id="connection-area">
         <button class="btn btn-primary" id="btn-create-room">
@@ -523,12 +523,12 @@ function _showGameOverModal(result) {
 
 function _showSettingsModal() {
   showModal({
-    title: 'WASM ENGINE & RULES',
+    title: '對戰規則說明',
     content: `
       <div style="font-size:0.875rem;display:flex;flex-direction:column;gap:0.5rem;">
-        <p><strong>Core Engine:</strong> WebAssembly C Compiled Binary (tetris-engine.wasm)</p>
-        <p><strong>Rules:</strong> Tetris Battle 2P (120s Match, KO System, Red Danger Gauge)</p>
-        <p><strong>PWA Offline:</strong> Full Standalone Support</p>
+        <p><strong>規則：</strong> 經典 2 分鐘 Tetris Battle 對決</p>
+        <p><strong>勝負判定：</strong> 倒數計時結束比較 K.O. 擊倒數與攻擊消行數</p>
+        <p><strong>特點：</strong> 支援單手搖桿與觸控操作</p>
       </div>
     `,
     actions: [{ text: '關閉', onClick: closeModal }],

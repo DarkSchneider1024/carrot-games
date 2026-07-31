@@ -26,7 +26,7 @@ export async function renderXiangqi(container, params) {
         <div class="xiangqi-topbar-title">
           <span class="mode-badge">
             ${mode === 'ai' ? SVG_ICONS.bot : SVG_ICONS.globe} 
-            ${mode === 'ai' ? 'TACTICAL AI BATTLE' : 'P2P REALTIME ROOM'}
+            ${mode === 'ai' ? '對戰 AI 模式' : '線上對戰房間'}
           </span>
         </div>
         <div class="xiangqi-topbar-actions">

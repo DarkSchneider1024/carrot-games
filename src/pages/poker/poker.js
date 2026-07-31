@@ -26,7 +26,7 @@ export async function renderPoker(container, params) {
         </button>
         <div class="poker-topbar-title">
           <span class="mode-badge">
-            🂡 TEXAS HOLD'EM POKER <span class="badge badge-success" style="font-size:10px;margin-left:6px;">HAPPY HUES</span>
+            🂡 TEXAS HOLD'EM POKER 德州撲克
           </span>
         </div>
         <div class="poker-topbar-actions">
@@ -335,12 +335,12 @@ function _createCardBackEl() {
 
 function _showSettingsModal() {
   showModal({
-    title: 'POKER ENGINE & RULES',
+    title: '德州撲克對局規則',
     content: `
       <div style="font-size:0.875rem;display:flex;flex-direction:column;gap:0.5rem;">
-        <p><strong>Variant:</strong> Texas Hold'em (無限注德州撲克)</p>
-        <p><strong>Blinds:</strong> $10 / $20</p>
-        <p><strong>Theme:</strong> Happy Hues Pastel Kawaii Style</p>
+        <p><strong>玩法：</strong> 無限注德州撲克 (Texas Hold'em)</p>
+        <p><strong>盲注：</strong> 小盲注 $10 / 大盲注 $20</p>
+        <p><strong>對戰：</strong> 支援可愛 AI 電腦對決與線上好友連線開房</p>
       </div>
     `,
     actions: [{ text: '關閉', onClick: closeModal }],
