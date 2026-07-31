@@ -1,7 +1,7 @@
 /**
  * Texas Hold'em Poker Game Page (德州撲克對局頁面)
  *
- * Happy Hues Fresh Cute Theme with AI Generated Avatars (Sanrio/Ghibli style)
+ * Happy Hues Fresh Cute Theme with Action Popovers, Turn Badges & Live Chat Battle Log
  */
 
 import { navigate } from '../../router.js';
@@ -59,6 +59,7 @@ export async function renderPoker(container, params) {
 
           <!-- Opponent Seat 1 (Top Left) -->
           <div class="player-seat seat-top-left" id="seat-1">
+            <div class="action-bubble" id="bubble-1"></div>
             <div class="poker-avatar">
               <img src="/carrot-games/assets/images/avatar_rabbit.png" alt="兔兔" class="poker-avatar-img" />
             </div>
@@ -72,6 +73,7 @@ export async function renderPoker(container, params) {
 
           <!-- Opponent Seat 2 (Top Center) -->
           <div class="player-seat seat-top-center" id="seat-2">
+            <div class="action-bubble" id="bubble-2"></div>
             <div class="poker-avatar">
               <img src="/carrot-games/assets/images/avatar_cat.png" alt="貓咪" class="poker-avatar-img" />
             </div>
@@ -85,6 +87,7 @@ export async function renderPoker(container, params) {
 
           <!-- Opponent Seat 3 (Top Right) -->
           <div class="player-seat seat-top-right" id="seat-3">
+            <div class="action-bubble" id="bubble-3"></div>
             <div class="poker-avatar">
               <img src="/carrot-games/assets/images/avatar_bear.png" alt="熊熊" class="poker-avatar-img" />
             </div>
@@ -98,6 +101,7 @@ export async function renderPoker(container, params) {
 
           <!-- Main Local Player Seat (Bottom Center) -->
           <div class="player-seat seat-bottom" id="seat-0">
+            <div class="action-bubble" id="bubble-0"></div>
             <div class="poker-avatar avatar-user">
               <img src="/carrot-games/assets/images/avatar_user.png" alt="玩家" class="poker-avatar-img" />
             </div>
@@ -127,9 +131,29 @@ export async function renderPoker(container, params) {
             </button>
           </div>
         </div>
+
+        <!-- Live Game Battle Action Log / Chat Box -->
+        <div class="poker-log-box glass">
+          <div class="log-header">
+            <span>📜 對戰即時動態 (GAME LOG)</span>
+          </div>
+          <div class="log-content" id="poker-log-content"></div>
+        </div>
       </div>
     </div>
   `;
+
+  // Attach Log Listener
+  engine.onLog = (msg, type) => {
+    const logContent = document.getElementById('poker-log-content');
+    if (logContent) {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `• ${msg}`;
+      logContent.appendChild(entry);
+      logContent.scrollTop = logContent.scrollHeight;
+    }
+  };
 
   // Initialize Match Data
   const initialPlayers = [
@@ -194,7 +218,7 @@ function _checkAITurn(engine) {
       makeAIDecision(engine, engine.currentTurnIdx);
       _updatePokerUI(engine);
       _checkAITurn(engine);
-    }, 600);
+    }, 750);
   }
 }
 
@@ -227,20 +251,35 @@ function _updatePokerUI(engine) {
     const statusEl = document.getElementById(`status-${idx}`);
     const cardsEl = document.getElementById(`cards-${idx}`);
     const seatEl = document.getElementById(`seat-${idx}`);
+    const bubbleEl = document.getElementById(`bubble-${idx}`);
 
     if (chipsEl) chipsEl.textContent = `$${p.chips}`;
-    if (statusEl) {
-      if (p.folded) statusEl.textContent = '棄牌 (FOLD)';
-      else if (p.isAllIn) statusEl.textContent = 'ALL-IN';
-      else if (p.bet > 0) statusEl.textContent = `注: $${p.bet}`;
-      else statusEl.textContent = '';
-    }
 
+    // Update Seat Status & Turn Indicator
     if (seatEl) {
       if (engine.currentTurnIdx === idx && !engine.gameOver) {
         seatEl.classList.add('turn-active');
+        if (statusEl) {
+          statusEl.innerHTML = `<span class="badge badge-warning turn-tag">${idx === 0 ? '💭 輪到你了' : '⏳ 思考中...'}</span>`;
+        }
       } else {
         seatEl.classList.remove('turn-active');
+        if (statusEl) {
+          if (p.folded) statusEl.innerHTML = `<span class="status-folded">❌ 棄牌 (FOLD)</span>`;
+          else if (p.isAllIn) statusEl.innerHTML = `<span class="status-allin">🔥 ALL-IN</span>`;
+          else if (p.bet > 0) statusEl.textContent = `注: $${p.bet}`;
+          else statusEl.textContent = '';
+        }
+      }
+    }
+
+    // Update Action Bubble Popover
+    if (bubbleEl) {
+      if (p.lastAction) {
+        bubbleEl.textContent = p.lastAction.label;
+        bubbleEl.className = `action-bubble active ${p.lastAction.type}`;
+      } else {
+        bubbleEl.className = 'action-bubble';
       }
     }
 
@@ -251,7 +290,6 @@ function _updatePokerUI(engine) {
           cardsEl.appendChild(_createCardEl(p.cards[0]));
           cardsEl.appendChild(_createCardEl(p.cards[1]));
         } else {
-          // Card back for hidden AI hole cards
           cardsEl.appendChild(_createCardBackEl());
           cardsEl.appendChild(_createCardBackEl());
         }
