@@ -166,14 +166,19 @@ export function getCurrentUser() {
 }
 
 export function getUserProfile() {
-  if (currentProfile) return currentProfile;
+  if (currentProfile) {
+    if (currentUser) {
+      currentProfile.isAnonymous = currentUser.isAnonymous;
+    }
+    return currentProfile;
+  }
 
   return {
-    uid: 'guest',
+    uid: currentUser ? currentUser.uid : 'guest',
     displayName: getPlayerName() || '匿名訪客',
-    email: '',
+    email: currentUser ? currentUser.email : '',
     photoURL: '',
-    isAnonymous: true,
+    isAnonymous: currentUser ? currentUser.isAnonymous : true,
     chips: 1000,
     stats: {
       poker: { played: 0, won: 0, netProfit: 0 },

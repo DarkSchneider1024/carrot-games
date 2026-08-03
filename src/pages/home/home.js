@@ -18,10 +18,10 @@ export async function renderHome(container) {
 
   const user = getCurrentUser();
   const currentProfile = getUserProfile();
-  const isGuest = !user || user.isAnonymous || !currentProfile || currentProfile.isAnonymous;
-  const initialName = currentProfile?.displayName || getPlayerName() || '匿名訪客';
-  const initialChipsText = isGuest ? '匿名訪客' : `$${(currentProfile?.chips || 1000).toLocaleString()}`;
-  const initialBadgeClass = isGuest ? 'badge-info' : 'badge-warning';
+  const isLoggedUser = !!(user && !user.isAnonymous);
+  const initialName = currentProfile?.displayName || user?.displayName || getPlayerName() || '匿名訪客';
+  const initialChipsText = isLoggedUser ? `$${(currentProfile?.chips !== undefined ? currentProfile.chips : 1000).toLocaleString()}` : '匿名訪客';
+  const initialBadgeClass = isLoggedUser ? 'badge-warning' : 'badge-info';
 
   container.innerHTML = `
     <div class="home">
@@ -276,14 +276,17 @@ export async function renderHome(container) {
   const updateHeaderUI = (user, profile) => {
     const displayEl = document.getElementById('display-player-name');
     const chipBadge = document.getElementById('display-user-chips');
-    const isLoggedUser = user && !user.isAnonymous && profile && !profile.isAnonymous;
+    const activeUser = user || getCurrentUser();
+    const activeProfile = profile || getUserProfile();
+    const isLogged = !!(activeUser && !activeUser.isAnonymous);
 
     if (displayEl) {
-      displayEl.textContent = profile?.displayName || getPlayerName() || '匿名訪客';
+      displayEl.textContent = activeProfile?.displayName || activeUser?.displayName || getPlayerName() || '匿名訪客';
     }
     if (chipBadge) {
-      if (isLoggedUser) {
-        chipBadge.textContent = `$${(profile?.chips || 1000).toLocaleString()}`;
+      if (isLogged) {
+        const chips = activeProfile?.chips !== undefined ? activeProfile.chips : 1000;
+        chipBadge.textContent = `$${chips.toLocaleString()}`;
         chipBadge.className = 'badge badge-warning';
       } else {
         chipBadge.textContent = '匿名訪客';
