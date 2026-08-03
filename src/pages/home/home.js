@@ -16,7 +16,12 @@ export async function renderHome(container) {
   let unsubRooms = null;
   let unsubChat = null;
 
+  const user = getCurrentUser();
   const currentProfile = getUserProfile();
+  const isGuest = !user || user.isAnonymous || !currentProfile || currentProfile.isAnonymous;
+  const initialName = currentProfile?.displayName || getPlayerName() || '匿名訪客';
+  const initialChipsText = isGuest ? '匿名訪客' : `$${(currentProfile?.chips || 1000).toLocaleString()}`;
+  const initialBadgeClass = isGuest ? 'badge-info' : 'badge-warning';
 
   container.innerHTML = `
     <div class="home">
@@ -34,9 +39,9 @@ export async function renderHome(container) {
         </div>
         <div class="home-header-actions">
           <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
-            👤 <span id="display-player-name">${currentProfile?.displayName || getPlayerName()}</span>
-            <span class="badge badge-warning" id="display-user-chips" style="margin-left:4px;">
-              ${currentProfile?.isAnonymous ? '匿名訪客' : `$${(currentProfile?.chips || 1000).toLocaleString()}`}
+            👤 <span id="display-player-name">${initialName}</span>
+            <span class="badge ${initialBadgeClass}" id="display-user-chips" style="margin-left:4px;">
+              ${initialChipsText}
             </span>
           </button>
           <button class="btn btn-secondary btn-sm" id="btn-pwa-guide">
@@ -268,14 +273,16 @@ export async function renderHome(container) {
   });
 
   // Init Auth System & Subscribe Profile UI Changes
-  initAuth((user, profile) => {
+  const updateHeaderUI = (user, profile) => {
     const displayEl = document.getElementById('display-player-name');
     const chipBadge = document.getElementById('display-user-chips');
+    const isLoggedUser = user && !user.isAnonymous && profile && !profile.isAnonymous;
+
     if (displayEl) {
-      displayEl.textContent = profile?.displayName || getPlayerName() || '玩家';
+      displayEl.textContent = profile?.displayName || getPlayerName() || '匿名訪客';
     }
     if (chipBadge) {
-      if (user && !user.isAnonymous) {
+      if (isLoggedUser) {
         chipBadge.textContent = `$${(profile?.chips || 1000).toLocaleString()}`;
         chipBadge.className = 'badge badge-warning';
       } else {
@@ -283,7 +290,10 @@ export async function renderHome(container) {
         chipBadge.className = 'badge badge-info';
       }
     }
-  });
+  };
+
+  initAuth(updateHeaderUI);
+  updateHeaderUI(getCurrentUser(), getUserProfile());
 
   // Open Auth Modal
   document.getElementById('btn-player-profile')?.addEventListener('click', () => {

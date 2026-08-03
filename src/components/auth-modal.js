@@ -14,7 +14,8 @@ import {
   signInWithGoogle,
   signInAsGuest,
   signOutUser,
-  updateUserChips
+  updateUserChips,
+  notifyAuthChange
 } from '../network/auth-manager.js';
 import { setPlayerName } from '../utils/player-profile.js';
 
@@ -240,7 +241,10 @@ function _renderAuthFormModal() {
     const password = document.getElementById('login-password')?.value;
     if (email && password) {
       const result = await signInWithEmail(email, password);
-      if (result.success) closeModal();
+      if (result.success) {
+        closeModal();
+        notifyAuthChange();
+      }
     }
   });
 
@@ -252,19 +256,26 @@ function _renderAuthFormModal() {
     const password = document.getElementById('reg-password')?.value;
     if (email && password) {
       const result = await signUpWithEmail(email, password, name);
-      if (result.success) closeModal();
+      if (result.success) {
+        closeModal();
+        notifyAuthChange();
+      }
     }
   });
 
   // Google Login Button
   document.getElementById('btn-google-auth')?.addEventListener('click', async () => {
     const result = await signInWithGoogle();
-    if (result.success) closeModal();
+    if (result.success) {
+      closeModal();
+      notifyAuthChange();
+    }
   });
 
   // Guest Login Button
   document.getElementById('btn-guest-auth')?.addEventListener('click', async () => {
     await signInAsGuest();
     closeModal();
+    notifyAuthChange();
   });
 }
