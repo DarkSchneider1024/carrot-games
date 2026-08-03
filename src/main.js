@@ -16,6 +16,10 @@ import { renderTetris } from './pages/tetris/tetris.js';
 import { renderPwaGuide } from './pages/pwa-guide/pwa-guide.js';
 import { renderPoker } from './pages/poker/poker.js';
 import { showToast } from './components/toast.js';
+import { updateLoadingProgress, hideLoadingScreen } from './utils/loading-manager.js';
+
+// Progress Update
+updateLoadingProgress(45, '⚡ 正在初始化遊戲對戰引擎與模組...');
 
 // ── Register Routes ──
 registerRoute('/', renderHome);
@@ -30,7 +34,6 @@ function registerPWA() {
 
   let refreshing = false;
 
-  // Auto-reload when new Service Worker activates and takes control
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (refreshing) return;
     refreshing = true;
@@ -71,6 +74,10 @@ registerPWA();
 
 // ── Initialize App ──
 document.addEventListener('DOMContentLoaded', () => {
+  updateLoadingProgress(75, '🎮 載入遊戲大廳與連線系統...');
   initRouter();
   console.log('🥕 Carrot Games initialized with Xiangqi, Tetris & Poker');
+  
+  // Smoothly fade out loading screen
+  hideLoadingScreen();
 });

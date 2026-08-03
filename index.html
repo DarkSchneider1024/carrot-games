@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="description" content="Carrot Games — 專業純前端對戰遊戲平台，支援象棋與俄羅斯方塊 Tetris Battle 2P" />
-  <meta name="theme-color" content="#070a0f" />
+  <meta name="description" content="Carrot Games — 專業純前端對戰遊戲平台，支援象棋、俄羅斯方塊與德州撲克" />
+  <meta name="theme-color" content="#faeee7" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="CarrotGames" />
@@ -13,13 +13,129 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&family=Russo+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Russo+One&display=swap" rel="stylesheet">
   
   <link rel="manifest" href="/carrot-games/manifest.json" />
   <link rel="icon" type="image/png" href="/carrot-games/assets/images/logo_carrot.png" />
   <link rel="apple-touch-icon" href="/carrot-games/assets/images/icon_192.png" />
+
+  <style>
+    /* Inline Instant Loading Screen Styles */
+    #initial-loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #faeee7 0%, #ffecda 50%, #f3d2c1 100%);
+      font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+      padding: 20px;
+    }
+
+    .loading-card {
+      width: 100%;
+      max-width: 380px;
+      padding: 32px 24px;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 2px solid rgba(255, 117, 68, 0.25);
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(255, 117, 68, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .loading-img-wrapper {
+      width: 110px;
+      height: 110px;
+      margin-bottom: 16px;
+      position: relative;
+      animation: loadingFloat 3s ease-in-out infinite;
+    }
+
+    .loading-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 15px rgba(255, 117, 68, 0.25));
+    }
+
+    .loading-title {
+      font-family: 'Russo One', 'Chakra Petch', sans-serif;
+      font-size: 26px;
+      color: #272343;
+      margin: 0 0 4px 0;
+      letter-spacing: 0.04em;
+    }
+
+    .loading-title span {
+      background: linear-gradient(135deg, #ff7544 0%, #ff70a6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .loading-status {
+      font-size: 13px;
+      color: #5f6c7b;
+      margin: 8px 0 16px 0;
+      font-weight: 500;
+      min-height: 20px;
+    }
+
+    .loading-bar-container {
+      width: 100%;
+      height: 12px;
+      background: rgba(39, 35, 67, 0.08);
+      border-radius: 100px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 117, 68, 0.2);
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      width: 15%;
+      background: linear-gradient(90deg, #ff7544, #ff70a6, #2ec4b6);
+      border-radius: 100px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(255, 117, 68, 0.5);
+    }
+
+    .loading-percent-text {
+      font-family: 'Chakra Petch', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ff7544;
+    }
+
+    @keyframes loadingFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(2deg); }
+    }
+  </style>
 </head>
 <body>
+  <!-- Instant Initial Loading Screen -->
+  <div id="initial-loading-screen">
+    <div class="loading-card">
+      <div class="loading-img-wrapper">
+        <img src="/carrot-games/assets/images/loading_splash.png" alt="Loading Carrot Games" class="loading-img" onError="this.src='/carrot-games/assets/images/logo_carrot.png'" />
+      </div>
+      <h2 class="loading-title">CARROT <span>GAMES</span></h2>
+      <p class="loading-status" id="loading-status">🥕 正在讀取 Carrot Games 平台資源...</p>
+      
+      <div class="loading-bar-container">
+        <div class="loading-bar-fill" id="loading-bar-fill"></div>
+      </div>
+      <span class="loading-percent-text" id="loading-percentage">15%</span>
+    </div>
+  </div>
+
   <div class="crt-overlay"></div>
   <div id="app"></div>
   <div class="toast-container" id="toast-container"></div>
