@@ -3,6 +3,8 @@
  * Hash-based router for static hosting compatibility (GitHub Pages)
  */
 
+import { hideLoadingScreen } from './utils/loading-manager.js';
+
 const routes = {};
 let currentCleanup = null;
 
@@ -80,34 +82,53 @@ async function renderRoute() {
 
   // Clean up previous page
   if (currentCleanup) {
-    currentCleanup();
+    try {
+      currentCleanup();
+    } catch (e) {
+      console.warn('Cleanup warning:', e);
+    }
     currentCleanup = null;
   }
 
   const match = matchRoute(path);
 
-  if (match) {
-    app.style.opacity = '0';
-    app.style.transition = 'opacity 0.15s ease';
+  try {
+    if (match) {
+      app.style.opacity = '0';
+      app.style.transition = 'opacity 0.15s ease';
 
-    await new Promise(r => setTimeout(r, 150));
-    app.innerHTML = '';
+      await new Promise(r => setTimeout(r, 100));
+      app.innerHTML = '';
 
-    currentCleanup = await match.handler(app, match.params);
+      currentCleanup = await match.handler(app, match.params);
 
-    requestAnimationFrame(() => {
-      app.style.opacity = '1';
-    });
-  } else {
-    // 404
+      requestAnimationFrame(() => {
+        app.style.opacity = '1';
+      });
+    } else {
+      // 404
+      app.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;background-color:var(--color-bg-primary);color:var(--color-text-primary);">
+          <h1 style="font-size:4rem;">🥕</h1>
+          <h2>找不到頁面</h2>
+          <p style="color:var(--color-text-secondary)">這裡什麼都沒有...</p>
+          <a href="#/" class="btn btn-primary" style="margin-top:1rem;">回到首頁</a>
+        </div>
+      `;
+    }
+  } catch (err) {
+    console.error('⚠️ [Router] Render route error:', err);
+    app.style.opacity = '1';
     app.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;background-color:var(--color-bg-primary);color:var(--color-text-primary);">
-        <h1 style="font-size:4rem;">🥕</h1>
-        <h2>找不到頁面</h2>
-        <p style="color:var(--color-text-secondary)">這裡什麼都沒有...</p>
-        <a href="#/" class="btn btn-primary" style="margin-top:1rem;">回到首頁</a>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;background-color:#0f172a;color:#f8fafc;padding:20px;text-align:center;">
+        <h1 style="font-size:3.5rem;">🥕</h1>
+        <h2>頁面載入異常</h2>
+        <p style="color:#94a3b8;max-width:400px;">系統遇到不預期的錯誤：${err.message || err}</p>
+        <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top:1rem;padding:10px 24px;">⚡ 重新載入頁面</button>
       </div>
     `;
+  } finally {
+    hideLoadingScreen();
   }
 }
 

@@ -9,7 +9,7 @@ import { subscribePublicRooms, subscribeGlobalChat, sendGlobalChatMessage } from
 import { showToast } from '../../components/toast.js';
 import { showModal, closeModal } from '../../components/modal.js';
 import { getPlayerName, setPlayerName } from '../../utils/player-profile.js';
-import { initAuth, getUserProfile } from '../../network/auth-manager.js';
+import { initAuth, getUserProfile, getCurrentUser } from '../../network/auth-manager.js';
 import { showAuthModal } from '../../components/auth-modal.js';
 
 export async function renderHome(container) {
