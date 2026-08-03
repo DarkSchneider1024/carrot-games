@@ -17,7 +17,7 @@ export async function renderTetris(container, params) {
   let room = null;
 
   container.innerHTML = `
-    <div class="tetris-page">
+    <div class="tetris-page show-mobile-game">
       <!-- Top Bar -->
       <div class="tetris-topbar">
         <button class="btn btn-ghost btn-sm" id="btn-back">
@@ -36,6 +36,16 @@ export async function renderTetris(container, params) {
             ${SVG_ICONS.settings}
           </button>
         </div>
+      </div>
+
+      <!-- Mobile Navigation Tabs -->
+      <div class="game-mobile-tabs">
+        <button class="mobile-tab-btn" id="mtab-tetris-setup">
+          ⚙️ 模式與設定
+        </button>
+        <button class="mobile-tab-btn active" id="mtab-tetris-game">
+          🎮 方塊對戰區
+        </button>
       </div>
 
       <!-- Main Battle Workspace -->
@@ -157,6 +167,32 @@ export async function renderTetris(container, params) {
     renderer.draw(game.getState(), game.engine, game.opponentBoard);
   };
   window.addEventListener('resize', resizeHandler);
+
+  // Mobile Viewport & Tab Switching System
+  const pageContainer = container.querySelector('.tetris-page');
+  const mtabSetup = document.getElementById('mtab-tetris-setup');
+  const mtabGame = document.getElementById('mtab-tetris-game');
+
+  function switchMobileTab(tab) {
+    if (tab === 'setup') {
+      pageContainer.classList.add('show-mobile-setup');
+      pageContainer.classList.remove('show-mobile-game');
+      mtabSetup?.classList.add('active');
+      mtabGame?.classList.remove('active');
+    } else {
+      pageContainer.classList.add('show-mobile-game');
+      pageContainer.classList.remove('show-mobile-setup');
+      mtabGame?.classList.add('active');
+      mtabSetup?.classList.remove('active');
+      requestAnimationFrame(() => {
+        _resizeCanvas(canvas);
+        if (renderer) renderer.resize();
+      });
+    }
+  }
+
+  mtabSetup?.addEventListener('click', () => switchMobileTab('setup'));
+  mtabGame?.addEventListener('click', () => switchMobileTab('game'));
 
   // Controller Mode Switcher
   _setupControllerModeToggle();

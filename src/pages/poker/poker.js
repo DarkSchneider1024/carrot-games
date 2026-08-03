@@ -18,7 +18,7 @@ export async function renderPoker(container, params) {
   let room = null;
 
   container.innerHTML = `
-    <div class="poker-page">
+    <div class="poker-page show-mobile-game">
       <!-- Top Bar -->
       <div class="poker-topbar">
         <button class="btn btn-ghost btn-sm" id="btn-back">
@@ -37,6 +37,16 @@ export async function renderPoker(container, params) {
             ${SVG_ICONS.settings}
           </button>
         </div>
+      </div>
+
+      <!-- Mobile Navigation Tabs -->
+      <div class="game-mobile-tabs">
+        <button class="mobile-tab-btn" id="mtab-poker-setup">
+          ⚙️ 盲注與戰報
+        </button>
+        <button class="mobile-tab-btn active" id="mtab-poker-game">
+          🃏 撲克檯面
+        </button>
       </div>
 
       <!-- Main Poker Table Stage -->
@@ -184,6 +194,29 @@ export async function renderPoker(container, params) {
 
   engine.initMatch(initialPlayers);
   _updatePokerUI(engine);
+
+  // Mobile Viewport & Tab Switching System
+  const pageContainer = container.querySelector('.poker-page');
+  const mtabSetup = document.getElementById('mtab-poker-setup');
+  const mtabGame = document.getElementById('mtab-poker-game');
+
+  function switchMobileTab(tab) {
+    if (tab === 'setup') {
+      pageContainer.classList.add('show-mobile-setup');
+      pageContainer.classList.remove('show-mobile-game');
+      mtabSetup?.classList.add('active');
+      mtabGame?.classList.remove('active');
+    } else {
+      pageContainer.classList.add('show-mobile-game');
+      pageContainer.classList.remove('show-mobile-setup');
+      mtabGame?.classList.add('active');
+      mtabSetup?.classList.remove('active');
+    }
+  }
+
+  mtabSetup?.addEventListener('click', () => switchMobileTab('setup'));
+  mtabGame?.addEventListener('click', () => switchMobileTab('game'));
+  document.getElementById('btn-settings')?.addEventListener('click', () => switchMobileTab('setup'));
 
   // Auto trigger AI turns if needed
   _checkAITurn(engine);

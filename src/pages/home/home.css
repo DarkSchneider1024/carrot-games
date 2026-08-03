@@ -101,6 +101,69 @@
   line-height: var(--line-height-relaxed);
 }
 
+/* ── Category Filter Bar ── */
+.home-filter-section {
+  width: 100%;
+  max-width: 1100px;
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: var(--glass-blur);
+}
+
+.home-filter-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.home-filter-count {
+  font-size: var(--font-size-xs);
+  color: var(--color-accent-primary);
+  background: rgba(255, 117, 68, 0.1);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}
+
+.home-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filter-pill {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.filter-pill:hover {
+  border-color: var(--color-accent-primary);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+.filter-pill.active {
+  background: var(--gradient-hero);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: var(--shadow-sm), var(--shadow-glow-orange);
+}
+
 /* ── Game Cards Showcase ── */
 .home-games {
   display: grid;
@@ -109,6 +172,18 @@
   width: 100%;
   max-width: 1100px;
   padding: var(--space-4) 0 var(--space-6);
+}
+
+.badge-category {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 2;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  font-size: 11px;
 }
 
 .game-card {

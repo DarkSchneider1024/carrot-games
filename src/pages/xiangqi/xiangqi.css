@@ -413,6 +413,35 @@
   padding: var(--space-2);
 }
 
+/* ── Mobile Tab Bar ── */
+.game-mobile-tabs {
+  display: none;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-1) var(--space-3);
+  gap: var(--space-2);
+  z-index: 10;
+}
+
+.mobile-tab-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.mobile-tab-btn.active {
+  background: var(--gradient-hero);
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
 /* Responsive Breakdown */
 @media (max-width: 1024px) {
   .xiangqi-main {
@@ -438,5 +467,73 @@
   .xiangqi-board-container {
     width: 100%;
     max-width: 520px;
+  }
+}
+
+@media (max-width: 768px) {
+  .xiangqi-page {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  .game-mobile-tabs {
+    display: flex;
+  }
+
+  .xiangqi-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  /* Setup Mode */
+  .xiangqi-page.show-mobile-setup .xiangqi-board-container {
+    display: none !important;
+  }
+
+  .xiangqi-page.show-mobile-setup .xiangqi-panel {
+    display: flex !important;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  /* Game Mode */
+  .xiangqi-page.show-mobile-game .xiangqi-panel {
+    display: none !important;
+  }
+
+  .xiangqi-page.show-mobile-game .xiangqi-board-container {
+    display: flex !important;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .xiangqi-board-container {
+    max-width: 100% !important;
+    height: 100%;
+  }
+
+  .board-frame {
+    width: 100%;
+    height: 100%;
+    max-height: calc(100dvh - 110px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #xiangqi-canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
   }
 }

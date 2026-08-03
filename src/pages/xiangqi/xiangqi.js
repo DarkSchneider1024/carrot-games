@@ -17,7 +17,7 @@ export async function renderXiangqi(container, params) {
   let room = null;
 
   container.innerHTML = `
-    <div class="xiangqi-page">
+    <div class="xiangqi-page show-mobile-game">
       <!-- Top Tactical Bar -->
       <div class="xiangqi-topbar">
         <button class="btn btn-ghost btn-sm" id="btn-back">
@@ -34,6 +34,16 @@ export async function renderXiangqi(container, params) {
             ${SVG_ICONS.settings}
           </button>
         </div>
+      </div>
+
+      <!-- Mobile Navigation Tabs -->
+      <div class="game-mobile-tabs">
+        <button class="mobile-tab-btn" id="mtab-setup">
+          ⚙️ 房間與設定
+        </button>
+        <button class="mobile-tab-btn active" id="mtab-game">
+          🎮 象棋對戰區
+        </button>
       </div>
 
       <!-- Main Game Workspace -->
@@ -118,6 +128,33 @@ export async function renderXiangqi(container, params) {
     const el = document.getElementById('ai-thinking');
     if (el) el.style.display = thinking ? 'flex' : 'none';
   };
+
+  // Mobile Viewport & Tab Switching System
+  const pageContainer = container.querySelector('.xiangqi-page');
+  const mtabSetup = document.getElementById('mtab-setup');
+  const mtabGame = document.getElementById('mtab-game');
+
+  function switchMobileTab(tab) {
+    if (tab === 'setup') {
+      pageContainer.classList.add('show-mobile-setup');
+      pageContainer.classList.remove('show-mobile-game');
+      mtabSetup?.classList.add('active');
+      mtabGame?.classList.remove('active');
+    } else {
+      pageContainer.classList.add('show-mobile-game');
+      pageContainer.classList.remove('show-mobile-setup');
+      mtabGame?.classList.add('active');
+      mtabSetup?.classList.remove('active');
+      requestAnimationFrame(() => {
+        _resizeCanvas(canvas, outerContainer);
+        if (game.renderer) game.renderer.handleResize();
+      });
+    }
+  }
+
+  mtabSetup?.addEventListener('click', () => switchMobileTab('setup'));
+  mtabGame?.addEventListener('click', () => switchMobileTab('game'));
+  document.getElementById('btn-settings')?.addEventListener('click', () => switchMobileTab('setup'));
 
   // Handle window resize
   const resizeHandler = () => {

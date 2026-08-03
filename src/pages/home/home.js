@@ -54,13 +54,28 @@ export async function renderHome(container) {
         </p>
       </section>
 
+      <!-- Category Filter Section -->
+      <div class="home-filter-section animate-fade-in-up">
+        <div class="home-filter-title">
+          <span>🎮 遊戲庫分類</span>
+          <span class="home-filter-count" id="filter-count">共 3 款遊戲</span>
+        </div>
+        <div class="home-filter-pills" id="home-filter-pills">
+          <button class="filter-pill active" data-filter="all">🌟 全部遊戲</button>
+          <button class="filter-pill" data-filter="board">♟️ 棋牌對戰</button>
+          <button class="filter-pill" data-filter="puzzle">🧩 益智街機</button>
+          <button class="filter-pill" data-filter="card">🃏 撲克娛樂</button>
+        </div>
+      </div>
+
       <!-- Games Showcase Grid -->
-      <section class="home-games">
+      <section class="home-games" id="home-games-grid">
         <!-- Chinese Chess Card -->
-        <div class="game-card animate-fade-in-up stagger-2" id="card-xiangqi">
+        <div class="game-card animate-fade-in-up stagger-2" id="card-xiangqi" data-category="board">
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_xiangqi.png" alt="中國象棋" class="game-card-img" />
             <div class="game-card-overlay"></div>
+            <span class="badge badge-category">♟️ 棋牌對戰</span>
             <span class="badge badge-success game-card-status">經典推廣</span>
           </div>
           <div class="game-card-content">
@@ -85,10 +100,11 @@ export async function renderHome(container) {
         </div>
 
         <!-- Tetris Battle Card -->
-        <div class="game-card animate-fade-in-up stagger-3" id="card-tetris">
+        <div class="game-card animate-fade-in-up stagger-3" id="card-tetris" data-category="puzzle">
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_gomoku.png" alt="俄羅斯方塊對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
+            <span class="badge badge-category">🧩 益智街機</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
           </div>
           <div class="game-card-content">
@@ -113,10 +129,11 @@ export async function renderHome(container) {
         </div>
 
         <!-- Poker Card -->
-        <div class="game-card animate-fade-in-up stagger-4" id="card-poker">
+        <div class="game-card animate-fade-in-up stagger-4" id="card-poker" data-category="card">
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_poker.png" alt="德州撲克" class="game-card-img" />
             <div class="game-card-overlay"></div>
+            <span class="badge badge-category">🃏 撲克娛樂</span>
             <span class="badge badge-success game-card-status">新品上市</span>
           </div>
           <div class="game-card-content">
@@ -291,6 +308,37 @@ export async function renderHome(container) {
       }
     });
   }
+
+  // Category Filter Pills Listener
+  const filterPills = document.querySelectorAll('#home-filter-pills .filter-pill');
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const selectedFilter = pill.getAttribute('data-filter');
+      
+      filterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+
+      const gameCards = document.querySelectorAll('#home-games-grid .game-card');
+      let visibleCount = 0;
+
+      gameCards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        if (selectedFilter === 'all' || category === selectedFilter) {
+          card.style.display = 'flex';
+          card.classList.remove('filter-hidden');
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+          card.classList.add('filter-hidden');
+        }
+      });
+
+      const countEl = document.getElementById('filter-count');
+      if (countEl) {
+        countEl.textContent = selectedFilter === 'all' ? `共 ${visibleCount} 款遊戲` : `已篩選 ${visibleCount} 款遊戲`;
+      }
+    });
+  });
 
   // Event handlers
   document.getElementById('btn-pwa-guide')?.addEventListener('click', () => navigate('/pwa-guide'));
