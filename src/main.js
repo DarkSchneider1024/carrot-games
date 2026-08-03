@@ -8,6 +8,7 @@ import './pages/xiangqi/xiangqi.css';
 import './pages/tetris/tetris.css';
 import './pages/pwa-guide/pwa-guide.css';
 import './pages/poker/poker.css';
+import './pages/magic-fighter/magic-fighter.css';
 
 import { registerRoute, initRouter } from './router.js';
 import { renderHome } from './pages/home/home.js';
@@ -15,6 +16,7 @@ import { renderXiangqi } from './pages/xiangqi/xiangqi.js';
 import { renderTetris } from './pages/tetris/tetris.js';
 import { renderPwaGuide } from './pages/pwa-guide/pwa-guide.js';
 import { renderPoker } from './pages/poker/poker.js';
+import { renderMagicFighter } from './pages/magic-fighter/magic-fighter.js';
 import { showToast } from './components/toast.js';
 import { updateLoadingProgress, hideLoadingScreen } from './utils/loading-manager.js';
 
@@ -26,6 +28,7 @@ registerRoute('/', renderHome);
 registerRoute('/xiangqi/:mode', renderXiangqi);
 registerRoute('/tetris/:mode', renderTetris);
 registerRoute('/poker/:mode', renderPoker);
+registerRoute('/magic-fighter/:mode', renderMagicFighter);
 registerRoute('/pwa-guide', renderPwaGuide);
 
 // ── PWA Service Worker & Auto-Update Manager ──

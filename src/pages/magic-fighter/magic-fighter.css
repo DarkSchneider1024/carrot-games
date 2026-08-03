@@ -1,0 +1,301 @@
+/**
+ * Magic Fighter Battle Styling
+ * Touch responsive, 100dvh lock, D-pad controls, & Happy Hues aesthetics
+ */
+
+.magic-fighter-page {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  color: #f8fafc;
+  overflow: hidden;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.magic-fighter-layout {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px;
+  gap: 20px;
+  overflow: hidden;
+}
+
+/* Side Panel Controls */
+.magic-side-panel {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.panel-card {
+  background: rgba(30, 41, 59, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 117, 68, 0.3);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.panel-title {
+  font-family: 'Russo One', sans-serif;
+  font-size: 1.25rem;
+  color: #ff7544;
+  margin: 0;
+}
+
+.panel-desc {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* HUD Box */
+.hud-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hud-label {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.hud-value {
+  font-family: 'Chakra Petch', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ff70a6;
+}
+
+.actions-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guide-box {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.guide-box h4 {
+  margin: 0;
+  color: #ff7544;
+}
+
+.guide-box p {
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Main Game Canvas Area */
+.magic-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.canvas-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1 / 1;
+  background: #000;
+  border-radius: 20px;
+  border: 3px solid rgba(255, 117, 68, 0.4);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 117, 68, 0.2);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#fighter-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Game Over Overlay */
+.game-over-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+
+.game-over-card {
+  background: rgba(30, 41, 59, 0.95);
+  border: 2px solid #ff7544;
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(255, 117, 68, 0.3);
+}
+
+.game-over-card h2 {
+  margin: 0;
+  color: #ff7544;
+  font-size: 1.5rem;
+}
+
+.game-over-card p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.go-reward {
+  font-family: 'Chakra Petch', monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #2ec4b6;
+  background: rgba(46, 196, 182, 0.15);
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(46, 196, 182, 0.3);
+}
+
+/* Mobile Virtual D-Pad & Controls */
+.mobile-controller-bar {
+  display: none;
+  width: 100%;
+  padding: 12px 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dpad-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dpad-row {
+  display: flex;
+  gap: 24px;
+}
+
+.dpad-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(255, 117, 68, 0.25);
+  border: 1.5px solid rgba(255, 117, 68, 0.5);
+  color: #fff;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.dpad-btn:active {
+  background: #ff7544;
+  transform: scale(0.92);
+}
+
+.mobile-fire-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff7544, #ff70a6);
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(255, 117, 68, 0.4);
+  touch-action: manipulation;
+}
+
+.mobile-fire-btn span {
+  font-size: 0.65rem;
+  font-weight: bold;
+}
+
+.mobile-fire-btn:active {
+  transform: scale(0.9);
+}
+
+/* Responsive Mobile Layout (max-width: 768px) */
+@media (max-width: 768px) {
+  .magic-fighter-layout {
+    flex-direction: column;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .magic-side-panel {
+    width: 100%;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .mobile-visible {
+    display: flex !important;
+  }
+
+  .mobile-controller-bar {
+    display: flex;
+  }
+
+  .canvas-wrapper {
+    max-width: 92vw;
+    max-height: 52vh;
+  }
+}

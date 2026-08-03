@@ -146,7 +146,7 @@ export async function renderHome(container) {
             <img src="/carrot-games/assets/images/icon_poker.png" alt="德州撲克" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">🃏 撲克娛樂</span>
-            <span class="badge badge-success game-card-status">新品上市</span>
+            <span class="badge badge-success game-card-status">熱門推薦</span>
           </div>
           <div class="game-card-content">
             <h3>德州撲克 (POKER)</h3>
@@ -161,6 +161,34 @@ export async function renderHome(container) {
                 ${SVG_ICONS.bot} 對戰 AI
               </button>
               <button class="btn btn-cyan" id="btn-poker-online">
+                ${SVG_ICONS.globe} 連線開房
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Magic Fighter Card -->
+        <div class="game-card animate-fade-in-up stagger-5" id="card-magic-fighter" data-category="puzzle">
+          <div class="game-card-banner">
+            <img src="/carrot-games/assets/images/icon_magic_fighter.png" alt="魔法對戰" class="game-card-img" />
+            <div class="game-card-overlay"></div>
+            <span class="badge badge-category">🧩 益智街機</span>
+            <span class="badge badge-warning game-card-status">全新上市</span>
+          </div>
+          <div class="game-card-content">
+            <h3>魔法對戰 (MAGIC FIGHTER)</h3>
+            <p>傳承經典《坦克大戰》靈魂！重塑為魔法戰機空戰對決，保護蘿蔔水晶基地！</p>
+            <div class="game-card-tags">
+              <span class="tag">${SVG_ICONS.cpu} 波次 AI 關卡</span>
+              <span class="tag">${SVG_ICONS.globe} 破壞磚牆</span>
+              <span class="tag">${SVG_ICONS.smartphone} 魔法道具升級</span>
+            </div>
+
+            <div class="game-card-actions">
+              <button class="btn btn-primary" id="btn-magic-fighter-ai">
+                ${SVG_ICONS.bot} 對戰 AI
+              </button>
+              <button class="btn btn-cyan" id="btn-magic-fighter-online">
                 ${SVG_ICONS.globe} 連線開房
               </button>
             </div>
@@ -360,6 +388,8 @@ export async function renderHome(container) {
   document.getElementById('btn-tetris-online')?.addEventListener('click', () => navigate('/tetris/online'));
   document.getElementById('btn-poker-ai')?.addEventListener('click', () => navigate('/poker/ai'));
   document.getElementById('btn-poker-online')?.addEventListener('click', () => navigate('/poker/online'));
+  document.getElementById('btn-magic-fighter-ai')?.addEventListener('click', () => navigate('/magic-fighter/ai'));
+  document.getElementById('btn-magic-fighter-online')?.addEventListener('click', () => navigate('/magic-fighter/online'));
 
   // Initialize storage badge
   try {

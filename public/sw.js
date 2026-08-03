@@ -3,7 +3,7 @@
  * Strategy: Network-First for HTML/JS/SW & Stale-While-Revalidate for Assets
  */
 
-const CACHE_NAME = 'carrot-games-v3';
+const CACHE_NAME = 'carrot-games-v4';
 const STATIC_ASSETS = [
   '/carrot-games/',
   '/carrot-games/index.html',
@@ -13,6 +13,9 @@ const STATIC_ASSETS = [
   '/carrot-games/assets/images/icon_xiangqi.png',
   '/carrot-games/assets/images/icon_gomoku.png',
   '/carrot-games/assets/images/icon_poker.png',
+  '/carrot-games/assets/images/icon_magic_fighter.png',
+  '/carrot-games/assets/images/player_fighter.png',
+  '/carrot-games/assets/images/enemy_fighter.png',
   '/carrot-games/assets/images/icon_192.png',
   '/carrot-games/assets/images/icon_512.png',
 ];
