@@ -10,6 +10,7 @@ import { showToast } from '../../components/toast.js';
 import { showModal, closeModal } from '../../components/modal.js';
 import { storage } from '../../storage/storage-manager.js';
 import { SVG_ICONS } from '../../components/icons.js';
+import { initAuth, updateUserStats } from '../../network/auth-manager.js';
 
 export async function renderXiangqi(container, params) {
   const mode = params.mode; // 'ai' or 'online'
@@ -592,13 +593,17 @@ function _showGameOver(result) {
   const reason = document.getElementById('game-over-reason');
 
   if (overlay && title && reason) {
+    let isWin = false;
     if (result.winner === 'draw') {
       title.textContent = 'HANDSHAKE DRAW (和棋)';
     } else if (result.winner === 'red') {
       title.textContent = 'RED VICTORY (紅方勝)';
+      isWin = (result.playerSide === 'red' || result.playerSide === RED);
     } else {
       title.textContent = 'BLACK VICTORY (黑方勝)';
+      isWin = (result.playerSide === 'black' || result.playerSide === BLACK);
     }
+    updateUserStats('xiangqi', { isWin });
     reason.textContent = result.reason;
     overlay.style.display = 'flex';
   }

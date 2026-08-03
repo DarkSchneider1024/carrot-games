@@ -11,11 +11,27 @@ import { RoomManager } from '../../network/room.js';
 import { showToast } from '../../components/toast.js';
 import { showModal, closeModal } from '../../components/modal.js';
 import { SVG_ICONS } from '../../components/icons.js';
+import { initAuth, getUserProfile, updateUserChips, updateUserStats, getCurrentUser } from '../../network/auth-manager.js';
+import { showAuthModal } from '../../components/auth-modal.js';
 
 export async function renderPoker(container, params) {
   const mode = params.mode || 'ai'; // 'ai' or 'online'
   const engine = new TexasHoldemEngine();
   let room = null;
+
+  initAuth();
+  const user = getCurrentUser();
+  const profile = getUserProfile();
+
+  // Auto Rescue check if user has <= 0 chips
+  let initialUserChips = 1000;
+  if (user && !user.isAnonymous) {
+    if ((profile?.chips || 0) <= 0) {
+      initialUserChips = await updateUserChips(1000);
+    } else {
+      initialUserChips = profile.chips;
+    }
+  }
 
   container.innerHTML = `
     <div class="poker-page show-mobile-game">
@@ -185,8 +201,9 @@ export async function renderPoker(container, params) {
   };
 
   // Initialize Match Data
+  const playerName = profile?.displayName ? `${profile.displayName} (你)` : '你 (玩家)';
   const initialPlayers = [
-    { id: 'p0', name: '你 (玩家)', isAI: false, chips: 1000 },
+    { id: 'p0', name: playerName, isAI: false, chips: initialUserChips },
     { id: 'p1', name: '兔兔 (AI)', isAI: true, chips: 1000 },
     { id: 'p2', name: '貓咪 (AI)', isAI: true, chips: 1000 },
     { id: 'p3', name: '熊熊 (AI)', isAI: true, chips: 1000 },
@@ -413,7 +430,7 @@ function _updatePokerUI(engine) {
     }
   });
 
-  // Handle Game Over / Showdown
+  // Handle Game Over / Showdown & Account Sync
   if (engine.gameOver) {
     const banner = document.getElementById('winner-banner');
     const winnerText = document.getElementById('winner-text');
@@ -423,6 +440,33 @@ function _updatePokerUI(engine) {
       winnerText.textContent = engine.winnerMsg;
       banner.style.display = 'flex';
       nextBtn.style.display = 'inline-flex';
+    }
+
+    // Record stats and sync chips
+    const userPlayer = engine.players[0];
+    if (userPlayer) {
+      const user = getCurrentUser();
+      if (user && !user.isAnonymous) {
+        const isWin = engine.winnerMsg.includes(userPlayer.name) || engine.winnerMsg.includes('你');
+        updateUserStats('poker', { isWin, netProfit: userPlayer.chips - initialUserChips });
+      }
+    }
+  }
+
+  // Sync current chips with logged-in account
+  const userPlayer = engine.players[0];
+  if (userPlayer) {
+    const user = getCurrentUser();
+    if (user && !user.isAnonymous) {
+      if (userPlayer.chips <= 0) {
+        updateUserChips(0).then(newChips => {
+          userPlayer.chips = newChips;
+          const userChipsEl = document.getElementById('chips-0');
+          if (userChipsEl) userChipsEl.textContent = `$${newChips}`;
+        });
+      } else {
+        updateUserChips(userPlayer.chips);
+      }
     }
   }
 }

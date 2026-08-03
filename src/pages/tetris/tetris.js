@@ -9,6 +9,7 @@ import { RoomManager } from '../../network/room.js';
 import { showToast } from '../../components/toast.js';
 import { showModal, closeModal } from '../../components/modal.js';
 import { SVG_ICONS } from '../../components/icons.js';
+import { initAuth, updateUserStats } from '../../network/auth-manager.js';
 
 export async function renderTetris(container, params) {
   const mode = params.mode || 'ai'; // 'ai' or 'online'
@@ -553,13 +554,16 @@ function _showGameOverModal(result) {
   const reason = document.getElementById('tetris-result-reason');
 
   if (overlay && title && reason) {
+    let isWin = false;
     if (result.winner === 'player') {
       title.textContent = 'VICTORY! (獲勝)';
+      isWin = true;
     } else if (result.winner === 'opponent') {
       title.textContent = 'DEFEAT! (戰敗)';
     } else {
       title.textContent = 'DRAW (平手)';
     }
+    updateUserStats('tetris', { isWin });
     reason.textContent = result.reason;
     overlay.style.display = 'flex';
   }

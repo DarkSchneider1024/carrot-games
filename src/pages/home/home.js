@@ -9,10 +9,14 @@ import { subscribePublicRooms, subscribeGlobalChat, sendGlobalChatMessage } from
 import { showToast } from '../../components/toast.js';
 import { showModal, closeModal } from '../../components/modal.js';
 import { getPlayerName, setPlayerName } from '../../utils/player-profile.js';
+import { initAuth, getUserProfile } from '../../network/auth-manager.js';
+import { showAuthModal } from '../../components/auth-modal.js';
 
 export async function renderHome(container) {
   let unsubRooms = null;
   let unsubChat = null;
+
+  const currentProfile = getUserProfile();
 
   container.innerHTML = `
     <div class="home">
@@ -29,8 +33,11 @@ export async function renderHome(container) {
           </div>
         </div>
         <div class="home-header-actions">
-          <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊修改玩家暱稱">
-            ✏️ <span id="display-player-name">${getPlayerName()}</span>
+          <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
+            👤 <span id="display-player-name">${currentProfile?.displayName || getPlayerName()}</span>
+            <span class="badge badge-warning" id="display-user-chips" style="margin-left:4px;">
+              ${currentProfile?.isAnonymous ? '匿名訪客' : `$${(currentProfile?.chips || 1000).toLocaleString()}`}
+            </span>
           </button>
           <button class="btn btn-secondary btn-sm" id="btn-pwa-guide">
             ${SVG_ICONS.smartphone} 手機安裝指南
@@ -260,35 +267,27 @@ export async function renderHome(container) {
     chatEl.scrollTop = chatEl.scrollHeight;
   });
 
-  // Player Profile Nickname Modal
+  // Init Auth System & Subscribe Profile UI Changes
+  initAuth((user, profile) => {
+    const displayEl = document.getElementById('display-player-name');
+    const chipBadge = document.getElementById('display-user-chips');
+    if (displayEl) {
+      displayEl.textContent = profile?.displayName || getPlayerName() || '玩家';
+    }
+    if (chipBadge) {
+      if (user && !user.isAnonymous) {
+        chipBadge.textContent = `$${(profile?.chips || 1000).toLocaleString()}`;
+        chipBadge.className = 'badge badge-warning';
+      } else {
+        chipBadge.textContent = '匿名訪客';
+        chipBadge.className = 'badge badge-info';
+      }
+    }
+  });
+
+  // Open Auth Modal
   document.getElementById('btn-player-profile')?.addEventListener('click', () => {
-    const currentName = getPlayerName();
-    showModal({
-      title: '修改玩家暱稱',
-      content: `
-        <div style="font-size:0.875rem;display:flex;flex-direction:column;gap:0.75rem;">
-          <label style="color:var(--color-text-secondary);">請輸入在大廳與對戰中顯示的玩家名稱 (最多 16 字)：</label>
-          <input type="text" class="input" id="input-nickname" value="${currentName}" maxlength="16" placeholder="輸入玩家暱稱..." />
-        </div>
-      `,
-      actions: [
-        { text: '取消', onClick: closeModal },
-        {
-          text: '儲存暱稱',
-          class: 'btn-primary',
-          onClick: () => {
-            const input = document.getElementById('input-nickname');
-            if (input && input.value.trim()) {
-              const newName = setPlayerName(input.value.trim());
-              const displayEl = document.getElementById('display-player-name');
-              if (displayEl) displayEl.textContent = newName;
-              showToast(`玩家暱稱已更新為：${newName}`, 'success');
-            }
-            closeModal();
-          }
-        }
-      ]
-    });
+    showAuthModal();
   });
 
   // Chat Form Submission
