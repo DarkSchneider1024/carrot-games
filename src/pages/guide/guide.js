@@ -39,7 +39,7 @@ export async function renderGameGuide(container, params = {}) {
       </div>
 
       <!-- Main Content Area -->
-      <main class="guide-content-area glass">
+      <main class="guide-content-area">
         <!-- 1. Chinese Chess Guide -->
         <article class="guide-article ${defaultTab === 'xiangqi' ? 'active' : ''}" id="guide-xiangqi">
           <h3>中國象棋 (XIANGQI) 玩法與規則指南</h3>
