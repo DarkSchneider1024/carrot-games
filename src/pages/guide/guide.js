@@ -18,14 +18,14 @@ export async function renderGameGuide(container, params = {}) {
         </button>
         <div class="guide-header-title">
           <h2>CARROT GAMES 遊戲玩法說明大全</h2>
-          <p>提供平台上 4 款對戰遊戲的詳細玩法規則、道具手冊與控制指令</p>
+          <p>提供平台上 5 款對戰遊戲的詳細玩法規則、道具手冊與控制指令</p>
         </div>
       </header>
 
       <!-- Navigation Tabs -->
       <div class="guide-tabs-bar">
         <button class="guide-tab-btn ${defaultTab === 'fruitHavoc' ? 'active' : ''}" data-tab="fruitHavoc" style="background:linear-gradient(135deg,#ff7544,#ff70a6);color:#fff;border:none;">
-          🍓 水果傷害 2D
+          🍓 水果傷害
         </button>
         <button class="guide-tab-btn ${defaultTab === 'xiangqi' ? 'active' : ''}" data-tab="xiangqi">
           中國象棋
@@ -46,7 +46,7 @@ export async function renderGameGuide(container, params = {}) {
         <!-- 1. Chinese Chess Guide -->
         <article class="guide-article ${defaultTab === 'xiangqi' ? 'active' : ''}" id="guide-xiangqi">
           <h3>中國象棋 (XIANGQI) 玩法與規則指南</h3>
-          
+
           <section class="guide-section">
             <h4>1. 遊戲目標與勝負判定</h4>
             <p>中國象棋為兩方對弈棋藝，紅方先行，黑方後行。目標為透過吃子與陣型防守，將死 (Checkmate) 對方的「將/帥」，或使對方困斃 (Stalemate) 無子可走時獲勝。</p>
@@ -271,17 +271,17 @@ export async function renderGameGuide(container, params = {}) {
 
         <!-- 5. Fruit Havoc Guide -->
         <article class="guide-article ${defaultTab === 'fruitHavoc' ? 'active' : ''}" id="guide-fruitHavoc">
-          <h3>🍓 水果傷害 (FRUIT HAVOC) — 2D 派對對戰手冊</h3>
+          <h3>🍓 水果傷害 (FRUIT HAVOC) — 派對對戰手冊</h3>
 
           <section class="guide-section">
             <h4>1. 遊戲核心玩法與《超級雞馬》對戰機制</h4>
-            <p>《水果傷害》是一款 2D 橫向平台派對競速對戰遊戲！玩家們輪流或同時在關卡地圖中<strong>自由擺放陷阱與助攻道具</strong>，擺放完畢後一齊衝向終點蛋糕旗！<br/>
+            <p>《水果傷害》是一款橫向平台派對競速對戰遊戲！玩家們輪流或同時在關卡地圖中<strong>自由擺放陷阱與助攻道具</strong>，擺放完畢後一齊衝向終點蛋糕旗！<br/>
             <strong>得分規則</strong>：如果所有人通通順利抵達終點，或所有人通通陣亡，則該輪「沒有人得分」；唯有<strong>成功穿越自己或朋友設置的危險陷阱到達終點</strong>，才能獲得勝場積分！</p>
           </section>
 
-          <!-- 5 大吉伊卡哇風格 2D 水果角色圖鑑 -->
+          <!-- 5 大水果角色圖鑑 -->
           <section class="guide-section">
-            <h4>2. 5 大三麗鷗 / 吉伊卡哇風格水果角色圖鑑</h4>
+            <h4>2. 5 大水果角色圖鑑</h4>
             <div class="guide-character-grid">
               <!-- Card 1: 草莓吉伊 -->
               <div class="character-card">

@@ -58,8 +58,8 @@ export async function renderFruitHavoc(container, params = {}) {
             ${SVG_ICONS.back} <span>大廳</span>
           </button>
           <div class="topbar-title">
-            <span class="game-name">🍓 水果傷害 (FRUIT HAVOC) 2D</span>
-            <span class="badge badge-warning">${mode === 'ai' ? '超級雞馬對戰 AI 模式' : '線上 P2P 派對房間'}</span>
+            <span class="game-name">🍓 水果傷害 (FRUIT HAVOC)</span>
+            <span class="badge badge-warning">${mode === 'online' ? '🌐 線上對戰 (即時同步)' : '👥 單機同屏 (玩家輪流擺放競速)'}</span>
           </div>
         </div>
         <div class="topbar-actions">
@@ -75,7 +75,7 @@ export async function renderFruitHavoc(container, params = {}) {
         <aside class="fruit-panel-left">
           <!-- Character Selector -->
           <div class="panel-card glass">
-            <h4 class="panel-title">1. 選擇三麗鷗吉伊水果角色</h4>
+            <h4 class="panel-title">1. 選擇水果角色</h4>
             <div class="char-selector-grid">
               ${FRUIT_CHARACTERS.map(c => `
                 <div class="char-select-item ${c.id === selectedChar.id ? 'active' : ''}" data-char-id="${c.id}">
@@ -112,11 +112,11 @@ export async function renderFruitHavoc(container, params = {}) {
           </div>
         </aside>
 
-        <!-- Right Panel: 2D Stage Canvas & Drop Zone -->
+        <!-- Right Panel: Stage Canvas & Drop Zone -->
         <main class="fruit-stage-area glass">
           <div class="stage-header">
-            <span class="badge badge-info">第 1 / 5 輪次：擺放與競速中</span>
-            <span class="stage-tip" id="stage-tip">🖐️ 請將左側道具【拖拉放至】右側藍色網格地圖！</span>
+            <span class="badge badge-info">第 1 / 5 輪次：單機多人輪流擺放</span>
+            <span class="stage-tip" id="stage-tip">🖐️ 請玩家輪流將左側道具【拖拉放至】右側地圖網格！</span>
           </div>
 
           <div class="canvas-wrapper" id="canvas-drop-zone">

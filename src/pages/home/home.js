@@ -311,19 +311,19 @@ export async function renderHome(container) {
           </div>
           <div class="game-card-content">
             <h3>水果傷害 (FRUIT HAVOC)</h3>
-            <p>類似《超級雞馬》的 2D 派對對戰！挑選吉伊卡哇風格水果角色，每輪自訂擺放 20 種陷阱與助攻道具衝向終點！</p>
+            <p>類似《超級雞馬》的派對平台對戰！支援單機同屏輪流擺放 20 種陷阱道具，闖過重重危險衝向終點！</p>
             <div class="game-card-tags">
-              <span class="tag">${SVG_ICONS.cpu} 2D 派對擺放</span>
+              <span class="tag">${SVG_ICONS.user} 單機同屏對戰</span>
               <span class="tag">${SVG_ICONS.globe} 20種陷阱道具</span>
-              <span class="tag">${SVG_ICONS.smartphone} 5位三麗鷗吉伊角色</span>
+              <span class="tag">${SVG_ICONS.smartphone} 5位水果角色</span>
             </div>
 
             <div class="game-card-actions">
-              <button class="btn btn-primary" id="btn-fruit-havoc-ai">
-                ${SVG_ICONS.bot} 對戰 AI
+              <button class="btn btn-primary" id="btn-fruit-havoc-local">
+                ${SVG_ICONS.user} 單機同屏
               </button>
               <button class="btn btn-cyan" id="btn-fruit-havoc-online">
-                ${SVG_ICONS.globe} 連線開房
+                ${SVG_ICONS.globe} 線上對戰
               </button>
             </div>
           </div>
@@ -590,7 +590,7 @@ export async function renderHome(container) {
   document.getElementById('btn-poker-online')?.addEventListener('click', () => navigate('/poker/online'));
   document.getElementById('btn-magic-fighter-ai')?.addEventListener('click', () => navigate('/magic-fighter/ai'));
   document.getElementById('btn-magic-fighter-online')?.addEventListener('click', () => navigate('/magic-fighter/online'));
-  document.getElementById('btn-fruit-havoc-ai')?.addEventListener('click', () => navigate('/fruit-havoc/ai'));
+  document.getElementById('btn-fruit-havoc-local')?.addEventListener('click', () => navigate('/fruit-havoc/local'));
   document.getElementById('btn-fruit-havoc-online')?.addEventListener('click', () => navigate('/fruit-havoc/online'));
 
   // Initialize storage badge
