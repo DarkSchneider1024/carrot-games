@@ -423,7 +423,7 @@ export async function renderFruitHavoc(container, params = {}) {
   // 2.5D Storybook Platformer Physics Engine (800x480)
   // ----------------------------------------------------
   const canvas = container.querySelector('#fruit-canvas');
-  const dropZone = container.querySelector('#canvas-drop-zone');
+  const dropZone = container.querySelector('#canvas-wrapper-box');
   const ctx = canvas ? canvas.getContext('2d') : null;
   const TILE_SIZE = 50; // 放大 50px 格子
 
@@ -783,10 +783,33 @@ export async function renderFruitHavoc(container, params = {}) {
     });
   });
 
-  if (dropZone && canvas) {
+    const handlePlaceTrapAtGrid = (gridX, gridY) => {
+      if (currentScene !== 1) return;
+      const targetTrap = TRAP_ITEMS.find(t => t.id === (draggedTrapId || selectedTrap.id)) || selectedTrap;
+      const currentP = players[activePlacementPlayerIdx];
+
+      if (targetTrap.id === 20) {
+        placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
+        showToast(`💥 ${currentP.name} 拆除了位置 (${gridX}, ${gridY}) 的障礙物！`, 'warning');
+      } else {
+        placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
+        placedTraps.push({ id: Date.now(), trap: targetTrap, gridX, gridY, placedBy: currentP.id });
+        showToast(`🎉 ${currentP.name} 放置【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
+      }
+
+      activePlacementPlayerIdx = (activePlacementPlayerIdx + 1) % players.length;
+      _updateTurnUI();
+
+      if (mode === 'online' && isPeerConnected) {
+        sendTrapPlacement(gridX, gridY, targetTrap.id);
+      }
+    };
+
+    // 1. Drag & Drop Event Listeners
     dropZone.addEventListener('dragover', (e) => {
       if (currentScene !== 1) return;
       e.preventDefault();
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
 
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -821,28 +844,26 @@ export async function renderFruitHavoc(container, params = {}) {
       if (relX >= 0 && relX < 800 && relY >= 0 && relY < 480) {
         const gridX = Math.floor(relX / TILE_SIZE);
         const gridY = Math.floor(relY / TILE_SIZE);
-        const targetTrap = TRAP_ITEMS.find(t => t.id === (draggedTrapId || selectedTrap.id)) || selectedTrap;
-
-        const currentP = players[activePlacementPlayerIdx];
-
-        if (targetTrap.id === 20) {
-          placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
-          showToast(`💥 ${currentP.name} 拆除了位置 (${gridX}, ${gridY}) 的障礙物！`, 'warning');
-        } else {
-          placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
-          placedTraps.push({ id: Date.now(), trap: targetTrap, gridX, gridY, placedBy: currentP.id });
-          showToast(`🎉 ${currentP.name} 放置【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
-        }
-
-        activePlacementPlayerIdx = (activePlacementPlayerIdx + 1) % players.length;
-        _updateTurnUI();
-
-        if (mode === 'online' && isPeerConnected) {
-          sendTrapPlacement(gridX, gridY, targetTrap.id);
-        }
+        handlePlaceTrapAtGrid(gridX, gridY);
       }
     });
-  }
+
+    // 2. Click-to-Place Alternative (點擊選中道具 ➔ 點擊地圖網格直接放置)
+    canvas.addEventListener('click', (e) => {
+      if (currentScene !== 1) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const relX = (e.clientX - rect.left) * scaleX;
+      const relY = (e.clientY - rect.top) * scaleY;
+
+      if (relX >= 0 && relX < 800 && relY >= 0 && relY < 480) {
+        const gridX = Math.floor(relX / TILE_SIZE);
+        const gridY = Math.floor(relY / TILE_SIZE);
+        handlePlaceTrapAtGrid(gridX, gridY);
+      }
+    });
 
   // Buttons
   container.querySelector('#btn-build-finish')?.addEventListener('click', () => {
