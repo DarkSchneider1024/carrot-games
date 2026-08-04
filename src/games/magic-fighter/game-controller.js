@@ -1,15 +1,10 @@
 /**
- * Magic Fighter 3D Engine — NES Classic Battle City Wave & MOBA Dual System
+ * Magic Fighter 3D Engine — Smart Pathfinding AI & NES Classic Wave Progression
  *
- * Game Rules & Architecture:
- * - AI Wave Mode (關卡制度): Player Base HQ (Bottom 500 HP). AI spawns Waves 1..5 of monster creeps (Bats, Griffins, Dragons). Defeat 16 enemies per wave to clear!
- * - Tile Destruction: Bullets destroy BRICK walls! Armor Piercing bullets destroy STEEL walls!
- * - Resource Economy: Mana (+5/sec, +30 per neutral creep kill, +20 per enemy creep kill).
- * - Player Creep Summoning:
- *   - 🦇 Dark Bat ($50 Mana) — Scout creep marching UP
- *   - 🦅 Griffin ($100 Mana) — Swift assault creep marching UP
- *   - 🐲 Fire Wyvern Dragon ($200 Mana) — Heavy 10-HP Tank dragon marching UP
- *   - ⭐️ Upgrade Firepower ($150 Mana) — Level up Fighter bullets
+ * Key Improvements:
+ * 1. 🧠 Smart Pathfinding AI: Monsters auto-detect obstacles (brick walls, steel, water), smoothly turn left/right/up/down around corners, and patrol the map without getting stuck.
+ * 2. 🏰 Base Wall Collision & Continuous Melee Attack: Monsters NO LONGER DISAPPEAR when hitting the player base wall! They stay alive and continuously attack the base until defeated by player bullets!
+ * 3. 🎯 Fixed Wave Stage Progression: Waves 1 to 5 with fixed monster counts per wave. Clear all wave monsters to advance to the next stage!
  */
 import {
   playLaserSound,
@@ -46,8 +41,8 @@ export class MagicFighterGame {
     this.mode = 'ai'; // 'ai' (NES Wave Stage) or 'pvp' (Dual HQ)
     this.wave = 1;
     this.maxWaves = 5;
-    this.enemiesRemaining = 16;
-    this.maxEnemiesOnScreen = 4;
+    this.enemiesRemaining = 12;
+    this.maxEnemiesOnScreen = 5;
 
     // Player Mana Resource & Base HQ (Bottom)
     this.playerMana = 120;
@@ -62,7 +57,7 @@ export class MagicFighterGame {
       destroyed: false,
     };
 
-    // Enemy AI Base HQ (Only active in PVP mode)
+    // Enemy AI Base HQ (PVP mode only)
     this.enemyBase = {
       x: 240,
       y: 0,
@@ -95,9 +90,6 @@ export class MagicFighterGame {
       isShiftingOnIce: false,
     };
 
-    this.freezeEnemiesTime = 0;
-    this.fortifyHqTime = 0;
-
     this.map = [];
     this.playerCreeps = [];
     this.enemyCreeps = [];
@@ -124,20 +116,16 @@ export class MagicFighterGame {
     this.running = true;
     this.gameOver = false;
     this.victory = false;
-    this.score = 0;
     this.wave = wave;
-    this.enemiesRemaining = 12 + wave * 4; // e.g. 16 for Wave 1
+    this.enemiesRemaining = 8 + wave * 4; // Wave 1: 12, Wave 2: 16, Wave 3: 20, Wave 4: 24, Wave 5: 28
     this.playerMana = 120;
 
-    // Reset Player Base HQ
     this.playerBase.hp = 500;
     this.playerBase.destroyed = false;
 
-    // Reset Enemy Base HQ (PVP only)
     this.enemyBase.hp = 500;
     this.enemyBase.destroyed = (this.mode === 'ai');
 
-    // Reset Player
     this.player.x = 4 * this.tileSize;
     this.player.y = 14 * this.tileSize;
     this.player.hp = 5;
@@ -147,15 +135,9 @@ export class MagicFighterGame {
     this.player.direction = 'UP';
     this.player.hasShield = true;
     this.player.shieldTime = Date.now() + 4000;
-    this.player.starLevel = 0;
 
-    this.freezeEnemiesTime = 0;
-    this.fortifyHqTime = 0;
-
-    // Generate Map
     this._generateMap();
 
-    // Reset Arrays
     this.playerCreeps = [];
     this.enemyCreeps = [];
     this.neutralCreeps = [];
@@ -186,7 +168,7 @@ export class MagicFighterGame {
       this.map[1][10] = TILE_BRICK;
     }
 
-    // Middle Neutral Jungle River (Row 7-8)
+    // Middle River
     for (let c = 0; c < MAP_GRID_SIZE; c++) {
       if (c === 3 || c === 4 || c === 11 || c === 12) {
         this.map[7][c] = TILE_WATER;
@@ -197,7 +179,7 @@ export class MagicFighterGame {
       }
     }
 
-    // Midfield Brick Obstacles
+    // Midfield Obstacles
     this.map[4][3] = TILE_BRICK;
     this.map[4][4] = TILE_BRICK;
     this.map[4][11] = TILE_BRICK;
@@ -233,7 +215,7 @@ export class MagicFighterGame {
     if (type === 'griffin') {
       cost = 100;
       hp = 4;
-      speed = 5.0;
+      speed = 4.5;
     } else if (type === 'dragon') {
       cost = 200;
       hp = 10;
@@ -320,7 +302,7 @@ export class MagicFighterGame {
     if (now - this.player.lastFireTime < this.player.fireRate) return;
     this.player.lastFireTime = now;
 
-    playLaserSound(); // Trigger Punchy Laser Sound Effect
+    playLaserSound();
 
     const p = this.player;
     const isArmorPiercing = p.starLevel >= 3;
@@ -400,13 +382,11 @@ export class MagicFighterGame {
   update(now, dt) {
     if (this.gameOver) return;
 
-    // Passive Mana Income (+5 Mana/sec)
     if (now - this._lastManaTick >= 1000) {
       this._lastManaTick = now;
       this.playerMana = Math.min(this.maxMana, this.playerMana + 5);
     }
 
-    // Shield & HQ Fortify Timers
     if (this.player.shieldTime && now > this.player.shieldTime) {
       this.player.hasShield = false;
     }
@@ -423,9 +403,7 @@ export class MagicFighterGame {
     this._updateNeutralCreeps(now);
     this._updateEnemyAI(now);
     this._updateBullets();
-    this._updatePowerups();
 
-    // Check Game Over / Victory Conditions
     if (this.mode === 'ai') {
       if (this.enemiesRemaining <= 0 && this.enemyCreeps.length === 0) {
         if (this.wave < this.maxWaves) {
@@ -434,7 +412,7 @@ export class MagicFighterGame {
           this.gameOver = true;
           this.victory = true;
           this.score += 3000;
-          if (this.onGameOver) this.onGameOver({ victory: true, score: this.score, reason: '🎉 恭喜全通 5 大波次！獲得 3D 空戰總冠軍！' });
+          if (this.onGameOver) this.onGameOver({ victory: true, score: this.score, reason: '🎉 恭喜全通 5 大波次關卡！獲得 3D 空戰總冠軍！' });
         }
       }
     } else if (this.mode === 'pvp') {
@@ -478,27 +456,82 @@ export class MagicFighterGame {
     if (!this._checkWallCollision(p.x, nextY, p.width, p.height)) p.y = nextY;
   }
 
+  /**
+   * 🧠 Smart Creep Pathfinding AI (遇到障礙物自動轉彎與繞路巡邏)
+   */
+  _moveCreepSmart(c, targetY) {
+    if (!c.direction) c.direction = targetY > c.y ? 'DOWN' : 'UP';
+
+    let dx = 0;
+    let dy = 0;
+    if (c.direction === 'DOWN') dy = c.speed;
+    else if (c.direction === 'UP') dy = -c.speed;
+    else if (c.direction === 'LEFT') dx = -c.speed;
+    else if (c.direction === 'RIGHT') dx = c.speed;
+
+    const nextX = c.x + dx;
+    const nextY = c.y + dy;
+
+    // Check if forward path is clear of brick/steel/water
+    if (!this._checkWallCollision(nextX, nextY, c.width, c.height)) {
+      c.x = nextX;
+      c.y = nextY;
+
+      // 5% chance to re-orient towards target direction when open space is available
+      if (Math.random() < 0.05) {
+        const preferred = (targetY > c.y) ? 'DOWN' : 'UP';
+        if (c.direction !== preferred) {
+          let testDy = preferred === 'DOWN' ? c.speed : -c.speed;
+          if (!this._checkWallCollision(c.x, c.y + testDy, c.width, c.height)) {
+            c.direction = preferred;
+          }
+        }
+      }
+    } else {
+      // Forward path is BLOCKED by obstacle! Auto-turn to valid adjacent direction
+      const preferred = (targetY > c.y) ? 'DOWN' : 'UP';
+      const possibleDirs = ['DOWN', 'LEFT', 'RIGHT', 'UP'].filter(dir => dir !== c.direction);
+
+      possibleDirs.sort((a, b) => {
+        if (a === preferred) return -1;
+        if (b === preferred) return 1;
+        return Math.random() - 0.5;
+      });
+
+      let turned = false;
+      for (const dir of possibleDirs) {
+        let testDx = (dir === 'LEFT' ? -c.speed : dir === 'RIGHT' ? c.speed : 0);
+        let testDy = (dir === 'DOWN' ? c.speed : dir === 'UP' ? -c.speed : 0);
+        if (!this._checkWallCollision(c.x + testDx, c.y + testDy, c.width, c.height)) {
+          c.direction = dir;
+          c.x += testDx;
+          c.y += testDy;
+          turned = true;
+          break;
+        }
+      }
+
+      if (!turned) {
+        c.direction = (c.direction === 'DOWN') ? 'LEFT' : 'DOWN';
+      }
+    }
+
+    c.x = Math.max(10, Math.min(this.width - c.width - 10, c.x));
+    c.y = Math.max(10, Math.min(this.height - c.height - 10, c.y));
+  }
+
   _updateFriendlyCreeps(now) {
     for (let i = this.playerCreeps.length - 1; i >= 0; i--) {
       const c = this.playerCreeps[i];
 
-      const nextY = c.y - c.speed;
-      if (!this._checkWallCollision(c.x, nextY, c.width, c.height)) {
-        c.y = nextY;
-      } else {
-        const altX = c.x + (Math.random() > 0.5 ? c.speed : -c.speed);
-        if (!this._checkWallCollision(altX, c.y, c.width, c.height)) {
-          c.x = altX;
-        } else {
-          c.y = nextY;
-        }
-      }
+      this._moveCreepSmart(c, 0); // March toward Top
 
       if (this.mode === 'pvp' && this._rectOverlap(c, this.enemyBase)) {
-        this.enemyBase.hp = Math.max(0, this.enemyBase.hp - 15);
-        this.playerCreeps.splice(i, 1);
-        playHitImpactSound();
-        continue;
+        if (!c.lastMeleeAttack || now - c.lastMeleeAttack > 1000) {
+          c.lastMeleeAttack = now;
+          this.enemyBase.hp = Math.max(0, this.enemyBase.hp - 12);
+          playHitImpactSound();
+        }
       }
 
       if (now - c.lastFire > c.fireRate) {
@@ -520,25 +553,18 @@ export class MagicFighterGame {
     for (let i = this.enemyCreeps.length - 1; i >= 0; i--) {
       const c = this.enemyCreeps[i];
 
-      const nextY = c.y + c.speed;
-      if (!this._checkWallCollision(c.x, nextY, c.width, c.height)) {
-        c.y = nextY;
-      } else {
-        const altX = c.x + (Math.random() > 0.5 ? c.speed : -c.speed);
-        if (!this._checkWallCollision(altX, c.y, c.width, c.height)) {
-          c.x = altX;
-        } else {
-          c.y = nextY;
-        }
-      }
-
+      // 🏰 Check collision with Player Base (MUST NOT DISAPPEAR! Stay alive and continuously attack!)
       if (this._rectOverlap(c, this.playerBase)) {
-        this.playerBase.hp = Math.max(0, this.playerBase.hp - 15);
-        this.enemyCreeps.splice(i, 1);
-        playHitImpactSound();
-        continue;
+        if (!c.lastMeleeAttack || now - c.lastMeleeAttack > 1000) {
+          c.lastMeleeAttack = now;
+          this.playerBase.hp = Math.max(0, this.playerBase.hp - 10);
+          playHitImpactSound();
+        }
+      } else {
+        this._moveCreepSmart(c, 600); // March toward Bottom Player HQ
       }
 
+      // Auto Fire Bullets
       if (now - c.lastFire > c.fireRate) {
         c.lastFire = now;
         this.bullets.push({
@@ -575,7 +601,6 @@ export class MagicFighterGame {
 
   _updateEnemyAI(now) {
     if (this.mode === 'ai') {
-      // Classic NES Battle City Spawns
       if (this.enemiesRemaining > 0 && this.enemyCreeps.length < this.maxEnemiesOnScreen && now - this._lastAiSummon > 2500) {
         this._lastAiSummon = now;
         this.enemiesRemaining--;
@@ -584,16 +609,16 @@ export class MagicFighterGame {
         const rand = Math.random();
         let type = 'bat';
         let hp = 2;
-        let speed = 3.5;
+        let speed = 3.2;
 
         if (rand > 0.7) {
           type = 'dragon';
           hp = 8;
-          speed = 2.2;
+          speed = 2.0;
         } else if (rand > 0.4) {
           type = 'griffin';
           hp = 4;
-          speed = 4.5;
+          speed = 4.0;
         }
 
         this.enemyCreeps.push({
@@ -621,7 +646,6 @@ export class MagicFighterGame {
       b.x += b.vx;
       b.y += b.vy;
 
-      // Offscreen Check
       if (b.x < 0 || b.x > this.width || b.y < 0 || b.y > this.height) {
         this.bullets.splice(i, 1);
         continue;
@@ -639,11 +663,11 @@ export class MagicFighterGame {
           if (r >= 0 && r < MAP_GRID_SIZE && c >= 0 && c < MAP_GRID_SIZE) {
             const tile = this.map[r][c];
             if (tile === TILE_BRICK) {
-              this.map[r][c] = TILE_EMPTY; // Destroy Brick Wall!
+              this.map[r][c] = TILE_EMPTY;
               hitWall = true;
             } else if (tile === TILE_STEEL) {
               if (b.isArmorPiercing) {
-                this.map[r][c] = TILE_EMPTY; // Armor piercing destroys Steel!
+                this.map[r][c] = TILE_EMPTY;
               }
               hitWall = true;
             }
@@ -652,11 +676,11 @@ export class MagicFighterGame {
       }
       if (hitWall) {
         this.bullets.splice(i, 1);
-        playWallBreakSound(); // Trigger Brick Wall Explosion Sound
+        playWallBreakSound();
         continue;
       }
 
-      // Check Bullet vs Base HQs (Friendly Fire Enabled: Player bullets also damage Player HQ!)
+      // Check Bullet vs Base HQs (Friendly Fire Enabled!)
       if (b.isPlayer && this.mode === 'pvp' && this._rectOverlap(b, this.enemyBase)) {
         this.enemyBase.hp = Math.max(0, this.enemyBase.hp - 10);
         this.bullets.splice(i, 1);
@@ -695,13 +719,10 @@ export class MagicFighterGame {
           if (this._rectOverlap(b, e)) {
             e.hp -= (b.isArmorPiercing ? 2 : 1);
 
-            // 💥 Hit Knockback Displacement Physics (後退退後感)
-            const kx = b.vx > 0 ? 16 : (b.vx < 0 ? -16 : 0);
-            const ky = b.vy > 0 ? 16 : (b.vy < 0 ? -16 : 0);
+            const kx = b.vx > 0 ? 14 : (b.vx < 0 ? -14 : 0);
+            const ky = b.vy > 0 ? 14 : (b.vy < 0 ? -14 : 0);
             e.x = Math.max(0, Math.min(this.width - e.width, e.x + kx));
             e.y = Math.max(0, Math.min(this.height - e.height, e.y + ky));
-
-            // Set Hit Flash Timestamp
             e.hitTime = Date.now() + 140;
 
             this.bullets.splice(i, 1);
@@ -710,23 +731,22 @@ export class MagicFighterGame {
               this.enemyCreeps.splice(j, 1);
               this.score += 100;
               this.playerMana = Math.min(this.maxMana, this.playerMana + 25);
-              playMonsterKillSound(); // Trigger Monster Death Explosion Sound
+              playMonsterKillSound();
             } else {
-              playHitImpactSound(); // Trigger Hit Impact Sound
+              playHitImpactSound();
             }
             break;
           }
         }
 
-        // Check Player Bullet vs Neutral Creeps (With Physical Knockback)
+        // Check Player Bullet vs Neutral Creeps
         for (let j = this.neutralCreeps.length - 1; j >= 0; j--) {
           const n = this.neutralCreeps[j];
           if (this._rectOverlap(b, n)) {
             n.hp -= 1;
 
-            // 💥 Hit Knockback Displacement
-            const kx = b.vx > 0 ? 16 : (b.vx < 0 ? -16 : 0);
-            const ky = b.vy > 0 ? 16 : (b.vy < 0 ? -16 : 0);
+            const kx = b.vx > 0 ? 14 : (b.vx < 0 ? -14 : 0);
+            const ky = b.vy > 0 ? 14 : (b.vy < 0 ? -14 : 0);
             n.x = Math.max(0, Math.min(this.width - n.width, n.x + kx));
             n.y = Math.max(0, Math.min(this.height - n.height, n.y + ky));
             n.hitTime = Date.now() + 140;
@@ -743,17 +763,6 @@ export class MagicFighterGame {
             break;
           }
         }
-      }
-    }
-  }
-
-  _updatePowerups() {
-    for (let i = this.powerups.length - 1; i >= 0; i--) {
-      const p = this.powerups[i];
-      if (this._rectOverlap(this.player, p)) {
-        this.powerups.splice(i, 1);
-        this.score += 500;
-        this.playerMana = Math.min(this.maxMana, this.playerMana + 60);
       }
     }
   }
