@@ -37,7 +37,7 @@
 /* ── Felt Table Stage ── */
 .poker-table-stage {
   width: 100%;
-  height: 520px;
+  height: 480px;
   border-radius: 90px;
   background: radial-gradient(ellipse at center, #2a9d8f 0%, #264653 100%);
   border: 12px solid #e9c46a;
@@ -46,6 +46,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 60px 0;
 }
 
 /* Table Center (Cleanly centered) */
@@ -251,11 +252,11 @@
 .status-folded { color: #5f6c7b; font-size: 10px; font-weight: bold; }
 .status-allin { color: #ff4d6d; font-size: 10px; font-weight: bold; }
 
-/* Seat Coordinates (Clean non-overlapping positions) */
-.seat-top-left { top: 14px; left: 8%; }
-.seat-top-center { top: 10px; left: 50%; transform: translateX(-50%); }
-.seat-top-right { top: 14px; right: 8%; }
-.seat-bottom { bottom: 10px; left: 50%; transform: translateX(-50%); }
+/* Seat Coordinates (Positioned Completely OUTSIDE the poker table felt border) */
+.seat-top-left { top: -55px; left: 4%; }
+.seat-top-center { top: -62px; left: 50%; transform: translateX(-50%); }
+.seat-top-right { top: -55px; right: 4%; }
+.seat-bottom { bottom: -62px; left: 50%; transform: translateX(-50%); }
 
 /* ── Winner Banner ── */
 .winner-banner {
@@ -360,7 +361,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
     padding: var(--space-2);
     gap: var(--space-2);
   }
@@ -388,8 +389,10 @@
     display: flex !important;
     flex: 1;
     width: 100%;
-    height: calc(100dvh - 160px);
+    height: calc(100dvh - 210px);
+    min-height: 280px;
     border-radius: 40px;
+    margin: 48px 0 !important;
   }
 
   .poker-page.show-mobile-game .poker-action-bar {
@@ -397,9 +400,10 @@
     flex-shrink: 0;
   }
 
-  .seat-top-left { top: 4px; left: 1%; }
-  .seat-top-right { top: 4px; right: 1%; }
-  .seat-top-center { top: 4px; }
+  .seat-top-left { top: -45px; left: 1%; }
+  .seat-top-right { top: -45px; right: 1%; }
+  .seat-top-center { top: -52px; left: 50%; transform: translateX(-50%); }
+  .seat-bottom { bottom: -52px; left: 50%; transform: translateX(-50%); }
   .poker-action-buttons { flex-wrap: nowrap; gap: 4px; }
   .action-btn { flex: 1; min-width: auto; padding: 8px 4px; font-size: 11px; }
 }
