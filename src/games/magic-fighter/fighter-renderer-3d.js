@@ -163,14 +163,17 @@ export class FighterRenderer3D {
   _createPlayerJet3D() {
     this.playerGroup = new THREE.Group();
 
-    const f16Mat = new THREE.MeshStandardMaterial({
-      color: 0x475569, // F-16 Tactical Dark Gunmetal Gray
+    // 🟠 Primary Orange Body Material & 🖤 Obsidian Black Wings Material
+    const jetOrangeBodyMat = new THREE.MeshStandardMaterial({
+      color: 0xf97316, // Racing Orange Main Body
+      emissive: 0xc2410c,
+      emissiveIntensity: 0.15,
       roughness: 0.25,
-      metalness: 0.75
+      metalness: 0.6
     });
 
-    const f16DarkMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
+    const jetBlackWingMat = new THREE.MeshStandardMaterial({
+      color: 0x0f172a, // Obsidian Black Wings & Accents
       roughness: 0.4
     });
 
@@ -188,32 +191,32 @@ export class FighterRenderer3D {
     this.playerGroup.add(probeMesh);
 
     const noseGeo = new THREE.ConeGeometry(8, 28, 12);
-    const noseMesh = new THREE.Mesh(noseGeo, f16Mat);
+    const noseMesh = new THREE.Mesh(noseGeo, jetOrangeBodyMat);
     noseMesh.rotation.x = Math.PI / 2;
     noseMesh.position.z = -14;
     this.playerGroup.add(noseMesh);
 
     // 2. F-16 Blended Fuselage Body
     const bodyGeo = new THREE.CylinderGeometry(8.5, 10, 32, 12);
-    const bodyMesh = new THREE.Mesh(bodyGeo, f16Mat);
+    const bodyMesh = new THREE.Mesh(bodyGeo, jetOrangeBodyMat);
     bodyMesh.rotation.x = Math.PI / 2;
     bodyMesh.position.z = 6;
     this.playerGroup.add(bodyMesh);
 
     // 3. Ventral Air Intake Scoop (腹部進氣口 Scoop)
     const intakeGeo = new THREE.BoxGeometry(9, 6, 16);
-    const intakeMesh = new THREE.Mesh(intakeGeo, f16DarkMat);
+    const intakeMesh = new THREE.Mesh(intakeGeo, jetBlackWingMat);
     intakeMesh.position.set(0, -6, 2);
     this.playerGroup.add(intakeMesh);
 
     // 4. Gold/Cyan Tinted Bubble Canopy Cockpit (水滴型透光座艙罩)
     const canopyGeo = new THREE.SphereGeometry(7, 16, 16);
     const canopyMat = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.3,
+      color: 0xfacc15,
+      emissive: 0xeab308,
+      emissiveIntensity: 0.4,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.8,
       roughness: 0.05
     });
     const canopyMesh = new THREE.Mesh(canopyGeo, canopyMat);
@@ -228,16 +231,16 @@ export class FighterRenderer3D {
     pilotMesh.position.set(0, 6, -4);
     this.playerGroup.add(pilotMesh);
 
-    // 5. F-16 Cropped Delta Wings & Leading-Edge Extensions (剪裁三角主翼)
+    // 5. F-16 Cropped Delta Wings & Leading-Edge Extensions (剪裁黑橘主翼)
     const wingGeo = new THREE.BoxGeometry(48, 2.2, 18);
-    const wingMesh = new THREE.Mesh(wingGeo, f16Mat);
+    const wingMesh = new THREE.Mesh(wingGeo, jetBlackWingMat);
     wingMesh.position.z = 6;
     this.playerGroup.add(wingMesh);
 
     // 6. Wingtip Rail Launchers & AIM-9 Sidewinder Missiles (翼尖響尾蛇導彈)
     [-25, 25].forEach(xOff => {
       const railGeo = new THREE.BoxGeometry(1.5, 1.5, 22);
-      const railMesh = new THREE.Mesh(railGeo, f16DarkMat);
+      const railMesh = new THREE.Mesh(railGeo, jetBlackWingMat);
       railMesh.position.set(xOff, 0, 6);
       this.playerGroup.add(railMesh);
 
@@ -251,7 +254,7 @@ export class FighterRenderer3D {
     // 7. Underwing External Fuel Drop Tanks (翼下副油箱)
     [-14, 14].forEach(xOff => {
       const tankGeo = new THREE.CylinderGeometry(3, 3, 24, 8);
-      const tankMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.3 });
+      const tankMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.3 });
       const tankMesh = new THREE.Mesh(tankGeo, tankMat);
       tankMesh.rotation.x = Math.PI / 2;
       tankMesh.position.set(xOff, -5, 6);
@@ -260,7 +263,7 @@ export class FighterRenderer3D {
 
     // 8. Single Tall Vertical Tail Fin & Dual Ventral Fins (高聳單尾翼與雙腹鰭)
     const tailFinGeo = new THREE.BoxGeometry(2.5, 22, 14);
-    const tailFinMesh = new THREE.Mesh(tailFinGeo, f16Mat);
+    const tailFinMesh = new THREE.Mesh(tailFinGeo, jetBlackWingMat);
     tailFinMesh.rotation.x = -0.3;
     tailFinMesh.position.set(0, 16, 16);
     this.playerGroup.add(tailFinMesh);
@@ -268,7 +271,7 @@ export class FighterRenderer3D {
     // Dual Ventral Fins Under Rear Fuselage
     [-4, 4].forEach(xOff => {
       const ventralGeo = new THREE.BoxGeometry(1.2, 8, 8);
-      const ventralMesh = new THREE.Mesh(ventralGeo, f16DarkMat);
+      const ventralMesh = new THREE.Mesh(ventralGeo, jetBlackWingMat);
       ventralMesh.rotation.x = 0.4;
       ventralMesh.position.set(xOff, -6, 18);
       this.playerGroup.add(ventralMesh);
@@ -276,7 +279,7 @@ export class FighterRenderer3D {
 
     // 9. Single Circular Afterburner Exhaust Nozzle & Light (單引擎噴嘴與後燃器燈光)
     const nozzleGeo = new THREE.CylinderGeometry(6, 6.5, 8, 12);
-    const nozzleMesh = new THREE.Mesh(nozzleGeo, f16DarkMat);
+    const nozzleMesh = new THREE.Mesh(nozzleGeo, jetBlackWingMat);
     nozzleMesh.rotation.x = Math.PI / 2;
     nozzleMesh.position.z = 24;
     this.playerGroup.add(nozzleMesh);
@@ -285,8 +288,32 @@ export class FighterRenderer3D {
     afterburnerLight.position.set(0, 0, 26);
     this.playerGroup.add(afterburnerLight);
 
-    // 10. Shield Geodesic Aura
-    const shieldGeo = new THREE.SphereGeometry(30, 16, 16);
+    // ⚡️ 10. Super Saiyan Golden Aura Ring (超級賽亞人黃金光環與黃金光)
+    const saiyanAuraGeo = new THREE.TorusGeometry(32, 2.5, 8, 20);
+    const saiyanAuraMat = new THREE.MeshBasicMaterial({
+      color: 0xfde047,
+      transparent: true,
+      opacity: 0.85,
+      wireframe: true
+    });
+    const saiyanAuraMesh = new THREE.Mesh(saiyanAuraGeo, saiyanAuraMat);
+    saiyanAuraMesh.rotation.x = Math.PI / 2;
+    saiyanAuraMesh.visible = false;
+    this.playerGroup.add(saiyanAuraMesh);
+
+    const saiyanLight = new THREE.PointLight(0xfacc15, 0, 100);
+    saiyanLight.position.set(0, 4, 0);
+    this.playerGroup.add(saiyanLight);
+
+    this.playerJetMaterials = {
+      bodyMat: jetOrangeBodyMat,
+      wingMat: jetBlackWingMat,
+      saiyanAuraMesh,
+      saiyanLight
+    };
+
+    // 11. Shield Geodesic Aura
+    const shieldGeo = new THREE.SphereGeometry(32, 16, 16);
     const shieldMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       transparent: true,
@@ -883,6 +910,37 @@ export class FighterRenderer3D {
       if (this.shieldMesh) {
         this.shieldMesh.visible = p.hasShield;
         if (p.hasShield) this.shieldMesh.rotation.y += 0.06;
+      }
+
+      // ⚡️ Sync Player Fighter Jet Super Saiyan Transformation (橘黑戰機 <-> 超級賽亞人金橘戰機)
+      if (this.playerJetMaterials) {
+        const isSuperSaiyan = p.starLevel > 0;
+        if (isSuperSaiyan) {
+          // ⚡️ Super Saiyan Transformation: Golden Yellow Body with Radiant Orange Wings & Golden Energy Aura!
+          this.playerJetMaterials.bodyMat.color.setHex(0xfacc15); // Golden Yellow
+          this.playerJetMaterials.bodyMat.emissive.setHex(0xeab308);
+          this.playerJetMaterials.bodyMat.emissiveIntensity = 0.55;
+          this.playerJetMaterials.wingMat.color.setHex(0xea580c); // Radiant Orange
+          if (this.playerJetMaterials.saiyanAuraMesh) {
+            this.playerJetMaterials.saiyanAuraMesh.visible = true;
+            this.playerJetMaterials.saiyanAuraMesh.rotation.z += 0.08;
+          }
+          if (this.playerJetMaterials.saiyanLight) {
+            this.playerJetMaterials.saiyanLight.intensity = 3.5;
+          }
+        } else {
+          // 🟠 Standard Base State: Racing Orange Body with Obsidian Black Wings!
+          this.playerJetMaterials.bodyMat.color.setHex(0xf97316); // Racing Orange
+          this.playerJetMaterials.bodyMat.emissive.setHex(0xc2410c);
+          this.playerJetMaterials.bodyMat.emissiveIntensity = 0.15;
+          this.playerJetMaterials.wingMat.color.setHex(0x0f172a); // Obsidian Black
+          if (this.playerJetMaterials.saiyanAuraMesh) {
+            this.playerJetMaterials.saiyanAuraMesh.visible = false;
+          }
+          if (this.playerJetMaterials.saiyanLight) {
+            this.playerJetMaterials.saiyanLight.intensity = 0;
+          }
+        }
       }
     }
 

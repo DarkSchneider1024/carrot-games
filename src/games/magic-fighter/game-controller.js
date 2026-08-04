@@ -126,8 +126,8 @@ export class MagicFighterGame {
     this.enemyBase.hp = 500;
     this.enemyBase.destroyed = (this.mode === 'ai');
 
-    this.player.x = 4 * this.tileSize;
-    this.player.y = 14 * this.tileSize;
+    this.player.x = 3 * this.tileSize; // 120 (Column 3, left of U-shaped base wall)
+    this.player.y = 13 * this.tileSize; // 520 (Row 13, open space)
     this.player.hp = 5;
     this.player.vx = 0;
     this.player.vy = 0;
@@ -730,8 +730,8 @@ export class MagicFighterGame {
           this.player.hp -= 1;
           playHitImpactSound();
           if (this.player.hp <= 0) {
-            this.player.x = 160;
-            this.player.y = 560;
+            this.player.x = 120;
+            this.player.y = 520;
             this.player.hp = 3;
             this.player.hasShield = true;
             this.player.shieldTime = Date.now() + 3000;
