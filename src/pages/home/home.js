@@ -44,6 +44,9 @@ export async function renderHome(container) {
               ${initialChipsText}
             </span>
           </button>
+          <button class="btn btn-primary btn-sm" id="btn-game-guide">
+            📖 遊戲玩法說明
+          </button>
           <button class="btn btn-secondary btn-sm" id="btn-pwa-guide">
             ${SVG_ICONS.smartphone} 手機安裝指南
           </button>
@@ -329,6 +332,11 @@ export async function renderHome(container) {
   // Open Auth Modal
   document.getElementById('btn-player-profile')?.addEventListener('click', () => {
     showAuthModal();
+  });
+
+  // Open Game Guide Rulebook Page
+  document.getElementById('btn-game-guide')?.addEventListener('click', () => {
+    navigate('/guide');
   });
 
   // Chat Form Submission
