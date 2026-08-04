@@ -68,10 +68,10 @@ export async function renderHome(container) {
               <button class="lativ-nav-btn pill-gradient" id="btn-auth-login">
                 ${SVG_ICONS.user} 登入 / 註冊
               </button>
-              <button class="lativ-nav-btn pill-guest" id="btn-player-profile" title="訪客模式">
+              <div class="lativ-nav-badge pill-guest-badge" id="guest-info-badge" title="當前模式：訪客 (不可點擊)">
                 ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
                 <span class="pill-badge info" id="display-user-chips">訪客</span>
-              </button>
+              </div>
             `}
           </div>
         </div>
@@ -503,15 +503,24 @@ export async function renderHome(container) {
   updateHeaderUI(getCurrentUser(), getUserProfile());
 
   // Desktop & Mobile Drawer Button Event Listeners
-  const handleAuthModal = () => {
+  const handleProfileModal = () => {
+    closeNavDrawer();
+    const user = getCurrentUser();
+    // 只有當用戶是正式登入會員時，點擊身分頭像才開啟個人檔案與戰績管理 Modal
+    if (user && !user.isAnonymous) {
+      showAuthModal();
+    }
+  };
+
+  const handleLoginModal = () => {
     closeNavDrawer();
     showAuthModal();
   };
 
-  document.getElementById('btn-player-profile')?.addEventListener('click', handleAuthModal);
-  document.getElementById('btn-auth-login')?.addEventListener('click', handleAuthModal);
-  document.getElementById('drawer-btn-auth-login')?.addEventListener('click', handleAuthModal);
-  document.getElementById('drawer-btn-profile')?.addEventListener('click', handleAuthModal);
+  document.getElementById('btn-player-profile')?.addEventListener('click', handleProfileModal);
+  document.getElementById('btn-auth-login')?.addEventListener('click', handleLoginModal);
+  document.getElementById('drawer-btn-auth-login')?.addEventListener('click', handleLoginModal);
+  document.getElementById('drawer-btn-profile')?.addEventListener('click', handleProfileModal);
 
   document.getElementById('btn-game-guide')?.addEventListener('click', () => {
     closeNavDrawer();
