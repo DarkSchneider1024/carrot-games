@@ -19,10 +19,10 @@ import {
 export class FighterRenderer {
   constructor() {
     this.playerImg = new Image();
-    this.playerImg.src = '/carrot-games/assets/images/player_fighter.png';
+    this.playerImg.src = './assets/images/player_fighter.png';
 
     this.enemyImg = new Image();
-    this.enemyImg.src = '/carrot-games/assets/images/enemy_fighter.png';
+    this.enemyImg.src = './assets/images/enemy_fighter.png';
   }
 
   render(ctx, state, width, height) {

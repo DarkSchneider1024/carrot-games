@@ -35,7 +35,7 @@ export async function renderPwaGuide(container) {
       <div class="pwa-content">
         <!-- Hero Banner -->
         <div class="pwa-hero glass animate-fade-in-down">
-          <img src="/carrot-games/assets/images/logo_carrot.png" alt="App Logo" class="pwa-app-logo" />
+          <img src="./assets/images/logo_carrot.png" alt="App Logo" class="pwa-app-logo" />
           <div class="pwa-hero-text">
             <h2>將 CARROT GAMES 安裝至手機</h2>
             <p>享受無邊框全螢幕、離線遊玩與極速載入體驗，就像原生 App 一樣流暢！</p>

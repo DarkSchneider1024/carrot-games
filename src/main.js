@@ -49,7 +49,7 @@ function registerPWA() {
 
   window.addEventListener('load', async () => {
     try {
-      const reg = await navigator.serviceWorker.register('/carrot-games/sw.js');
+      const reg = await navigator.serviceWorker.register('./sw.js');
       console.log('[PWA] ServiceWorker registered with scope:', reg.scope);
 
       window.addEventListener('focus', () => reg.update());

@@ -31,7 +31,7 @@ export async function renderHome(container) {
       <!-- Header -->
       <header class="home-header animate-fade-in-down">
         <div class="home-logo">
-          <img src="/carrot-games/assets/images/logo_carrot.png" alt="Carrot Logo" class="home-logo-img" />
+          <img src="./assets/images/logo_carrot.png" alt="Carrot Logo" class="home-logo-img" />
           <div>
             <h1 class="home-title">CARROT <span class="accent-text">GAMES</span></h1>
             <p class="home-subtitle">線上休閒對戰遊戲大廳</p>
@@ -89,7 +89,7 @@ export async function renderHome(container) {
         <!-- Chinese Chess Card -->
         <div class="game-card animate-fade-in-up stagger-2" id="card-xiangqi" data-category="board">
           <div class="game-card-banner">
-            <img src="/carrot-games/assets/images/icon_xiangqi.png" alt="中國象棋" class="game-card-img" />
+            <img src="./assets/images/icon_xiangqi.png" alt="中國象棋" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">棋牌對戰</span>
             <span class="badge badge-success game-card-status">經典推廣</span>
@@ -118,7 +118,7 @@ export async function renderHome(container) {
         <!-- Tetris Battle Card -->
         <div class="game-card animate-fade-in-up stagger-3" id="card-tetris" data-category="puzzle">
           <div class="game-card-banner">
-            <img src="/carrot-games/assets/images/icon_gomoku.png" alt="俄羅斯方塊對戰" class="game-card-img" />
+            <img src="./assets/images/icon_gomoku.png" alt="俄羅斯方塊對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">益智街機</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
@@ -147,7 +147,7 @@ export async function renderHome(container) {
         <!-- Poker Card -->
         <div class="game-card animate-fade-in-up stagger-4" id="card-poker" data-category="card">
           <div class="game-card-banner">
-            <img src="/carrot-games/assets/images/icon_poker.png" alt="德州撲克" class="game-card-img" />
+            <img src="./assets/images/icon_poker.png" alt="德州撲克" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">撲克娛樂</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
@@ -174,7 +174,7 @@ export async function renderHome(container) {
         <!-- Magic Fighter Card -->
         <div class="game-card animate-fade-in-up stagger-5" id="card-magic-fighter" data-category="action">
           <div class="game-card-banner">
-            <img src="/carrot-games/assets/images/icon_magic_fighter.png" alt="魔法對戰" class="game-card-img" />
+            <img src="./assets/images/icon_magic_fighter.png" alt="魔法對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">3D動作空戰</span>
             <span class="badge badge-warning game-card-status">全新上市</span>

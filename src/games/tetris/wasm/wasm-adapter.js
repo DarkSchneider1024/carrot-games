@@ -39,7 +39,7 @@ export class TetrisWasmEngine {
   /**
    * Initialize WebAssembly engine
    */
-  async init(wasmUrl = '/carrot-games/assets/wasm/tetris-engine.wasm') {
+  async init(wasmUrl = './assets/wasm/tetris-engine.wasm') {
     try {
       const response = await fetch(wasmUrl);
       if (response.ok) {

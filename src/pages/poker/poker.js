@@ -87,7 +87,7 @@ export async function renderPoker(container, params) {
           <div class="player-seat seat-top-left" id="seat-1">
             <div class="action-bubble" id="bubble-1"></div>
             <div class="poker-avatar">
-              <img src="/carrot-games/assets/images/avatar_rabbit.png" alt="兔兔" class="poker-avatar-img" />
+              <img src="./assets/images/avatar_rabbit.png" alt="兔兔" class="poker-avatar-img" />
             </div>
             <div class="seat-info">
               <span class="seat-name">兔兔 (AI)</span>
@@ -101,7 +101,7 @@ export async function renderPoker(container, params) {
           <div class="player-seat seat-top-center" id="seat-2">
             <div class="action-bubble" id="bubble-2"></div>
             <div class="poker-avatar">
-              <img src="/carrot-games/assets/images/avatar_cat.png" alt="貓咪" class="poker-avatar-img" />
+              <img src="./assets/images/avatar_cat.png" alt="貓咪" class="poker-avatar-img" />
             </div>
             <div class="seat-info">
               <span class="seat-name">貓咪 (AI)</span>
@@ -115,7 +115,7 @@ export async function renderPoker(container, params) {
           <div class="player-seat seat-top-right" id="seat-3">
             <div class="action-bubble" id="bubble-3"></div>
             <div class="poker-avatar">
-              <img src="/carrot-games/assets/images/avatar_bear.png" alt="熊熊" class="poker-avatar-img" />
+              <img src="./assets/images/avatar_bear.png" alt="熊熊" class="poker-avatar-img" />
             </div>
             <div class="seat-info">
               <span class="seat-name">熊熊 (AI)</span>
@@ -129,7 +129,7 @@ export async function renderPoker(container, params) {
           <div class="player-seat seat-bottom" id="seat-0">
             <div class="action-bubble" id="bubble-0"></div>
             <div class="poker-avatar avatar-user">
-              <img src="/carrot-games/assets/images/avatar_user.png" alt="玩家" class="poker-avatar-img" />
+              <img src="./assets/images/avatar_user.png" alt="玩家" class="poker-avatar-img" />
             </div>
             <div class="seat-info">
               <span class="seat-name">你 (玩家)</span>

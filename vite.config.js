@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/carrot-games/',
+  base: './',
   build: {
     target: 'esnext',
     outDir: 'dist',
