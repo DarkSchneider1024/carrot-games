@@ -157,15 +157,21 @@ export class MagicFighterGame {
   _generateMap() {
     this.map = Array(MAP_GRID_SIZE).fill(0).map(() => Array(MAP_GRID_SIZE).fill(TILE_EMPTY));
 
-    // Player Base Fortifications (Rows 13-15, Cols 5-10)
-    for (let c = 5; c <= 10; c++) this.map[13][c] = TILE_BRICK;
-    this.map[14][5] = TILE_BRICK;
-    this.map[14][10] = TILE_BRICK;
+    // Player Base Fortifications (Symmetrical U-Shape Wall around Columns 4-11, Rows 12-15)
+    for (let c = 4; c <= 11; c++) {
+      this.map[12][c] = TILE_BRICK;
+    }
+    for (let r = 13; r <= 15; r++) {
+      this.map[r][4] = TILE_BRICK;
+      this.map[r][11] = TILE_BRICK;
+    }
 
     if (this.mode === 'pvp') {
-      for (let c = 5; c <= 10; c++) this.map[2][c] = TILE_BRICK;
-      this.map[1][5] = TILE_BRICK;
-      this.map[1][10] = TILE_BRICK;
+      for (let c = 4; c <= 11; c++) this.map[3][c] = TILE_BRICK;
+      for (let r = 0; r <= 2; r++) {
+        this.map[r][4] = TILE_BRICK;
+        this.map[r][11] = TILE_BRICK;
+      }
     }
 
     // Middle River
@@ -232,7 +238,7 @@ export class MagicFighterGame {
       id: 'pcreep_' + Date.now() + '_' + Math.random(),
       type,
       x: 200 + Math.random() * 240,
-      y: 500,
+      y: 480,
       width,
       height,
       hp,
@@ -261,9 +267,11 @@ export class MagicFighterGame {
       this.playerBase.hp = Math.min(this.playerBase.maxHp, this.playerBase.hp + 150);
       this.fortifyHqTime = Date.now() + 15000;
 
-      for (let c = 5; c <= 10; c++) this.map[13][c] = TILE_STEEL;
-      this.map[14][5] = TILE_STEEL;
-      this.map[14][10] = TILE_STEEL;
+      for (let c = 4; c <= 11; c++) this.map[12][c] = TILE_STEEL;
+      for (let r = 13; r <= 15; r++) {
+        this.map[r][4] = TILE_STEEL;
+        this.map[r][11] = TILE_STEEL;
+      }
       return true;
     }
     return false;
@@ -392,9 +400,11 @@ export class MagicFighterGame {
     }
     if (this.fortifyHqTime && now > this.fortifyHqTime) {
       this.fortifyHqTime = 0;
-      for (let c = 5; c <= 10; c++) this.map[13][c] = TILE_BRICK;
-      this.map[14][5] = TILE_BRICK;
-      this.map[14][10] = TILE_BRICK;
+      for (let c = 4; c <= 11; c++) this.map[12][c] = TILE_BRICK;
+      for (let r = 13; r <= 15; r++) {
+        this.map[r][4] = TILE_BRICK;
+        this.map[r][11] = TILE_BRICK;
+      }
     }
 
     this._updatePlayerMovement();
@@ -457,10 +467,20 @@ export class MagicFighterGame {
   }
 
   /**
-   * 🧠 Smart Creep Pathfinding AI (遇到障礙物自動轉彎與繞路巡邏)
+   * 🧠 Smart Target-Seeking Creep Pathfinding AI (自動過牆、轉彎與向主塔進攻)
    */
-  _moveCreepSmart(c, targetY) {
-    if (!c.direction) c.direction = targetY > c.y ? 'DOWN' : 'UP';
+  _moveCreepSmart(c, targetX, targetY) {
+    // Calculate primary desired direction based on target position
+    let preferredDir = 'DOWN';
+    if (Math.abs(c.y - targetY) > 50) {
+      preferredDir = targetY > c.y ? 'DOWN' : 'UP';
+    } else if (Math.abs(c.x - targetX) > 40) {
+      preferredDir = targetX > c.x ? 'RIGHT' : 'LEFT';
+    } else {
+      preferredDir = targetY > c.y ? 'DOWN' : 'UP';
+    }
+
+    if (!c.direction) c.direction = preferredDir;
 
     let dx = 0;
     let dy = 0;
@@ -472,47 +492,55 @@ export class MagicFighterGame {
     const nextX = c.x + dx;
     const nextY = c.y + dy;
 
-    // Check if forward path is clear of brick/steel/water
-    if (!this._checkWallCollision(nextX, nextY, c.width, c.height)) {
+    // Check if forward step is clear of wall/boundary
+    const isBlocked = this._checkWallCollision(nextX, nextY, c.width, c.height) ||
+                      (nextY >= this.height - c.height - 12 && c.direction === 'DOWN') ||
+                      (nextY <= 12 && c.direction === 'UP') ||
+                      (nextX <= 12 && c.direction === 'LEFT') ||
+                      (nextX >= this.width - c.width - 12 && c.direction === 'RIGHT');
+
+    if (!isBlocked) {
       c.x = nextX;
       c.y = nextY;
 
-      // 5% chance to re-orient towards target direction when open space is available
-      if (Math.random() < 0.05) {
-        const preferred = (targetY > c.y) ? 'DOWN' : 'UP';
-        if (c.direction !== preferred) {
-          let testDy = preferred === 'DOWN' ? c.speed : -c.speed;
-          if (!this._checkWallCollision(c.x, c.y + testDy, c.width, c.height)) {
-            c.direction = preferred;
-          }
+      // 8% chance to re-steer towards primary target direction when path is open
+      if (Math.random() < 0.08 && c.direction !== preferredDir) {
+        let testDx = preferredDir === 'LEFT' ? -c.speed : preferredDir === 'RIGHT' ? c.speed : 0;
+        let testDy = preferredDir === 'DOWN' ? c.speed : preferredDir === 'UP' ? -c.speed : 0;
+        if (!this._checkWallCollision(c.x + testDx, c.y + testDy, c.width, c.height)) {
+          c.direction = preferredDir;
         }
       }
     } else {
-      // Forward path is BLOCKED by obstacle! Auto-turn to valid adjacent direction
-      const preferred = (targetY > c.y) ? 'DOWN' : 'UP';
+      // Forward step BLOCKED! Find valid unblocked direction sorted by distance to target
       const possibleDirs = ['DOWN', 'LEFT', 'RIGHT', 'UP'].filter(dir => dir !== c.direction);
 
       possibleDirs.sort((a, b) => {
-        if (a === preferred) return -1;
-        if (b === preferred) return 1;
-        return Math.random() - 0.5;
+        let distA = this._getDirTargetDistance(c, a, targetX, targetY);
+        let distB = this._getDirTargetDistance(c, b, targetX, targetY);
+        return distA - distB;
       });
 
       let turned = false;
       for (const dir of possibleDirs) {
         let testDx = (dir === 'LEFT' ? -c.speed : dir === 'RIGHT' ? c.speed : 0);
         let testDy = (dir === 'DOWN' ? c.speed : dir === 'UP' ? -c.speed : 0);
-        if (!this._checkWallCollision(c.x + testDx, c.y + testDy, c.width, c.height)) {
+        const testX = c.x + testDx;
+        const testY = c.y + testDy;
+
+        if (testX > 10 && testX < this.width - c.width - 10 &&
+            testY > 10 && testY < this.height - c.height - 10 &&
+            !this._checkWallCollision(testX, testY, c.width, c.height)) {
           c.direction = dir;
-          c.x += testDx;
-          c.y += testDy;
+          c.x = testX;
+          c.y = testY;
           turned = true;
           break;
         }
       }
 
       if (!turned) {
-        c.direction = (c.direction === 'DOWN') ? 'LEFT' : 'DOWN';
+        c.direction = preferredDir;
       }
     }
 
@@ -520,11 +548,17 @@ export class MagicFighterGame {
     c.y = Math.max(10, Math.min(this.height - c.height - 10, c.y));
   }
 
+  _getDirTargetDistance(c, dir, targetX, targetY) {
+    let testX = c.x + (dir === 'LEFT' ? -c.speed * 4 : dir === 'RIGHT' ? c.speed * 4 : 0);
+    let testY = c.y + (dir === 'DOWN' ? c.speed * 4 : dir === 'UP' ? -c.speed * 4 : 0);
+    return Math.hypot(testX - targetX, testY - targetY);
+  }
+
   _updateFriendlyCreeps(now) {
     for (let i = this.playerCreeps.length - 1; i >= 0; i--) {
       const c = this.playerCreeps[i];
 
-      this._moveCreepSmart(c, 0); // March toward Top
+      this._moveCreepSmart(c, 320, 40); // March toward Enemy Top (320, 40)
 
       if (this.mode === 'pvp' && this._rectOverlap(c, this.enemyBase)) {
         if (!c.lastMeleeAttack || now - c.lastMeleeAttack > 1000) {
@@ -553,7 +587,7 @@ export class MagicFighterGame {
     for (let i = this.enemyCreeps.length - 1; i >= 0; i--) {
       const c = this.enemyCreeps[i];
 
-      // 🏰 Check collision with Player Base (MUST NOT DISAPPEAR! Stay alive and continuously attack!)
+      // 🏰 Check collision with Player Base (Continuous Melee Attack!)
       if (this._rectOverlap(c, this.playerBase)) {
         if (!c.lastMeleeAttack || now - c.lastMeleeAttack > 1000) {
           c.lastMeleeAttack = now;
@@ -561,7 +595,7 @@ export class MagicFighterGame {
           playHitImpactSound();
         }
       } else {
-        this._moveCreepSmart(c, 600); // March toward Bottom Player HQ
+        this._moveCreepSmart(c, 320, 540); // March toward Player Base HQ at Bottom Center (320, 540)
       }
 
       // Auto Fire Bullets

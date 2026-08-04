@@ -306,14 +306,16 @@ export class FighterRenderer3D {
   _createSkyCastles3D() {
     // 1. Player Sky Castle (Bottom, Cyan/White Laputa)
     const pCastle = this._createFloatingCastleMesh(false);
-    pCastle.position.set(320, 0, 590);
+    pCastle.position.set(320, -6, 575);
+    pCastle.scale.set(0.92, 0.92, 0.92);
     this.playerBaseGroup = pCastle;
     this.playerCrystalMesh = pCastle.userData.crystalMesh;
     this.scene.add(pCastle);
 
     // 2. Enemy Sky Castle (Top, Obsidian/Crimson Dark Laputa)
     const eCastle = this._createFloatingCastleMesh(true);
-    eCastle.position.set(320, 0, 50);
+    eCastle.position.set(320, -6, 65);
+    eCastle.scale.set(0.92, 0.92, 0.92);
     this.enemyBaseGroup = eCastle;
     this.enemyCrystalMesh = eCastle.userData.crystalMesh;
     this.scene.add(eCastle);
