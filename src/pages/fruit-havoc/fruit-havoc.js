@@ -579,19 +579,131 @@ export async function renderFruitHavoc(container, params = {}) {
   const TILE_SIZE = 50; // 50px
 
   const renderer3D = new FruitHavoc3DRenderer();
+  let is3DModeSupported = false;
+
   if (canvas) {
-    renderer3D.init(canvas, 800, 480);
-    renderer3D.updatePlatforms(PLATFORMS);
+    try {
+      is3DModeSupported = renderer3D.init(canvas, 800, 480);
+      if (is3DModeSupported !== false) {
+        renderer3D.updatePlatforms(PLATFORMS);
+        is3DModeSupported = true;
+      }
+    } catch (e) {
+      console.warn('WebGL Renderer Init Error, falling back to 2.5D Engine:', e);
+      is3DModeSupported = false;
+    }
   }
 
   const drawStage = () => {
     if (!ctx || (currentScene !== 1 && currentScene !== 2)) return;
 
-    if (renderer3D.initialized) {
-      renderer3D.updateTraps(placedTraps);
-      renderer3D.updateHoverGrid(currentScene === 1 ? hoverGrid : null);
-      renderer3D.render(players, currentScene);
+    if (is3DModeSupported && renderer3D.initialized) {
+      try {
+        renderer3D.updateTraps(placedTraps);
+        renderer3D.updateHoverGrid(currentScene === 1 ? hoverGrid : null);
+        renderer3D.render(players, currentScene);
+        return;
+      } catch (err) {
+        console.warn('3D Render loop error, switching to 2D canvas fallback:', err);
+        is3DModeSupported = false;
+      }
     }
+
+    // 🎨 優雅降級 2.5D Canvas HD 繪圖引擎 (100% WebGL 上下文保底)
+    draw2DStage();
+  };
+
+  const draw2DStage = () => {
+    if (!ctx) return;
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, 480);
+    bgGrad.addColorStop(0, '#e0f2fe');
+    bgGrad.addColorStop(1, '#bae6fd');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 800, 480);
+
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.12)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= 800; x += TILE_SIZE) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 480); ctx.stroke();
+    }
+    for (let y = 0; y <= 480; y += TILE_SIZE) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(800, y); ctx.stroke();
+    }
+
+    PLATFORMS.forEach(plat => {
+      ctx.fillStyle = '#b45309';
+      ctx.fillRect(plat.x, plat.y + plat.h, plat.w, 14);
+
+      const platGrad = ctx.createLinearGradient(0, plat.y, 0, plat.y + plat.h);
+      platGrad.addColorStop(0, '#fcd34d');
+      platGrad.addColorStop(1, '#f59e0b');
+      ctx.fillStyle = platGrad;
+      ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(plat.x, plat.y, plat.w, plat.h);
+
+      ctx.fillStyle = '#4ade80';
+      ctx.fillRect(plat.x, plat.y - 4, plat.w, 6);
+    });
+
+    ctx.font = '36px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🏆', 680, 190);
+    ctx.fillText('🎂', 620, 190);
+
+    placedTraps.forEach(pt => {
+      const px = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
+      const py = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
+      ctx.fillStyle = 'rgba(255, 237, 213, 0.9)';
+      ctx.fillRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.strokeStyle = '#fdba74';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.font = '28px sans-serif';
+      ctx.fillText(pt.trap.icon, px, py);
+    });
+
+    if (currentScene === 1 && hoverGrid) {
+      const gx = hoverGrid.gridX * TILE_SIZE;
+      const gy = hoverGrid.gridY * TILE_SIZE;
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.35)';
+      ctx.fillRect(gx + 2, gy + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(gx + 2, gy + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.font = '30px sans-serif';
+      ctx.fillText(selectedTrap.icon, gx + TILE_SIZE / 2, gy + TILE_SIZE / 2);
+    }
+
+    players.forEach(p => {
+      if (!p.isDead) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y + 18, 16, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        const spriteImg = charSpriteImages[p.char.id];
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        if (p.facing === 'left') ctx.scale(-1, 1);
+
+        if (spriteImg && spriteImg.complete && spriteImg.naturalWidth !== 0) {
+          ctx.drawImage(spriteImg, -26, -30, 52, 52);
+        } else {
+          ctx.font = '36px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(p.char.icon, 0, 0);
+        }
+        ctx.restore();
+
+        ctx.fillStyle = p.char.color;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${p.name} (${p.char.icon})`, p.x, p.y - 32);
+      }
+    });
   };
 
   // ----------------------------------------------------

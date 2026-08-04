@@ -54,17 +54,23 @@ export class FruitHavoc3DRenderer {
     dirLight.shadow.camera.bottom = -500;
     this.scene.add(dirLight);
 
-    // WebGL Renderer
-    this.renderer = new THREE.WebGLRenderer({
-      canvas: containerCanvas,
-      antialias: true,
-      alpha: false,
-      powerPreference: 'high-performance'
-    });
-    this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // WebGL Renderer Try-Catch Safeguard
+    try {
+      this.renderer = new THREE.WebGLRenderer({
+        canvas: containerCanvas,
+        antialias: true,
+        alpha: false,
+        powerPreference: 'high-performance'
+      });
+      this.renderer.setSize(width, height);
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.renderer.shadowMap.enabled = true;
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    } catch (e) {
+      console.warn('WebGL Context creation failed, falling back to 2.5D Canvas:', e);
+      this.initialized = false;
+      return false;
+    }
 
     // Groups Setup
     this.platformGroup = new THREE.Group();
