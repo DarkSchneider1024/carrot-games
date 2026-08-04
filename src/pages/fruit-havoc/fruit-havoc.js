@@ -1,14 +1,20 @@
 /**
- * Fruit Havoc Page — 2D Party Trap Platformer (水果傷害 2D 派對對戰)
- * Features Drag & Drop Placement System (拖拉擺放陷阱), Chiikawa Fruit Characters, & 20 Trap Items.
+ * Fruit Havoc Page — 2D Party Trap Platformer (水果傷害 派對對戰)
+ * Features Drag & Drop Placement System, PeerJS WebRTC DataChannel Sync (60 FPS UDP Movement & Trap Sync).
  */
 
 import { SVG_ICONS } from '../../components/icons.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../../components/toast.js';
+import {
+  initFruitPeer,
+  sendTrapPlacement,
+  sendMovementState,
+  closeFruitPeer
+} from '../../network/fruit-peer-manager.js';
 
 export async function renderFruitHavoc(container, params = {}) {
-  const mode = params.mode || 'ai';
+  const mode = params.mode || 'local'; // 'local' or 'online'
 
   const FRUIT_CHARACTERS = [
     { id: 'strawberry', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '速度型 (淚流衝刺)', speed: 7.5, jump: 6.5 },
@@ -44,10 +50,19 @@ export async function renderFruitHavoc(container, params = {}) {
   let selectedChar = FRUIT_CHARACTERS[0];
   let selectedTrap = TRAP_ITEMS[0];
   let placedTraps = [
-    { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9 }, // 預設擺放彈簧手套
-    { id: 2, trap: TRAP_ITEMS[1], gridX: 9, gridY: 7 }  // 預設擺放電鋸
+    { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9 },
+    { id: 2, trap: TRAP_ITEMS[1], gridX: 9, gridY: 7 }
   ];
-  let hoverGrid = null; // { gridX, gridY } for drag preview
+  let hoverGrid = null;
+
+  // Realtime Movement State & Interpolation
+  let isPeerConnected = false;
+  let isRacing = false;
+  let animFrameId = null;
+
+  const localPlayer = { x: 80, y: 380, vx: 0, vy: 0 };
+  const remotePlayer = { x: 80, y: 380, vx: 0, vy: 0, icon: '🍌' };
+  const remoteTarget = { x: 80, y: 380, vx: 0, vy: 0 };
 
   container.innerHTML = `
     <div class="fruit-havoc-page animate-fade-in">
@@ -59,7 +74,7 @@ export async function renderFruitHavoc(container, params = {}) {
           </button>
           <div class="topbar-title">
             <span class="game-name">🍓 水果傷害 (FRUIT HAVOC)</span>
-            <span class="badge badge-warning">${mode === 'online' ? '🌐 線上對戰 (即時同步)' : '👥 單機同屏 (玩家輪流擺放競速)'}</span>
+            <span class="badge badge-warning">${mode === 'online' ? '🌐 WebRTC DataChannel 即時連線' : '👥 單機同屏 (玩家輪流擺放競速)'}</span>
           </div>
         </div>
         <div class="topbar-actions">
@@ -68,6 +83,26 @@ export async function renderFruitHavoc(container, params = {}) {
           </button>
         </div>
       </div>
+
+      ${mode === 'online' ? `
+        <!-- WebRTC PeerJS Room Control Bar -->
+        <div class="peer-room-bar glass" style="padding:12px 16px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--color-bg-card);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button class="btn btn-primary btn-sm" id="btn-create-room" style="background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;">
+              🏠 創建連線房間
+            </button>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <input type="text" id="input-room-code" placeholder="輸入4位數代碼" style="width:130px;padding:5px 10px;border-radius:8px;border:1px solid var(--color-border);font-size:0.85rem;" />
+              <button class="btn btn-cyan btn-sm" id="btn-join-room">
+                🔗 加入對戰
+              </button>
+            </div>
+          </div>
+          <div id="peer-status-bar" style="font-size:0.85rem;font-weight:600;color:var(--color-text-secondary);">
+            ⚪ 未連線 (請創建或輸入房間號)
+          </div>
+        </div>
+      ` : ''}
 
       <!-- Main Workspace -->
       <div class="fruit-havoc-main">
@@ -115,8 +150,8 @@ export async function renderFruitHavoc(container, params = {}) {
         <!-- Right Panel: Stage Canvas & Drop Zone -->
         <main class="fruit-stage-area glass">
           <div class="stage-header">
-            <span class="badge badge-info">第 1 / 5 輪次：單機多人輪流擺放</span>
-            <span class="stage-tip" id="stage-tip">🖐️ 請玩家輪流將左側道具【拖拉放至】右側地圖網格！</span>
+            <span class="badge badge-info" id="stage-round-badge">第 1 / 5 輪次：擺放階段</span>
+            <span class="stage-tip" id="stage-tip">🖐️ 請將左側道具【拖拉放至】右側地圖網格！</span>
           </div>
 
           <div class="canvas-wrapper" id="canvas-drop-zone">
@@ -132,9 +167,70 @@ export async function renderFruitHavoc(container, params = {}) {
     </div>
   `;
 
-  // Attach Navigation Event Handlers
-  container.querySelector('#btn-back')?.addEventListener('click', () => navigate('/'));
+  // Attach Navigation Handlers
+  container.querySelector('#btn-back')?.addEventListener('click', () => {
+    closeFruitPeer();
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+    navigate('/');
+  });
   container.querySelector('#btn-settings')?.addEventListener('click', () => navigate('/guide?game=fruitHavoc'));
+
+  // PeerJS WebRTC Connection Logic (Online Mode)
+  const statusEl = container.querySelector('#peer-status-bar');
+
+  if (mode === 'online') {
+    const handleStatusChange = (status, msg) => {
+      if (statusEl) {
+        if (status === 'connected') {
+          statusEl.innerHTML = `<span style="color:#16a34a;">${msg}</span>`;
+          isPeerConnected = true;
+          showToast('🟢 P2P WebRTC 連線成功！60 FPS UDP 位置同步已就緒', 'success');
+        } else if (status === 'waiting' || status === 'connecting') {
+          statusEl.innerHTML = `<span style="color:#d97706;">${msg}</span>`;
+        } else {
+          statusEl.innerHTML = `<span style="color:#dc2626;">${msg}</span>`;
+          isPeerConnected = false;
+        }
+      }
+    };
+
+    const handleDataReceive = (packet) => {
+      if (packet.type === 'TRAP_PLACE') {
+        // 同步放置陷阱
+        const targetTrap = TRAP_ITEMS.find(t => t.id === packet.trapId);
+        if (targetTrap) {
+          placedTraps = placedTraps.filter(pt => !(pt.gridX === packet.gridX && pt.gridY === packet.gridY));
+          placedTraps.push({ id: Date.now(), trap: targetTrap, gridX: packet.gridX, gridY: packet.gridY });
+          showToast(`🌐 對手拖放放置了【${targetTrap.icon} ${targetTrap.name}】(${packet.gridX}, ${packet.gridY})`, 'info');
+          drawStage();
+        }
+      } else if (packet.type === 'MOVE') {
+        // 60 FPS 位置 packet -> 更新遠端目標點（供 Lerp 外推插值）
+        remoteTarget.x = packet.x;
+        remoteTarget.y = packet.y;
+        remoteTarget.vx = packet.vx;
+        remoteTarget.vy = packet.vy;
+      }
+    };
+
+    container.querySelector('#btn-create-room')?.addEventListener('click', () => {
+      const randomCode = 'HAVOC-' + Math.floor(1000 + Math.random() * 9000);
+      const input = container.querySelector('#input-room-code');
+      if (input) input.value = randomCode;
+      initFruitPeer(randomCode, true, handleStatusChange, handleDataReceive);
+    });
+
+    container.querySelector('#btn-join-room')?.addEventListener('click', () => {
+      const input = container.querySelector('#input-room-code');
+      const code = input ? input.value.trim().toUpperCase() : '';
+      if (!code) {
+        showToast('請輸入對手的 4 位數房間代碼', 'warning');
+        return;
+      }
+      const fullCode = code.startsWith('HAVOC-') ? code : 'HAVOC-' + code;
+      initFruitPeer(fullCode, false, handleStatusChange, handleDataReceive);
+    });
+  }
 
   // Character Selector Handlers
   container.querySelectorAll('.char-select-item').forEach(item => {
@@ -155,7 +251,7 @@ export async function renderFruitHavoc(container, params = {}) {
     });
   });
 
-  // Canvas & Trap Placement Logic
+  // Canvas & Trap Placement & 60 FPS Interpolation Loop
   const canvas = container.querySelector('#fruit-canvas');
   const dropZone = container.querySelector('#canvas-drop-zone');
   const ctx = canvas ? canvas.getContext('2d') : null;
@@ -163,10 +259,15 @@ export async function renderFruitHavoc(container, params = {}) {
 
   const drawStage = () => {
     if (!ctx) return;
+
+    // 1. Smooth Interpolation for Remote Player (遠端對手位置線性插值)
+    remotePlayer.x += (remoteTarget.x - remotePlayer.x) * 0.3;
+    remotePlayer.y += (remoteTarget.y - remotePlayer.y) * 0.3;
+
+    // 2. Clear Background & Draw Grid
     ctx.fillStyle = '#f0f9ff';
     ctx.fillRect(0, 0, 640, 480);
 
-    // Grid Lines
     ctx.strokeStyle = 'rgba(2, 132, 199, 0.18)';
     ctx.lineWidth = 1;
     for (let x = 0; x <= 640; x += TILE_SIZE) {
@@ -182,38 +283,32 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.stroke();
     }
 
-    // Platforms
+    // 3. Platforms & Goal
     ctx.fillStyle = '#fdba74';
-    ctx.fillRect(40, 400, 160, 40); // Start Platform
-    ctx.fillRect(440, 200, 160, 40); // Goal Platform
+    ctx.fillRect(40, 400, 160, 40); // Start
+    ctx.fillRect(440, 200, 160, 40); // Goal
 
-    // Goal Flag
     ctx.font = '28px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('🏆', 540, 180);
     ctx.fillText('🎂', 480, 180);
 
-    // Start Player Position
-    ctx.fillText(selectedChar.icon, 80, 380);
-
-    // Draw All Placed Traps
+    // 4. Draw All Placed Traps
     placedTraps.forEach(pt => {
       const px = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
       const py = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
 
-      // Trap Background Tile Highlight
       ctx.fillStyle = 'rgba(255, 237, 213, 0.85)';
       ctx.fillRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
       ctx.strokeStyle = '#fdba74';
       ctx.strokeRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
 
-      // Icon
       ctx.font = '24px sans-serif';
       ctx.fillText(pt.trap.icon, px, py);
     });
 
-    // Draw Drag Hover Preview Ghost (若正將道具拖懸到地圖上方)
+    // 5. Draw Drag Hover Ghost Box
     if (hoverGrid) {
       const gx = hoverGrid.gridX * TILE_SIZE;
       const gy = hoverGrid.gridY * TILE_SIZE;
@@ -227,9 +322,46 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.font = '26px sans-serif';
       ctx.fillText(selectedTrap.icon, gx + TILE_SIZE / 2, gy + TILE_SIZE / 2);
     }
+
+    // 6. Draw Local Player
+    ctx.font = '30px sans-serif';
+    ctx.fillText(selectedChar.icon, localPlayer.x, localPlayer.y);
+
+    // 7. Draw Remote Player (Online Mode Only)
+    if (mode === 'online' && isPeerConnected) {
+      ctx.font = '30px sans-serif';
+      ctx.fillText(remotePlayer.icon, remotePlayer.x, remotePlayer.y);
+      ctx.fillStyle = '#0284c7';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('對手 (P2P)', remotePlayer.x, remotePlayer.y - 24);
+    }
   };
 
-  // HTML5 Drag & Drop Event Listeners
+  // Continuous Animation Loop for Smooth 60 FPS Rendering
+  const gameLoop = () => {
+    drawStage();
+
+    if (isRacing) {
+      // Simulate simple Movement Run
+      if (localPlayer.x < 480) {
+        localPlayer.x += selectedChar.speed * 0.6;
+        if (localPlayer.x > 180 && localPlayer.y > 220) {
+          localPlayer.y -= 1.8; // jump curve
+        }
+      }
+
+      // Broadcast 60 FPS Movement Packet via WebRTC DataChannel
+      if (mode === 'online' && isPeerConnected) {
+        sendMovementState(localPlayer.x, localPlayer.y, localPlayer.vx, localPlayer.vy, 'run');
+      }
+    }
+
+    animFrameId = requestAnimationFrame(gameLoop);
+  };
+
+  animFrameId = requestAnimationFrame(gameLoop);
+
+  // Drag & Drop Traps Event Handlers
   let draggedTrapId = null;
 
   container.querySelectorAll('.trap-select-item').forEach(item => {
@@ -241,7 +373,7 @@ export async function renderFruitHavoc(container, params = {}) {
       selectedTrap = TRAP_ITEMS.find(t => t.id === trapId);
       draggedTrapId = trapId;
 
-      showToast(`已選中：${selectedTrap.name} (可拖拉至地圖放開)`, 'info');
+      showToast(`已選中：${selectedTrap.name}`, 'info');
     });
 
     item.addEventListener('dragstart', (e) => {
@@ -260,11 +392,10 @@ export async function renderFruitHavoc(container, params = {}) {
     item.addEventListener('dragend', () => {
       item.classList.remove('is-dragging');
       hoverGrid = null;
-      drawStage();
     });
   });
 
-  // Drop Zone DragOver & Drop Event Handlers
+  // Drop Zone Handlers
   if (dropZone && canvas) {
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -274,26 +405,18 @@ export async function renderFruitHavoc(container, params = {}) {
       const scaleX = canvas.width / rect.width;
       const scaleY = canvas.height / rect.height;
 
-      const clientX = e.clientX;
-      const clientY = e.clientY;
-
-      const relX = (clientX - rect.left) * scaleX;
-      const relY = (clientY - rect.top) * scaleY;
+      const relX = (e.clientX - rect.left) * scaleX;
+      const relY = (e.clientY - rect.top) * scaleY;
 
       if (relX >= 0 && relX < 640 && relY >= 0 && relY < 480) {
         const gridX = Math.floor(relX / TILE_SIZE);
         const gridY = Math.floor(relY / TILE_SIZE);
-
-        if (!hoverGrid || hoverGrid.gridX !== gridX || hoverGrid.gridY !== gridY) {
-          hoverGrid = { gridX, gridY };
-          drawStage();
-        }
+        hoverGrid = { gridX, gridY };
       }
     });
 
     dropZone.addEventListener('dragleave', () => {
       hoverGrid = null;
-      drawStage();
     });
 
     dropZone.addEventListener('drop', (e) => {
@@ -310,43 +433,31 @@ export async function renderFruitHavoc(container, params = {}) {
       if (relX >= 0 && relX < 640 && relY >= 0 && relY < 480) {
         const gridX = Math.floor(relX / TILE_SIZE);
         const gridY = Math.floor(relY / TILE_SIZE);
-
         const targetTrap = TRAP_ITEMS.find(t => t.id === (draggedTrapId || selectedTrap.id)) || selectedTrap;
 
-        // Check if tile already has a trap (若格子已有陷阱則蓋過)
         placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
         placedTraps.push({ id: Date.now(), trap: targetTrap, gridX, gridY });
 
-        showToast(`🎉 成功拖放放置【${targetTrap.icon} ${targetTrap.name}】至座標 (${gridX}, ${gridY})！`, 'success');
-        drawStage();
+        showToast(`🎉 成功拖放【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
+
+        // Broadcast Trap Placement via WebRTC DataChannel
+        if (mode === 'online' && isPeerConnected) {
+          sendTrapPlacement(gridX, gridY, targetTrap.id);
+        }
       }
-    });
-
-    // Support Click-to-Place Alternative (點擊畫布亦可直接擺放)
-    canvas.addEventListener('click', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-
-      const relX = (e.clientX - rect.left) * scaleX;
-      const relY = (e.clientY - rect.top) * scaleY;
-
-      const gridX = Math.floor(relX / TILE_SIZE);
-      const gridY = Math.floor(relY / TILE_SIZE);
-
-      placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
-      placedTraps.push({ id: Date.now(), trap: selectedTrap, gridX, gridY });
-
-      showToast(`📍 點擊放置【${selectedTrap.icon} ${selectedTrap.name}】至 (${gridX}, ${gridY})`, 'success');
-      drawStage();
     });
   }
 
-  // Start Round Button Handler
+  // Start Round Button
   container.querySelector('#btn-start-round')?.addEventListener('click', () => {
-    showToast(`🍓 ${selectedChar.name} 踏入關卡出發！已佈置 ${placedTraps.length} 個陷阱與障礙！`, 'success');
+    isRacing = true;
+    localPlayer.x = 80;
+    localPlayer.y = 380;
+    showToast(`🍓 ${selectedChar.name} 踩下油門！出發穿越陷阱陣！`, 'success');
   });
 
-  // Initial Draw
-  drawStage();
+  return () => {
+    closeFruitPeer();
+    if (animFrameId) cancelAnimationFrame(animFrameId);
+  };
 }
