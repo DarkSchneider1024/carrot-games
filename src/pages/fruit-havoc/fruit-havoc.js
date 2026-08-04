@@ -1,6 +1,9 @@
 /**
- * Fruit Havoc Page — Authentic Ultimate Chicken Horse Party Platformer
- * Implements Party Box Placement, Simultaneous Player Racing, Goldilocks Scoring (Too Easy/Too Hard rules), & Round Progressions.
+ * Fruit Havoc Page — 4-Scene Game Architecture
+ * Scene 1: 1. 布置場地 (Build/Trap Placement)
+ * Scene 2: 2. 開始玩場地 (Mario Race Controls)
+ * Scene 3: 3. 記分 (Dynamic Animated Scoreboard Progress Bar)
+ * Scene 4: 4. 獲勝影片 (3-Second Character Victory Celebration Video Canvas)
  */
 
 import { SVG_ICONS } from '../../components/icons.js';
@@ -20,6 +23,7 @@ export async function renderFruitHavoc(container, params = {}) {
     { id: 'strawberry', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', speed: 4.8, jump: -11.5, color: '#ef4444' },
     { id: 'banana', name: '香蕉烏薩奇', icon: '🍌', img: './assets/images/char_banana_usagi.png', speed: 4.2, jump: -13.5, color: '#eab308' },
     { id: 'melon', name: '哈密瓜小八', icon: '🍈', img: './assets/images/char_melon_hachi.png', speed: 4.4, jump: -12.0, color: '#22c55e' },
+    { id: 'peach', name: '水桃栗饅頭', icon: '🍑', img: './assets/images/char_peach_kuriman.png', speed: 3.8, jump: -11.0, color: '#f97316' },
     { id: 'grape', name: '飛天葡萄飛鼠', icon: '🍇', img: './assets/images/char_grape_momonga.png', speed: 5.2, jump: -12.5, color: '#a855f7' }
   ];
 
@@ -52,37 +56,36 @@ export async function renderFruitHavoc(container, params = {}) {
   let targetScore = 10;
   let playerCount = 2; // 2P default
 
-  // Player Objects Array for Simultaneous Racing
+  // Player Objects
   let players = [
-    { id: 1, char: FRUIT_CHARACTERS[0], name: '玩家 1', keys: 'A D W', x: 80, y: 360, vx: 0, vy: 0, isGrounded: true, isDead: false, reached: false, score: 0, finishRank: 0 },
-    { id: 2, char: FRUIT_CHARACTERS[1], name: '玩家 2', keys: '← → ↑', x: 100, y: 360, vx: 0, vy: 0, isGrounded: true, isDead: false, reached: false, score: 0, finishRank: 0 }
+    { id: 1, char: FRUIT_CHARACTERS[0], name: '玩家 1', x: 80, y: 360, vx: 0, vy: 0, isGrounded: true, isDead: false, reached: false, score: 0, prevScore: 0, finishRank: 0 },
+    { id: 2, char: FRUIT_CHARACTERS[1], name: '玩家 2', x: 100, y: 360, vx: 0, vy: 0, isGrounded: true, isDead: false, reached: false, score: 0, prevScore: 0, finishRank: 0 }
   ];
 
-  let activePlacementPlayerIdx = 0; // 當前輪到哪位玩家擺放陷阱
+  let activePlacementPlayerIdx = 0;
   let selectedTrap = TRAP_ITEMS[0];
   let placedTraps = [
-    { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9, placedBy: 1 }, // 彈簧手套
-    { id: 2, trap: TRAP_ITEMS[8], gridX: 8, gridY: 10, placedBy: 2 }  // 跳跳菇
+    { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9, placedBy: 1 },
+    { id: 2, trap: TRAP_ITEMS[8], gridX: 8, gridY: 10, placedBy: 2 }
   ];
   let hoverGrid = null;
 
-  // Game Phase State: 'PLACEMENT' -> 'COUNTDOWN' -> 'RACE' -> 'ROUND_SUMMARY' -> 'MATCH_OVER'
-  let gamePhase = 'PLACEMENT';
-  let countdownSec = 3;
+  // 4 Scenes State: 1 = 'BUILD', 2 = 'RACE', 3 = 'SCORE', 4 = 'VICTORY'
+  let currentScene = 1;
   let animFrameId = null;
+  let victoryAnimId = null;
   let isPeerConnected = false;
+  let winnerPlayer = null;
 
-  // Key Input Listener States
+  // Key Input States
   const keysState = {
-    // P1 Controls (A, D, W)
     p1Left: false, p1Right: false, p1Jump: false,
-    // P2 Controls (Left, Right, Up)
     p2Left: false, p2Right: false, p2Jump: false
   };
 
   const PLATFORMS = [
-    { x: 40, y: 400, w: 160, h: 40 },  // 起點踏板
-    { x: 240, y: 320, w: 120, h: 20 }, // 中間高台 1
+    { x: 40, y: 400, w: 160, h: 40 },  // 起點
+    { x: 240, y: 320, w: 120, h: 20 }, // 中間高台
     { x: 440, y: 200, w: 160, h: 40 }  // 終點高台
   ];
 
@@ -96,7 +99,7 @@ export async function renderFruitHavoc(container, params = {}) {
           </button>
           <div class="topbar-title">
             <span class="game-name">🍓 水果傷害 (FRUIT HAVOC)</span>
-            <span class="badge badge-warning">${mode === 'online' ? '🌐 WebRTC 連線對戰' : '👥 同屏對戰 (多玩家同時競速)'}</span>
+            <span class="badge badge-warning" id="scene-badge">1. 布置場地</span>
           </div>
         </div>
         <div class="topbar-actions" style="display:flex;gap:8px;">
@@ -112,7 +115,7 @@ export async function renderFruitHavoc(container, params = {}) {
       </div>
 
       ${mode === 'online' ? `
-        <!-- WebRTC PeerJS Room Control Bar -->
+        <!-- WebRTC PeerJS Room Bar -->
         <div class="peer-room-bar glass" style="padding:10px 16px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--color-bg-card);">
           <div style="display:flex;align-items:center;gap:10px;">
             <button class="btn btn-primary btn-sm" id="btn-create-room" style="background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;">
@@ -131,13 +134,12 @@ export async function renderFruitHavoc(container, params = {}) {
         </div>
       ` : ''}
 
-      <!-- Match Scoreboard & Progress Header -->
-      <div class="scoreboard-bar glass" style="padding:12px 16px;border-radius:14px;background:var(--color-bg-card);display:flex;align-items:center;justify-content:space-between;">
+      <!-- Top Scoreboard Bar -->
+      <div class="scoreboard-bar glass" style="padding:10px 16px;border-radius:14px;background:var(--color-bg-card);display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;align-items:center;gap:12px;">
-          <span class="badge badge-info" id="round-counter-tag">輪次: 第 ${currentRound} / ${maxRounds} 輪</span>
-          <span style="font-size:0.85rem;color:var(--color-text-secondary);font-weight:600;">目標得分：${targetScore} 分獲勝</span>
+          <span class="badge badge-info" id="round-counter-tag">第 ${currentRound} / ${maxRounds} 輪</span>
+          <span style="font-size:0.85rem;color:var(--color-text-secondary);font-weight:600;">目標分數：${targetScore} 分</span>
         </div>
-
         <div class="player-scores-grid" id="player-scores-grid" style="display:flex;gap:16px;">
           ${players.map(p => `
             <div class="player-score-item" style="display:flex;align-items:center;gap:6px;">
@@ -148,9 +150,9 @@ export async function renderFruitHavoc(container, params = {}) {
         </div>
       </div>
 
-      <!-- Main Workspace -->
+      <!-- Main Game Content Wrapper -->
       <div class="fruit-havoc-main">
-        <!-- Left Panel: Drag Trap Selection & Turn Status -->
+        <!-- 1. 場景 1: 布置場地 (Build Scene) 的左側選單 -->
         <aside class="fruit-panel-left" id="panel-left-sidebar">
           <div class="panel-card glass" style="background:#fff7ed;border-color:#fdba74;">
             <h4 class="panel-title" style="color:#ea580c;" id="turn-title">
@@ -161,7 +163,7 @@ export async function renderFruitHavoc(container, params = {}) {
             </p>
           </div>
 
-          <!-- Draggable Trap Selector (20 Traps) -->
+          <!-- Draggable Trap Selector -->
           <div class="panel-card glass">
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <h4 class="panel-title">擺放/拆除陷阱 (20種)</h4>
@@ -182,17 +184,16 @@ export async function renderFruitHavoc(container, params = {}) {
           </div>
         </aside>
 
-        <!-- Right Panel: Stage Canvas & Race Controls -->
-        <main class="fruit-stage-area glass">
-          <div class="stage-header">
-            <span class="badge badge-info" id="stage-phase-badge">階段 1：輪流擺放陷阱</span>
-            <span class="stage-tip" id="stage-tip">🖐️ 請 ${players[activePlacementPlayerIdx]?.name} 拖拉道具放置地圖！</span>
-          </div>
-
-          <div class="canvas-wrapper" id="canvas-drop-zone">
+        <!-- 右側主要舞台區域 (包容場景 1, 2, 3, 4) -->
+        <main class="fruit-stage-area glass" style="flex:1;position:relative;overflow:hidden;">
+          <!-- 核心地圖 Canvas (場景 1 與 場景 2) -->
+          <div class="canvas-wrapper" id="canvas-wrapper-box" style="display:block;">
+            <div class="stage-header" style="margin-bottom:8px;">
+              <span class="stage-tip" id="stage-tip">🖐️ 請拖拉道具放置地圖！完成後開啟對戰！</span>
+            </div>
             <canvas id="fruit-canvas" width="640" height="480"></canvas>
 
-            <!-- Touch Controls for Mobile (同屏分區觸控) -->
+            <!-- 場景 2 獨佔的瑪利歐觸控按鍵 (場景 1, 3, 4 時完全隱藏) -->
             <div class="mobile-touch-controls" id="mobile-touch-controls" style="display:none;">
               <div style="display:flex;gap:6px;">
                 <button class="dpad-btn" id="tbtn-p1-left">⬅️ P1</button>
@@ -206,33 +207,64 @@ export async function renderFruitHavoc(container, params = {}) {
               </div>
             </div>
 
-            <!-- Overlay Action Button -->
+            <!-- 場景 1 的步驟推進按鈕 -->
             <div class="canvas-overlay-ui" id="canvas-overlay-ui">
-              <button class="btn btn-primary btn-lg" id="btn-phase-toggle" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;box-shadow:0 4px 16px rgba(255,117,68,0.4);">
-                🚀 全員擺放完成！開跑同時競速
+              <button class="btn btn-primary btn-lg" id="btn-build-finish" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;box-shadow:0 4px 16px rgba(255,117,68,0.4);">
+                🚀 布置完成！開始 2. 開始玩場地競速
               </button>
             </div>
+          </div>
+
+          <!-- 3. 場景 3: 記分場景 (Scoreboard Scene) 全螢幕 UI -->
+          <div class="scene-container" id="scene-score" style="display:none;padding:24px;flex-direction:column;gap:20px;align-items:center;justify-content:center;min-height:480px;">
+            <div style="text-align:center;">
+              <h3 style="font-size:1.6rem;color:var(--color-text-primary);margin:0;">📊 第 ${currentRound} 輪比賽分數結算</h3>
+              <p style="color:var(--color-text-secondary);font-size:0.9rem;margin:4px 0 0 0;" id="score-summary-reason">黃金結算結果展報...</p>
+            </div>
+
+            <div class="animated-score-bars" id="animated-score-bars" style="width:100%;max-width:500px;display:flex;flex-direction:column;gap:14px;">
+              <!-- 這裡會動態插入每位玩家的計分進度條動畫 -->
+            </div>
+
+            <button class="btn btn-primary btn-lg" id="btn-score-next" style="background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;padding:12px 32px;font-size:1.05rem;">
+              ➡️ 進入下一輪：1. 布置場地
+            </button>
+          </div>
+
+          <!-- 4. 場景 4: 獲勝影片場景 (Victory Scene) 3 秒 AI 畫風慶祝動態 Canvas -->
+          <div class="scene-container" id="scene-victory" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:480px;text-align:center;">
+            <h2 style="font-size:2rem;margin:0;color:#ea580c;text-shadow:0 2px 10px rgba(234,88,12,0.2);" id="victory-title-text">
+              👑 恭喜獲得總冠軍！
+            </h2>
+            <div style="position:relative;width:400px;height:300px;border-radius:20px;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.25);border:3px solid #fdba74;">
+              <canvas id="victory-video-canvas" width="400" height="300"></canvas>
+            </div>
+            <p style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary);" id="victory-winner-desc">水果大師強勢登頂！</p>
+            <button class="btn btn-primary btn-lg" id="btn-victory-restart" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;padding:12px 36px;font-size:1.1rem;">
+              🔄 重新開始全場比賽
+            </button>
           </div>
         </main>
       </div>
     </div>
   `;
 
-  // Attach Navigation & PeerJS Listeners
+  // Navigation Listeners
   container.querySelector('#btn-back')?.addEventListener('click', () => {
     closeFruitPeer();
     if (animFrameId) cancelAnimationFrame(animFrameId);
+    if (victoryAnimId) cancelAnimationFrame(victoryAnimId);
     _removeKeyListeners();
     navigate('/');
   });
   container.querySelector('#btn-settings')?.addEventListener('click', () => navigate('/guide?game=fruitHavoc'));
 
-  // Player Count Selector Handler
+  // Player Count Selector
   container.querySelector('#select-player-count')?.addEventListener('change', (e) => {
     playerCount = parseInt(e.target.value, 10);
     _reinitPlayers();
     _updateScoreboardUI();
-    showToast(`對戰人數設定為 ${playerCount} 人！`, 'info');
+    showToast(`對戰人數已調整為 ${playerCount} 人！`, 'info');
   });
 
   function _reinitPlayers() {
@@ -242,7 +274,6 @@ export async function renderFruitHavoc(container, params = {}) {
         id: i + 1,
         char: FRUIT_CHARACTERS[i % FRUIT_CHARACTERS.length],
         name: `玩家 ${i + 1}`,
-        keys: i === 0 ? 'A D W' : (i === 1 ? '← → ↑' : '自動'),
         x: 80 + i * 24,
         y: 360,
         vx: 0,
@@ -251,6 +282,7 @@ export async function renderFruitHavoc(container, params = {}) {
         isDead: false,
         reached: false,
         score: 0,
+        prevScore: 0,
         finishRank: 0
       });
     }
@@ -282,7 +314,156 @@ export async function renderFruitHavoc(container, params = {}) {
   }
 
   // ----------------------------------------------------
-  // Simultaneous 2D Physics Platformer Racing Engine
+  // 🏛️ 4大場景切換引擎 (4 Scenes Switcher System)
+  // ----------------------------------------------------
+  function switchScene(targetScene) {
+    currentScene = targetScene;
+    const sceneBadge = container.querySelector('#scene-badge');
+    const panelLeft = container.querySelector('#panel-left-sidebar');
+    const canvasWrapper = container.querySelector('#canvas-wrapper-box');
+    const touchControls = container.querySelector('#mobile-touch-controls');
+    const overlayUI = container.querySelector('#canvas-overlay-ui');
+    const sceneScore = container.querySelector('#scene-score');
+    const sceneVictory = container.querySelector('#scene-victory');
+
+    if (victoryAnimId) cancelAnimationFrame(victoryAnimId);
+
+    // Hide all scenes first
+    canvasWrapper.style.display = 'none';
+    touchControls.style.display = 'none';
+    overlayUI.style.display = 'none';
+    sceneScore.style.display = 'none';
+    sceneVictory.style.display = 'none';
+
+    if (targetScene === 1) { // 1. 布置場地
+      if (sceneBadge) sceneBadge.textContent = '1. 布置場地';
+      panelLeft.style.display = 'flex';
+      canvasWrapper.style.display = 'block';
+      overlayUI.style.display = 'block';
+      _updateTurnUI();
+    } else if (targetScene === 2) { // 2. 開始玩場地 (競速跑跳)
+      if (sceneBadge) sceneBadge.textContent = '2. 開始玩場地競速';
+      panelLeft.style.display = 'none'; // 隱藏左側選單讓視野擴展
+      canvasWrapper.style.display = 'block';
+      touchControls.style.display = 'flex'; // 顯示獨佔觸控按鍵
+      showToast('🎮 倒數開跑！使用鍵盤 A/D/W 或下按鍵親自操控跑跳！', 'success');
+    } else if (targetScene === 3) { // 3. 記分場景
+      if (sceneBadge) sceneBadge.textContent = '3. 記分場景';
+      panelLeft.style.display = 'none';
+      sceneScore.style.display = 'flex';
+      _renderScoreboardSceneAnimation();
+    } else if (targetScene === 4) { // 4. 獲勝影片場景 (3秒 AI 風格動態影片)
+      if (sceneBadge) sceneBadge.textContent = '4. 獲勝慶典影片';
+      panelLeft.style.display = 'none';
+      sceneVictory.style.display = 'flex';
+      _startVictoryVideoCanvas();
+    }
+  }
+
+  // ----------------------------------------------------
+  // 3. 場景 3: 記分場景與動態計分條 (Animated Score Progress Bar)
+  // ----------------------------------------------------
+  function _renderScoreboardSceneAnimation() {
+    const barsContainer = container.querySelector('#animated-score-bars');
+    if (!barsContainer) return;
+
+    barsContainer.innerHTML = players.map(p => `
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:0.9rem;">
+          <span>${p.char.icon} ${p.name}</span>
+          <span style="color:${p.char.color};">${p.score} / ${targetScore} 分</span>
+        </div>
+        <div style="width:100%;height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.1);">
+          <div class="score-progress-fill-${p.id}" style="width:${Math.min(100, (p.prevScore / targetScore) * 100)}%;height:100%;background:${p.char.color};transition:width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+        </div>
+      </div>
+    `).join('');
+
+    // Trigger Bar Fill Animation
+    setTimeout(() => {
+      players.forEach(p => {
+        const fillEl = container.querySelector(`.score-progress-fill-${p.id}`);
+        if (fillEl) {
+          fillEl.style.width = `${Math.min(100, (p.score / targetScore) * 100)}%`;
+        }
+      });
+    }, 150);
+  }
+
+  // ----------------------------------------------------
+  // 4. 場景 4: 獲勝影片場景 (3秒 AI 風格角色慶祝動態 Canvas)
+  // ----------------------------------------------------
+  function _startVictoryVideoCanvas() {
+    const vCanvas = container.querySelector('#victory-video-canvas');
+    if (!vCanvas || !winnerPlayer) return;
+    const vCtx = vCanvas.getContext('2d');
+
+    const winnerImg = new Image();
+    winnerImg.src = winnerPlayer.char.img;
+
+    const winnerText = container.querySelector('#victory-winner-desc');
+    if (winnerText) winnerText.textContent = `👑 恭喜 ${winnerPlayer.char.icon} ${winnerPlayer.name} 贏得全場總冠軍！`;
+
+    // Confetti Particles Array (40 顆彩帶雨)
+    const confetti = Array.from({ length: 40 }, () => ({
+      x: Math.random() * 400,
+      y: Math.random() * 300 - 300,
+      size: Math.random() * 8 + 4,
+      color: ['#ff7544', '#ff70a6', '#38bdf8', '#facc15', '#4ade80'][Math.floor(Math.random() * 5)],
+      vy: Math.random() * 2 + 1.5,
+      vx: Math.sin(Math.random() * Math.PI) * 1
+    }));
+
+    let startTime = Date.now();
+
+    const renderVictoryFrame = () => {
+      const elapsed = (Date.now() - startTime) / 1000;
+
+      vCtx.fillStyle = '#f0f9ff';
+      vCtx.fillRect(0, 0, 400, 300);
+
+      // Gold Glow Background
+      const grad = vCtx.createRadialGradient(200, 150, 20, 200, 150, 180);
+      grad.addColorStop(0, 'rgba(254, 240, 138, 0.6)');
+      grad.addColorStop(1, 'rgba(253, 186, 116, 0.1)');
+      vCtx.fillStyle = grad;
+      vCtx.fillRect(0, 0, 400, 300);
+
+      // Draw Character Image with Bounce Animation (3秒 歡快跳躍)
+      const bounceY = Math.abs(Math.sin(elapsed * 5)) * 25;
+      if (winnerImg.complete && winnerImg.naturalWidth !== 0) {
+        vCtx.drawImage(winnerImg, 140, 90 - bounceY, 120, 120);
+      } else {
+        vCtx.font = '64px sans-serif';
+        vCtx.textAlign = 'center';
+        vCtx.fillText(winnerPlayer.char.icon, 200, 150 - bounceY);
+      }
+
+      // Draw Trophy 🏆
+      vCtx.font = '36px sans-serif';
+      vCtx.textAlign = 'center';
+      vCtx.fillText('🏆', 200, 230);
+
+      // Render Falling Confetti
+      confetti.forEach(c => {
+        c.y += c.vy;
+        c.x += c.vx;
+        if (c.y > 300) c.y = -10;
+
+        vCtx.fillStyle = c.color;
+        vCtx.beginPath();
+        vCtx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
+        vCtx.fill();
+      });
+
+      victoryAnimId = requestAnimationFrame(renderVictoryFrame);
+    };
+
+    renderVictoryFrame();
+  }
+
+  // ----------------------------------------------------
+  // 2D Physics Mario Racing Engine (場景 2 競速運算)
   // ----------------------------------------------------
   const canvas = container.querySelector('#fruit-canvas');
   const dropZone = container.querySelector('#canvas-drop-zone');
@@ -302,17 +483,14 @@ export async function renderFruitHavoc(container, params = {}) {
     });
   };
 
-  // Keyboard Event Listeners for Simultaneous 2P Control
   const onKeyDown = (e) => {
-    if (gamePhase !== 'RACE') return;
-    // P1 (A, D, W)
+    if (currentScene !== 2) return;
     if (['KeyA'].includes(e.code)) keysState.p1Left = true;
     if (['KeyD'].includes(e.code)) keysState.p1Right = true;
     if (['KeyW'].includes(e.code)) {
       if (!keysState.p1Jump) _playerJump(players[0]);
       keysState.p1Jump = true;
     }
-    // P2 (Left, Right, Up)
     if (['ArrowLeft'].includes(e.code)) keysState.p2Left = true;
     if (['ArrowRight'].includes(e.code)) keysState.p2Right = true;
     if (['ArrowUp'].includes(e.code)) {
@@ -346,7 +524,7 @@ export async function renderFruitHavoc(container, params = {}) {
     window.removeEventListener('keyup', onKeyUp);
   };
 
-  // Touch Controls Binding
+  // Touch Controls
   const bindTouch = (id, fnStart, fnEnd) => {
     const btn = container.querySelector(id);
     if (!btn) return;
@@ -364,38 +542,29 @@ export async function renderFruitHavoc(container, params = {}) {
   bindTouch('#tbtn-p2-right', () => keysState.p2Right = true, () => keysState.p2Right = false);
   bindTouch('#tbtn-p2-jump', () => _playerJump(players[1]), () => {});
 
-  // Physics Loop (同時計算所有人座標與碰撞)
   let finishOrderCounter = 0;
 
   const updatePhysics = () => {
-    if (gamePhase !== 'RACE') return;
+    if (currentScene !== 2) return;
 
     players.forEach((p, idx) => {
       if (p.isDead || p.reached) return;
 
-      // Controller input assignment
       let isLeft = idx === 0 ? keysState.p1Left : (idx === 1 ? keysState.p2Left : false);
       let isRight = idx === 0 ? keysState.p1Right : (idx === 1 ? keysState.p2Right : false);
-
-      // AI Auto Movement for P3/P4 if local
       if (idx >= 2) isRight = true;
 
-      // Horizontal Acceleration
       if (isLeft) p.vx = -p.char.speed;
       else if (isRight) p.vx = p.char.speed;
       else p.vx *= 0.82;
 
-      // Gravity
       p.vy += 0.55;
-
       p.x += p.vx;
       p.y += p.vy;
 
-      // Boundaries
       if (p.x < 20) p.x = 20;
       if (p.x > 620) p.x = 620;
 
-      // Platform Collision
       p.isGrounded = false;
       PLATFORMS.forEach(plat => {
         if (
@@ -411,40 +580,34 @@ export async function renderFruitHavoc(container, params = {}) {
         }
       });
 
-      // Trap Interactions (蘑菇彈飛 / 電鋸陣亡)
       placedTraps.forEach(pt => {
         const tx = pt.gridX * TILE_SIZE + 20;
         const ty = pt.gridY * TILE_SIZE + 20;
         const dist = Math.hypot(p.x - tx, p.y - ty);
 
         if (dist < 28) {
-          if (pt.trap.id === 9) { // 跳跳菇
+          if (pt.trap.id === 9) {
             p.vy = -16;
             p.isGrounded = false;
-          } else if (pt.trap.id === 1) { // 拳擊手套
+          } else if (pt.trap.id === 1) {
             p.vx = 10;
             p.vy = -6;
-          } else if (pt.trap.id === 2 || pt.trap.id === 8) { // 電鋸 / 刺球 -> 陣亡
+          } else if (pt.trap.id === 2 || pt.trap.id === 8) {
             p.isDead = true;
             showToast(`💥 ${p.name} 踩中【${pt.trap.name}】陣亡！`, 'warning');
-
-            // 陷阱放置者獲得陷阱殺敵分！
             const killerP = players.find(player => player.id === pt.placedBy);
             if (killerP && killerP.id !== p.id) {
               killerP.score += 1;
-              _updateScoreboardUI();
             }
           }
         }
       });
 
-      // Pitfall Death
       if (p.y > 470) {
         p.isDead = true;
         showToast(`🕳️ ${p.name} 掉入深淵陣亡！`, 'warning');
       }
 
-      // Reached Goal Check 🏆
       if (p.x >= 520 && p.y <= 210) {
         p.reached = true;
         finishOrderCounter++;
@@ -453,88 +616,51 @@ export async function renderFruitHavoc(container, params = {}) {
       }
     });
 
-    // Check if All Players finished or died -> Trigger Ultimate Chicken Horse Scoring
     const allEnded = players.every(p => p.isDead || p.reached);
     if (allEnded) {
-      _evaluateChickenHorseScoring();
-    }
-
-    // Send 60 FPS Movement state if Online P2P
-    if (mode === 'online' && isPeerConnected && players[0]) {
-      sendMovementState(players[0].x, players[0].y, players[0].vx, players[0].vy, 'run');
+      _evaluateRoundResults();
     }
   };
 
   /**
-   * Ultimate Chicken Horse Authentic Scoring Engine (黃金過難/過易 結算機制)
+   * 黃金結算並準備進入【場景 3: 記分】
    */
-  const _evaluateChickenHorseScoring = () => {
-    gamePhase = 'ROUND_SUMMARY';
+  const _evaluateRoundResults = () => {
+    players.forEach(p => p.prevScore = p.score); // 保存舊分數供進度條過渡動畫
+
     const reachedPlayers = players.filter(p => p.reached);
     const totalCount = players.length;
+    const reasonEl = container.querySelector('#score-summary-reason');
 
-    let summaryMsg = '';
+    let summaryText = '';
 
     if (reachedPlayers.length === totalCount) {
-      // 所有人通通到達 -> 太簡單！全體 0 分！
-      summaryMsg = '❌ 本輪【全員皆到達終點】！關卡太簡單，所有玩家獲得 0 分！';
+      summaryText = '❌ 本輪全員皆到達終點！關卡太簡單，所有人得 0 分！';
     } else if (reachedPlayers.length === 0) {
-      // 所有人通通陣亡 -> 太難！全體 0 分！
-      summaryMsg = '💥 本輪【全體陣亡無人到達】！關卡太危險，所有玩家獲得 0 分！';
+      summaryText = '💥 本輪全體陣亡無人到達！關卡太危險，所有人得 0 分！';
     } else {
-      // 部分人通過，部分人陣亡 -> 觸發標準結算得分！
-      summaryMsg = '🏆 本輪關卡難易度適中！結算得分：\n';
+      summaryText = '🏆 本輪關卡難易度適中！順利得分：';
       reachedPlayers.forEach(p => {
-        let pts = 1; // 基礎通關分 +1
-        if (p.finishRank === 1) pts += 1; // 第一名冠軍分 +1
-        if (reachedPlayers.length === 1) pts += 2; // 獨自通關 Solo 分 +2
-
+        let pts = 1;
+        if (p.finishRank === 1) pts += 1;
+        if (reachedPlayers.length === 1) pts += 2;
         p.score += pts;
-        summaryMsg += `• ${p.char.icon} ${p.name}: +${pts} 分！\n`;
+        summaryText += ` ${p.char.icon} ${p.name}(+${pts}分)`;
       });
     }
 
-    _updateScoreboardUI();
-    showToast(summaryMsg, 'info');
+    if (reasonEl) reasonEl.textContent = summaryText;
 
-    // Check match winner or next round
-    const winner = players.find(p => p.score >= targetScore);
-
-    const phaseBtn = container.querySelector('#btn-phase-toggle');
-    const phaseBadge = container.querySelector('#stage-phase-badge');
-
-    if (winner) {
-      gamePhase = 'MATCH_OVER';
-      if (phaseBadge) phaseBadge.textContent = '🎉 比賽結束！冠軍出爐！';
-      if (phaseBtn) {
-        phaseBtn.style.display = 'block';
-        phaseBtn.textContent = `👑 恭喜 ${winner.char.icon} ${winner.name} 贏得最終總冠軍！點擊重新開局`;
-      }
-    } else {
-      if (currentRound >= maxRounds) {
-        // Round Limit Reached -> 最高分獲勝
-        const topPlayer = [...players].sort((a, b) => b.score - a.score)[0];
-        gamePhase = 'MATCH_OVER';
-        if (phaseBadge) phaseBadge.textContent = '🏁 已達最大輪次！結算總冠軍';
-        if (phaseBtn) {
-          phaseBtn.style.display = 'block';
-          phaseBtn.textContent = `👑 8 輪結束！最高分 ${topPlayer.char.icon} ${topPlayer.name} (${topPlayer.score}分) 獲勝！`;
-        }
-      } else {
-        // Advance to Next Round
-        if (phaseBtn) {
-          phaseBtn.style.display = 'block';
-          phaseBtn.textContent = `進度：進入第 ${currentRound + 1} / ${maxRounds} 輪擺放階段`;
-        }
-      }
-    }
+    // 切換至場景 3: 記分場景！
+    setTimeout(() => {
+      switchScene(3);
+    }, 800);
   };
 
-  // Main Render Loop
+  // Main Canvas Render
   const drawStage = () => {
-    if (!ctx) return;
+    if (!ctx || (currentScene !== 1 && currentScene !== 2)) return;
 
-    // Clear & Grid
     ctx.fillStyle = '#f0f9ff';
     ctx.fillRect(0, 0, 640, 480);
 
@@ -553,7 +679,6 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.stroke();
     }
 
-    // Platforms
     PLATFORMS.forEach(plat => {
       ctx.fillStyle = '#fdba74';
       ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
@@ -561,14 +686,12 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.strokeRect(plat.x, plat.y, plat.w, plat.h);
     });
 
-    // Goal Flag 🏆
     ctx.font = '28px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('🏆', 540, 180);
     ctx.fillText('🎂', 480, 180);
 
-    // Draw All Placed Traps
     placedTraps.forEach(pt => {
       const px = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
       const py = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
@@ -582,8 +705,7 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.fillText(pt.trap.icon, px, py);
     });
 
-    // Draw Hover Ghost
-    if (gamePhase === 'PLACEMENT' && hoverGrid) {
+    if (currentScene === 1 && hoverGrid) {
       const gx = hoverGrid.gridX * TILE_SIZE;
       const gy = hoverGrid.gridY * TILE_SIZE;
 
@@ -597,12 +719,10 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.fillText(selectedTrap.icon, gx + TILE_SIZE / 2, gy + TILE_SIZE / 2);
     }
 
-    // Draw All Active Players
     players.forEach(p => {
       if (!p.isDead) {
         ctx.font = '32px sans-serif';
         ctx.fillText(p.char.icon, p.x, p.y);
-
         ctx.fillStyle = p.char.color;
         ctx.font = '10px sans-serif';
         ctx.fillText(p.name, p.x, p.y - 22);
@@ -618,7 +738,7 @@ export async function renderFruitHavoc(container, params = {}) {
 
   animFrameId = requestAnimationFrame(gameLoop);
 
-  // Drag & Drop Traps Event Handlers
+  // Drag & Drop Handlers
   let draggedTrapId = null;
 
   container.querySelectorAll('.trap-select-item').forEach(item => {
@@ -634,7 +754,7 @@ export async function renderFruitHavoc(container, params = {}) {
     });
 
     item.addEventListener('dragstart', (e) => {
-      if (gamePhase !== 'PLACEMENT') return;
+      if (currentScene !== 1) return;
       const trapId = parseInt(item.dataset.trapId, 10);
       draggedTrapId = trapId;
       selectedTrap = TRAP_ITEMS.find(t => t.id === trapId);
@@ -653,10 +773,9 @@ export async function renderFruitHavoc(container, params = {}) {
     });
   });
 
-  // Drop Zone Event Handlers
   if (dropZone && canvas) {
     dropZone.addEventListener('dragover', (e) => {
-      if (gamePhase !== 'PLACEMENT') return;
+      if (currentScene !== 1) return;
       e.preventDefault();
 
       const rect = canvas.getBoundingClientRect();
@@ -678,7 +797,7 @@ export async function renderFruitHavoc(container, params = {}) {
     });
 
     dropZone.addEventListener('drop', (e) => {
-      if (gamePhase !== 'PLACEMENT') return;
+      if (currentScene !== 1) return;
       e.preventDefault();
       hoverGrid = null;
 
@@ -697,17 +816,14 @@ export async function renderFruitHavoc(container, params = {}) {
         const currentP = players[activePlacementPlayerIdx];
 
         if (targetTrap.id === 20) {
-          // 💥 炸彈道具：拆除該格地圖障礙！
           placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
-          showToast(`💥 ${currentP.name} 炸毀拆除了位置 (${gridX}, ${gridY}) 的障礙物！`, 'warning');
+          showToast(`💥 ${currentP.name} 拆除了位置 (${gridX}, ${gridY}) 的障礙物！`, 'warning');
         } else {
-          // 一般陷阱擺放
           placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
           placedTraps.push({ id: Date.now(), trap: targetTrap, gridX, gridY, placedBy: currentP.id });
-          showToast(`🎉 ${currentP.name} 成功拖放【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
+          showToast(`🎉 ${currentP.name} 放置【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
         }
 
-        // 輪流擺放邏輯：切換至下一個玩家擺放
         activePlacementPlayerIdx = (activePlacementPlayerIdx + 1) % players.length;
         _updateTurnUI();
 
@@ -718,69 +834,60 @@ export async function renderFruitHavoc(container, params = {}) {
     });
   }
 
-  // Phase Button Handler (進度流程推進按鈕)
-  const phaseBtn = container.querySelector('#btn-phase-toggle');
-  const phaseBadge = container.querySelector('#stage-phase-badge');
-  const tipEl = container.querySelector('#stage-tip');
-  const touchControls = container.querySelector('#mobile-touch-controls');
+  // ----------------------------------------------------
+  // 按鈕點擊切換 4大場景
+  // ----------------------------------------------------
+  // 1. 布置完成按鈕 (場景 1 -> 場景 2)
+  container.querySelector('#btn-build-finish')?.addEventListener('click', () => {
+    resetAllPlayersPos();
+    finishOrderCounter = 0;
+    switchScene(2); // 進入「2. 開始玩場地」
+  });
 
-  if (phaseBtn) {
-    phaseBtn.addEventListener('click', () => {
-      if (gamePhase === 'PLACEMENT') {
-        // 進入競速階段！所有人同時跑向終點
-        gamePhase = 'RACE';
-        resetAllPlayersPos();
-        finishOrderCounter = 0;
+  // 2. 記分場景按鈕 (場景 3 -> 場景 1 或 場景 4)
+  container.querySelector('#btn-score-next')?.addEventListener('click', () => {
+    _updateScoreboardUI();
 
-        phaseBtn.style.display = 'none';
-        if (phaseBadge) phaseBadge.textContent = `輪次 ${currentRound}: 全員同時競速開跑！`;
-        if (tipEl) tipEl.textContent = '🎮 P1:【A/D/W】 | P2:【←/→/↑】同時跑向終點旗！';
-        if (touchControls) touchControls.style.display = 'flex';
+    const winner = players.find(p => p.score >= targetScore);
 
-        showToast(`🚀 3, 2, 1, GO! 第 ${currentRound} 輪競速開跑！跑向終點旗 🏆`, 'success');
-      } else if (gamePhase === 'ROUND_SUMMARY') {
-        // 進入下一輪擺放進度
-        currentRound++;
-        gamePhase = 'PLACEMENT';
-        activePlacementPlayerIdx = 0;
-        resetAllPlayersPos();
+    if (winner) {
+      winnerPlayer = winner;
+      switchScene(4); // 進入「4. 獲勝影片場景」
+    } else if (currentRound >= maxRounds) {
+      winnerPlayer = [...players].sort((a, b) => b.score - a.score)[0];
+      switchScene(4); // 已達 8 輪次上限 -> 進入「4. 獲勝影片場景」
+    } else {
+      currentRound++;
+      activePlacementPlayerIdx = 0;
+      resetAllPlayersPos();
+      container.querySelector('#round-counter-tag').textContent = `第 ${currentRound} / ${maxRounds} 輪`;
+      switchScene(1); // 繼續進入下一輪「1. 布置場地」
+    }
+  });
 
-        container.querySelector('#round-counter-tag').textContent = `輪次: 第 ${currentRound} / ${maxRounds} 輪`;
-        if (phaseBadge) phaseBadge.textContent = `輪次 ${currentRound}: 擺放階段`;
-        if (touchControls) touchControls.style.display = 'none';
+  // 3. 獲勝影片重新開始按鈕 (場景 4 -> 場景 1)
+  container.querySelector('#btn-victory-restart')?.addEventListener('click', () => {
+    currentRound = 1;
+    players.forEach(p => { p.score = 0; p.prevScore = 0; });
+    activePlacementPlayerIdx = 0;
+    placedTraps = [
+      { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9, placedBy: 1 },
+      { id: 2, trap: TRAP_ITEMS[8], gridX: 8, gridY: 10, placedBy: 2 }
+    ];
+    _reinitPlayers();
+    _updateScoreboardUI();
+    resetAllPlayersPos();
+    container.querySelector('#round-counter-tag').textContent = `第 ${currentRound} / ${maxRounds} 輪`;
+    switchScene(1); // 重置開局「1. 布置場地」
+  });
 
-        phaseBtn.textContent = '🚀 全員擺放完成！開跑同時競速';
-        _updateTurnUI();
-      } else if (gamePhase === 'MATCH_OVER') {
-        // 重新開始全場比賽
-        currentRound = 1;
-        players.forEach(p => p.score = 0);
-        gamePhase = 'PLACEMENT';
-        activePlacementPlayerIdx = 0;
-        placedTraps = [
-          { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9, placedBy: 1 },
-          { id: 2, trap: TRAP_ITEMS[8], gridX: 8, gridY: 10, placedBy: 2 }
-        ];
-
-        _reinitPlayers();
-        _updateScoreboardUI();
-        resetAllPlayersPos();
-
-        container.querySelector('#round-counter-tag').textContent = `輪次: 第 ${currentRound} / ${maxRounds} 輪`;
-        if (phaseBadge) phaseBadge.textContent = '輪次 1: 擺放階段';
-        if (touchControls) touchControls.style.display = 'none';
-
-        phaseBtn.textContent = '🚀 全員擺放完成！開跑同時競速';
-        _updateTurnUI();
-
-        showToast('🔄 新局比賽重置完畢！開始第一輪擺放', 'info');
-      }
-    });
-  }
+  // 開局初始切換至「場景 1: 布置場地」
+  switchScene(1);
 
   return () => {
     closeFruitPeer();
     if (animFrameId) cancelAnimationFrame(animFrameId);
+    if (victoryAnimId) cancelAnimationFrame(victoryAnimId);
     _removeKeyListeners();
   };
 }
