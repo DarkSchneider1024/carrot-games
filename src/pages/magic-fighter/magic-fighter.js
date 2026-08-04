@@ -1,32 +1,33 @@
 /**
- * Magic Fighter Battle Page (魔法對戰主頁面)
- * Supports AI Wave Survival & P2P Online Room Match, Mobile 100dvh Lock, & Virtual Joystick.
+ * Magic Fighter 3D Battle Page (全 3D 魔法對戰主頁面)
+ * Features Three.js WebGL 3D Engine, 360° Analog Virtual Joystick, & Rapid Movement.
  */
 
 import { MagicFighterGame } from '../../games/magic-fighter/game-controller.js';
-import { FighterRenderer } from '../../games/magic-fighter/fighter-renderer.js';
+import { FighterRenderer3D } from '../../games/magic-fighter/fighter-renderer-3d.js';
+import { VirtualJoystick } from '../../components/joystick.js';
 import { PeerManager } from '../../network/peer-manager.js';
 import { updateUserChips, updateUserStats, getUserProfile } from '../../network/auth-manager.js';
 import { showToast } from '../../components/toast.js';
 
 export async function renderMagicFighter(container, params = {}) {
-  const mode = params.mode || 'ai'; // 'ai' or 'online'
+  const mode = params.mode || 'ai';
 
   let game = null;
-  let renderer = null;
-  let peer = null;
+  let renderer3D = null;
+  let joystick = null;
 
-  let activeTab = 'game'; // 'setup' or 'game'
+  let activeTab = 'game';
 
   container.innerHTML = `
     <div class="magic-fighter-page animate-fade-in">
-      <!-- Top Mobile Navigation Switcher (768px below) -->
+      <!-- Top Mobile Navigation Switcher -->
       <div class="game-mobile-tabs" id="mobile-tab-bar">
         <button class="mobile-tab-btn" id="btn-tab-setup">
-          ⚙️ 房間/設定
+          ⚙️ 模式與設定
         </button>
         <button class="mobile-tab-btn active" id="btn-tab-game">
-          🎮 魔法對戰區
+          🎮 3D 魔法對戰區
         </button>
       </div>
 
@@ -34,8 +35,8 @@ export async function renderMagicFighter(container, params = {}) {
         <!-- Sidebar Controls & Setup -->
         <aside class="magic-side-panel ${activeTab === 'setup' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-setup">
           <div class="panel-card">
-            <h2 class="panel-title">✈️ 魔法對戰 (MAGIC FIGHTER)</h2>
-            <p class="panel-desc">傳承經典《坦克大戰》的核心對戰！保護蘿蔔基地，破壞磚牆，擊退魔法戰機敵軍！</p>
+            <h2 class="panel-title">✈️ 魔法對戰 3D (MAGIC FIGHTER)</h2>
+            <p class="panel-desc">Three.js WebGL 3D 魔法空戰對決！保護 3D 蘿蔔水晶基地，破壞磚牆，擊退敵軍！</p>
 
             <div class="mode-badge-box">
               <span class="badge badge-warning">${mode === 'ai' ? '🤖 AI 波次關卡對決' : '🌐 線上 P2P 連線對抗'}</span>
@@ -56,7 +57,7 @@ export async function renderMagicFighter(container, params = {}) {
                 <span class="hud-value" id="hud-hp">❤️❤️❤️</span>
               </div>
               <div class="hud-item">
-                <span class="hud-label">蘿蔔基地</span>
+                <span class="hud-label">蘿蔔水晶基地</span>
                 <span class="hud-value" id="hud-base-status">🛡️ 完好</span>
               </div>
             </div>
@@ -64,7 +65,7 @@ export async function renderMagicFighter(container, params = {}) {
             <!-- Game Actions -->
             <div class="actions-box">
               <button class="btn btn-primary btn-block" id="btn-restart-game">
-                🔄 重新開始遊戲
+                🔄 重新開始 3D 遊戲
               </button>
               <a href="#/" class="btn btn-secondary btn-block" style="text-align:center;">
                 🏠 返回遊戲大廳
@@ -73,23 +74,20 @@ export async function renderMagicFighter(container, params = {}) {
 
             <!-- Instructions -->
             <div class="guide-box">
-              <h4>🎮 操作說明</h4>
-              <p>💻 **電腦**：方向鍵 / WASD 移動戰機，【空白鍵 Space】發射魔法子彈。</p>
-              <p>📱 **手機**：使用下方虛擬搖桿與開火按鈕操作。</p>
-              <p>⚡ **道具掉落**：雙重連發、魔法護盾、全螢幕清場與基地加固。</p>
+              <h4>🎮 3D 控制說明</h4>
+              <p>💻 **電腦**：方向鍵 / WASD 自由飛行，【空白鍵 Space】發射魔法子彈。</p>
+              <p>📱 **手機**：左半螢幕按住觸控按滑滑動 **360° 模擬搖桿** 進行飛行，右側點擊 **【開火】**。</p>
             </div>
           </div>
         </aside>
 
-        <!-- Main Game Area -->
+        <!-- Main Game 3D Area -->
         <main class="magic-main-area ${activeTab === 'game' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-game">
-          <div class="canvas-wrapper">
-            <canvas id="fighter-canvas" width="640" height="640"></canvas>
-            
+          <div class="canvas-wrapper-3d" id="three-container">
             <!-- Game Over Overlay -->
             <div class="game-over-overlay" id="game-over-modal" style="display:none;">
               <div class="game-over-card animate-scale-up">
-                <h2 id="go-title">🎮 遊戲結束</h2>
+                <h2 id="go-title">🎮 3D 戰局結束</h2>
                 <p id="go-desc">蘿蔔基地已失守！</p>
                 <div class="go-reward" id="go-reward-chips">+ $0 籌碼</div>
                 <button class="btn btn-primary" id="btn-modal-restart">🔄 再玩一局</button>
@@ -97,19 +95,14 @@ export async function renderMagicFighter(container, params = {}) {
             </div>
           </div>
 
-          <!-- Mobile Virtual Joystick & Actions -->
-          <div class="mobile-controller-bar">
-            <div class="dpad-box">
-              <button class="dpad-btn up" id="btn-dpad-up">▲</button>
-              <div class="dpad-row">
-                <button class="dpad-btn left" id="btn-dpad-left">◄</button>
-                <button class="dpad-btn right" id="btn-dpad-right">►</button>
-              </div>
-              <button class="dpad-btn down" id="btn-dpad-down">▼</button>
+          <!-- Mobile Virtual Controls -->
+          <div class="mobile-3d-controller-bar">
+            <div class="joystick-touch-zone" id="joystick-zone">
+              <span class="joystick-hint">👈 左側觸控區域：360° 模擬搖桿</span>
             </div>
-            <button class="mobile-fire-btn" id="btn-mobile-fire">
+            <button class="mobile-fire-btn-3d" id="btn-mobile-fire">
               🔥
-              <span>射擊</span>
+              <span>開火</span>
             </button>
           </div>
         </main>
@@ -117,7 +110,7 @@ export async function renderMagicFighter(container, params = {}) {
     </div>
   `;
 
-  // Mobile Tab Switching
+  // Mobile Tab Switcher
   const btnTabSetup = container.querySelector('#btn-tab-setup');
   const btnTabGame = container.querySelector('#btn-tab-game');
   const panelSetup = container.querySelector('#panel-setup');
@@ -145,14 +138,34 @@ export async function renderMagicFighter(container, params = {}) {
   btnTabSetup?.addEventListener('click', () => switchTab('setup'));
   btnTabGame?.addEventListener('click', () => switchTab('game'));
 
-  // Initialize Game & Canvas
-  const canvas = container.querySelector('#fighter-canvas');
+  // Initialize Game & 3D WebGL Renderer
+  const threeContainer = container.querySelector('#three-container');
   game = new MagicFighterGame();
-  renderer = new FighterRenderer();
+  renderer3D = new FighterRenderer3D();
 
-  game.init(canvas);
+  const cWidth = threeContainer.clientWidth || 640;
+  const cHeight = threeContainer.clientHeight || 640;
 
-  // Keyboard Listeners
+  renderer3D.init(threeContainer, cWidth, cHeight);
+  game.init(null);
+
+  // Initialize 360° Virtual Joystick
+  const joystickZone = container.querySelector('#joystick-zone');
+  if (joystickZone) {
+    joystick = new VirtualJoystick(joystickZone, {
+      maxRadius: 55,
+      onMove: (vector) => {
+        if (game && game.running) {
+          game.movePlayerVector(vector.x, vector.y);
+        }
+      },
+      onEnd: () => {
+        if (game) game.stopPlayer();
+      }
+    });
+  }
+
+  // Keyboard Listeners (Combined 360° Velocity Calculation)
   const activeKeys = {};
   const handleKeyDown = (e) => {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'w', 'a', 's', 'd'].includes(e.code)) {
@@ -172,35 +185,43 @@ export async function renderMagicFighter(container, params = {}) {
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
 
-  // Key Loop for smooth continuous movement
+  // Keyboard Key Loop for continuous movement
   let keyInterval = setInterval(() => {
     if (!game || !game.running) return;
 
-    if (activeKeys['ArrowUp'] || activeKeys['KeyW']) game.movePlayer('UP');
-    else if (activeKeys['ArrowDown'] || activeKeys['KeyS']) game.movePlayer('DOWN');
-    else if (activeKeys['ArrowLeft'] || activeKeys['KeyA']) game.movePlayer('LEFT');
-    else if (activeKeys['ArrowRight'] || activeKeys['KeyD']) game.movePlayer('RIGHT');
-  }, 30);
+    let vx = 0;
+    let vy = 0;
 
-  // Mobile Controller Buttons
-  const dpadUp = container.querySelector('#btn-dpad-up');
-  const dpadDown = container.querySelector('#btn-dpad-down');
-  const dpadLeft = container.querySelector('#btn-dpad-left');
-  const dpadRight = container.querySelector('#btn-dpad-right');
+    if (activeKeys['ArrowLeft'] || activeKeys['KeyA']) vx -= 1;
+    if (activeKeys['ArrowRight'] || activeKeys['KeyD']) vx += 1;
+    if (activeKeys['ArrowUp'] || activeKeys['KeyW']) vy -= 1;
+    if (activeKeys['ArrowDown'] || activeKeys['KeyS']) vy += 1;
+
+    // Normalize diagonal velocity
+    if (vx !== 0 && vy !== 0) {
+      vx *= 0.7071;
+      vy *= 0.7071;
+    }
+
+    if (vx !== 0 || vy !== 0) {
+      game.movePlayerVector(vx, vy);
+    } else if (!joystick || !joystick.active) {
+      game.stopPlayer();
+    }
+  }, 20);
+
+  // Mobile Fire Button
   const btnFire = container.querySelector('#btn-mobile-fire');
+  btnFire?.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    game.firePlayerBullet();
+  });
+  btnFire?.addEventListener('click', () => game.firePlayerBullet());
 
-  dpadUp?.addEventListener('touchstart', (e) => { e.preventDefault(); game.movePlayer('UP'); });
-  dpadDown?.addEventListener('touchstart', (e) => { e.preventDefault(); game.movePlayer('DOWN'); });
-  dpadLeft?.addEventListener('touchstart', (e) => { e.preventDefault(); game.movePlayer('LEFT'); });
-  dpadRight?.addEventListener('touchstart', (e) => { e.preventDefault(); game.movePlayer('RIGHT'); });
-  btnFire?.addEventListener('touchstart', (e) => { e.preventDefault(); game.firePlayerBullet(); });
-
-  // Game Engine State Change Listener
+  // Engine State Sync
   game.onStateChange = (state) => {
-    // Render Frame
-    renderer.render(game.ctx, state, game.width, game.height);
+    renderer3D.render(state);
 
-    // Update HUD
     const hudScore = container.querySelector('#hud-score');
     const hudWave = container.querySelector('#hud-wave');
     const hudHp = container.querySelector('#hud-hp');
@@ -219,21 +240,20 @@ export async function renderMagicFighter(container, params = {}) {
     const descEl = container.querySelector('#go-desc');
     const rewardEl = container.querySelector('#go-reward-chips');
 
-    const reward = victory ? 300 + score : Math.floor(score / 2);
+    const reward = victory ? 400 + score : Math.floor(score / 2);
     if (reward > 0) {
       const profile = getUserProfile();
       await updateUserChips(profile.chips + reward);
     }
     await updateUserStats('magicFighter', { isWin: victory, netProfit: reward });
 
-    if (titleEl) titleEl.textContent = victory ? '🎉 空戰勝利！' : '💥 戰局結束';
+    if (titleEl) titleEl.textContent = victory ? '🎉 3D 空戰全勝！' : '💥 3D 戰局結束';
     if (descEl) descEl.textContent = reason;
     if (rewardEl) rewardEl.textContent = `🎁 獲得帳號籌碼本金：+$${reward.toLocaleString()}`;
 
     if (modal) modal.style.display = 'flex';
   };
 
-  // Restart Handlers
   const restartGame = () => {
     const modal = container.querySelector('#game-over-modal');
     if (modal) modal.style.display = 'none';
@@ -243,11 +263,12 @@ export async function renderMagicFighter(container, params = {}) {
   container.querySelector('#btn-restart-game')?.addEventListener('click', restartGame);
   container.querySelector('#btn-modal-restart')?.addEventListener('click', restartGame);
 
-  // Cleanup Function
   return () => {
     window.removeEventListener('keydown', handleKeyDown);
     window.removeEventListener('keyup', handleKeyUp);
     if (keyInterval) clearInterval(keyInterval);
+    if (joystick) joystick.destroy();
     if (game) game.destroy();
+    if (renderer3D) renderer3D.destroy();
   };
 }

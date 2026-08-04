@@ -1,8 +1,7 @@
 /**
- * Magic Fighter Battle Engine (魔法對戰戰術空戰核心)
+ * Magic Fighter 3D Engine — Game Controller
  *
- * Classic Battle City / Tank Battalion reinvented with Magic Fighter Jets:
- * Protect Carrot Base, Destroy Brick/Steel Terrain, Spawn Waves of Enemy Jets, & Collect Power-ups!
+ * Handles 360° Flight Kinematics, Collision Detection, Enemy Spawners & Powerups.
  */
 
 export const MAP_GRID_SIZE = 16; // 16x16 Grid
@@ -19,8 +18,6 @@ export const POWERUP_BASE_FORTIFY = 'base_fortify';
 
 export class MagicFighterGame {
   constructor() {
-    this.canvas = null;
-    this.ctx = null;
     this.width = 640;
     this.height = 640;
     this.tileSize = 40;
@@ -32,14 +29,17 @@ export class MagicFighterGame {
     this.wave = 1;
     this.maxWaves = 5;
 
-    // Player Jet State
+    // Player Jet State (360° Flight Kinematics)
     this.player = {
       x: 240,
       y: 560,
       width: 36,
       height: 36,
-      speed: 3.5,
-      direction: 'UP', // 'UP', 'DOWN', 'LEFT', 'RIGHT'
+      speed: 6.0, // High Speed Responsive Movement
+      direction: 'UP',
+      vx: 0,
+      vy: 0,
+      bankAngle: 0, // Visual 3D roll/tilt angle
       hp: 3,
       maxHp: 3,
       hasShield: false,
@@ -47,7 +47,7 @@ export class MagicFighterGame {
       dualShot: false,
       dualShotTime: 0,
       lastFireTime: 0,
-      fireRate: 250, // ms
+      fireRate: 200, // Rapid fire rate
     };
 
     // Base State (Carrot Magic Crystal at Bottom Center)
@@ -77,10 +77,8 @@ export class MagicFighterGame {
   }
 
   init(canvas) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
-    this.width = canvas.width || 640;
-    this.height = canvas.height || 640;
+    this.width = canvas?.width || 640;
+    this.height = canvas?.height || 640;
     this.tileSize = this.width / MAP_GRID_SIZE;
 
     this.newGame();
@@ -97,6 +95,9 @@ export class MagicFighterGame {
     this.player.x = (MAP_GRID_SIZE / 2 - 2) * this.tileSize;
     this.player.y = (MAP_GRID_SIZE - 2) * this.tileSize;
     this.player.hp = 3;
+    this.player.vx = 0;
+    this.player.vy = 0;
+    this.player.speed = 6.0;
     this.player.direction = 'UP';
     this.player.hasShield = true;
     this.player.shieldTime = Date.now() + 3000;
@@ -158,45 +159,51 @@ export class MagicFighterGame {
       this.enemies.push({
         id: `e_${i}_${Date.now()}`,
         x: col * this.tileSize,
-        y: -40 - (i * 65), // Staggered spawn
+        y: -40 - (i * 65),
         width: 36,
         height: 36,
-        speed: isHeavy ? 1.5 : 2.2,
+        speed: isHeavy ? 2.0 : 3.2,
         direction: 'DOWN',
-        hp: isHeavy ? 2 : 1,
-        maxHp: isHeavy ? 2 : 1,
+        hp: isHeavy ? 3 : 1,
+        maxHp: isHeavy ? 3 : 1,
         isHeavy,
         lastFire: 0,
-        fireRate: isHeavy ? 1200 : 1800,
+        fireRate: isHeavy ? 1000 : 1500,
         changeDirTime: 0,
       });
     }
   }
 
-  movePlayer(dir) {
+  movePlayerVector(vx, vy) {
     if (!this.running || this.gameOver) return;
 
-    this.player.direction = dir;
-    let nextX = this.player.x;
-    let nextY = this.player.y;
+    this.player.vx = vx * this.player.speed;
+    this.player.vy = vy * this.player.speed;
 
-    if (dir === 'UP') nextY -= this.player.speed;
-    else if (dir === 'DOWN') nextY += this.player.speed;
-    else if (dir === 'LEFT') nextX -= this.player.speed;
-    else if (dir === 'RIGHT') nextX += this.player.speed;
+    // Determine Direction Label & Bank Angle
+    if (Math.abs(vx) > 0.1 || Math.abs(vy) > 0.1) {
+      this.player.bankAngle = vx * 0.4; // 3D roll banking
 
-    // Boundary Check
-    nextX = Math.max(0, Math.min(this.width - this.player.width, nextX));
-    nextY = Math.max(0, Math.min(this.height - this.player.height, nextY));
-
-    // Collision with Walls
-    if (!this._checkWallCollision(nextX, nextY, this.player.width, this.player.height)) {
-      this.player.x = nextX;
-      this.player.y = nextY;
+      if (Math.abs(vx) > Math.abs(vy)) {
+        this.player.direction = vx > 0 ? 'RIGHT' : 'LEFT';
+      } else {
+        this.player.direction = vy > 0 ? 'DOWN' : 'UP';
+      }
+    } else {
+      this.player.bankAngle *= 0.8;
     }
+  }
 
-    // Check Powerup Pickups
-    this._checkPowerupPickup();
+  movePlayer(dir) {
+    if (dir === 'UP') this.movePlayerVector(0, -1);
+    else if (dir === 'DOWN') this.movePlayerVector(0, 1);
+    else if (dir === 'LEFT') this.movePlayerVector(-1, 0);
+    else if (dir === 'RIGHT') this.movePlayerVector(1, 0);
+  }
+
+  stopPlayer() {
+    this.player.vx = 0;
+    this.player.vy = 0;
   }
 
   firePlayerBullet() {
@@ -207,7 +214,6 @@ export class MagicFighterGame {
     this.player.lastFireTime = now;
 
     if (this.player.dualShot) {
-      // Fire 2 parallel bullets
       this.bullets.push(
         this._createBullet(this.player.x + 4, this.player.y, this.player.direction, true),
         this._createBullet(this.player.x + this.player.width - 12, this.player.y, this.player.direction, true)
@@ -223,9 +229,9 @@ export class MagicFighterGame {
     return {
       x,
       y,
-      width: 8,
-      height: 8,
-      speed: 7,
+      width: 10,
+      height: 10,
+      speed: 9,
       direction: dir,
       isPlayer,
     };
@@ -250,7 +256,22 @@ export class MagicFighterGame {
 
     const now = Date.now();
 
-    // Check Shield & Powerup Timeouts
+    // Update Player Kinematics
+    if (Math.abs(this.player.vx) > 0.01 || Math.abs(this.player.vy) > 0.01) {
+      let nextX = this.player.x + this.player.vx;
+      let nextY = this.player.y + this.player.vy;
+
+      nextX = Math.max(0, Math.min(this.width - this.player.width, nextX));
+      nextY = Math.max(0, Math.min(this.height - this.player.height, nextY));
+
+      if (!this._checkWallCollision(nextX, nextY, this.player.width, this.player.height)) {
+        this.player.x = nextX;
+        this.player.y = nextY;
+      }
+      this._checkPowerupPickup();
+    }
+
+    // Shield & Powerup Timers
     if (this.player.hasShield && now > this.player.shieldTime) {
       this.player.hasShield = false;
     }
@@ -258,21 +279,19 @@ export class MagicFighterGame {
       this.player.dualShot = false;
     }
 
-    // Update Enemies AI
+    // Update Enemies
     this.enemies.forEach((e) => {
       if (e.y < 0) {
-        e.y += e.speed; // Move onto screen
+        e.y += e.speed;
         return;
       }
 
-      // Change Direction periodically
       if (now > e.changeDirTime) {
         const dirs = ['DOWN', 'DOWN', 'LEFT', 'RIGHT', 'UP'];
         e.direction = dirs[Math.floor(Math.random() * dirs.length)];
-        e.changeDirTime = now + 1500 + Math.random() * 2000;
+        e.changeDirTime = now + 1200 + Math.random() * 1800;
       }
 
-      // Move Enemy
       let nextX = e.x;
       let nextY = e.y;
       if (e.direction === 'UP') nextY -= e.speed;
@@ -287,13 +306,12 @@ export class MagicFighterGame {
         e.x = nextX;
         e.y = nextY;
       } else {
-        e.direction = 'DOWN'; // Fallback towards base
+        e.direction = 'DOWN';
       }
 
-      // Enemy Fire
       if (now - e.lastFire > e.fireRate) {
         e.lastFire = now;
-        this.bullets.push(this._createBullet(e.x + e.width / 2 - 4, e.y + e.height, 'DOWN', false));
+        this.bullets.push(this._createBullet(e.x + e.width / 2 - 5, e.y + e.height, 'DOWN', false));
       }
     });
 
@@ -305,59 +323,53 @@ export class MagicFighterGame {
       else if (b.direction === 'LEFT') b.x -= b.speed;
       else if (b.direction === 'RIGHT') b.x += b.speed;
 
-      // Out of Screen
       if (b.x < 0 || b.x > this.width || b.y < 0 || b.y > this.height) {
         this.bullets.splice(i, 1);
         continue;
       }
 
-      // Bullet vs Wall Collision
       const tileC = Math.floor((b.x + b.width / 2) / this.tileSize);
       const tileR = Math.floor((b.y + b.height / 2) / this.tileSize);
 
       if (tileR >= 0 && tileR < MAP_GRID_SIZE && tileC >= 0 && tileC < MAP_GRID_SIZE) {
         const tileType = this.map[tileR][tileC];
         if (tileType === TILE_BRICK) {
-          this.map[tileR][tileC] = TILE_EMPTY; // Destroy Brick
-          this._createExplosion(b.x, b.y, '#ff7544');
+          this.map[tileR][tileC] = TILE_EMPTY;
+          this._createExplosion(b.x, b.y, '#ff7544', 12);
           this.bullets.splice(i, 1);
           continue;
         } else if (tileType === TILE_STEEL) {
-          this._createExplosion(b.x, b.y, '#94a3b8');
+          this._createExplosion(b.x, b.y, '#94a3b8', 6);
           this.bullets.splice(i, 1);
           continue;
         }
       }
 
-      // Bullet vs Base Collision
       if (this._rectOverlap(b, { x: 280, y: 580, width: 80, height: 40 })) {
         this.base.destroyed = true;
-        this._createExplosion(320, 600, '#ef4444', 20);
-        this._triggerGameOver(false, '蘿蔔水晶基地已被摧毀！');
+        this._createExplosion(320, 600, '#ef4444', 25);
+        this._triggerGameOver(false, '蘿蔔魔法水晶基地已被摧毀！');
         return;
       }
 
-      // Player Bullet vs Enemy
       if (b.isPlayer) {
         for (let j = this.enemies.length - 1; j >= 0; j--) {
           const enemy = this.enemies[j];
           if (this._rectOverlap(b, enemy)) {
             enemy.hp--;
-            this._createExplosion(b.x, b.y, '#ff70a6');
+            this._createExplosion(b.x, b.y, '#ff70a6', 10);
             this.bullets.splice(i, 1);
 
             if (enemy.hp <= 0) {
               this.score += enemy.isHeavy ? 200 : 100;
-              this._createExplosion(enemy.x + 18, enemy.y + 18, '#ff7544', 15);
+              this._createExplosion(enemy.x + 18, enemy.y + 18, '#ff7544', 20);
 
-              // Chance to drop powerup
-              if (Math.random() < 0.35) {
+              if (Math.random() < 0.40) {
                 this._dropPowerup(enemy.x, enemy.y);
               }
 
               this.enemies.splice(j, 1);
 
-              // Check Wave Complete
               if (this.enemies.length === 0) {
                 if (this.wave < this.maxWaves) {
                   this.wave++;
@@ -366,7 +378,7 @@ export class MagicFighterGame {
                   this.player.shieldTime = Date.now() + 2500;
                 } else {
                   this.victory = true;
-                  this._triggerGameOver(true, '🎉 全波次通關！戰鬥機空戰成功保護蘿蔔基地！');
+                  this._triggerGameOver(true, '🎉 全波次 3D 魔法空戰通關！成功守護蘿蔔基地！');
                 }
               }
             }
@@ -374,17 +386,16 @@ export class MagicFighterGame {
           }
         }
       } else {
-        // Enemy Bullet vs Player
         if (this._rectOverlap(b, this.player)) {
           this.bullets.splice(i, 1);
           if (!this.player.hasShield) {
             this.player.hp--;
             this.player.hasShield = true;
             this.player.shieldTime = Date.now() + 2000;
-            this._createExplosion(this.player.x + 18, this.player.y + 18, '#ef4444', 12);
+            this._createExplosion(this.player.x + 18, this.player.y + 18, '#ef4444', 16);
 
             if (this.player.hp <= 0) {
-              this._triggerGameOver(false, '戰機擊沉！遊戲結束');
+              this._triggerGameOver(false, '戰機擊沉！3D 遊戲結束');
               return;
             }
           }
@@ -426,8 +437,7 @@ export class MagicFighterGame {
           this.player.hasShield = true;
           this.player.shieldTime = now + 5000;
         } else if (p.type === POWERUP_BOMB) {
-          // Clear all current enemy jets
-          this.enemies.forEach((e) => this._createExplosion(e.x + 18, e.y + 18, '#ff70a6', 12));
+          this.enemies.forEach((e) => this._createExplosion(e.x + 18, e.y + 18, '#ff70a6', 15));
           this.score += this.enemies.length * 100;
           this.enemies = [];
           if (this.wave < this.maxWaves) {
@@ -435,13 +445,12 @@ export class MagicFighterGame {
             this._spawnWave(this.wave);
           } else {
             this.victory = true;
-            this._triggerGameOver(true, '🎉 魔法炸彈清場！完美勝利！');
+            this._triggerGameOver(true, '🎉 3D 魔法清場引爆！完美勝利！');
           }
         } else if (p.type === POWERUP_SPEED) {
-          this.player.speed = 5.0;
-          setTimeout(() => (this.player.speed = 3.5), 8000);
+          this.player.speed = 8.5;
+          setTimeout(() => (this.player.speed = 6.0), 8000);
         } else if (p.type === POWERUP_BASE_FORTIFY) {
-          // Turn walls around base into steel for 8s
           for (let r = 14; r < 16; r++) {
             for (let c = 6; c < 10; c++) {
               if (this.map[r][c] !== TILE_EMPTY) this.map[r][c] = TILE_STEEL;
@@ -469,7 +478,6 @@ export class MagicFighterGame {
       }
     }
 
-    // Base Collision
     if (this._rectOverlap({ x, y, width: w, height: h }, { x: 280, y: 580, width: 80, height: 40 })) {
       return true;
     }
@@ -486,10 +494,10 @@ export class MagicFighterGame {
     );
   }
 
-  _createExplosion(x, y, color = '#ff7544', count = 8) {
+  _createExplosion(x, y, color = '#ff7544', count = 10) {
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 1 + Math.random() * 3;
+      const speed = 2 + Math.random() * 4;
       this.particles.push({
         x,
         y,
