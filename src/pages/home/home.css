@@ -55,49 +55,50 @@
   gap: var(--space-3);
 }
 
-/* ── lativ 風格極簡桌面導覽列 (Lativ Minimalist Nav Header) ── */
+/* ── lativ 風格極簡統一高度導覽列 (Unified Height Nav Bar) ── */
 .lativ-style-nav {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.lativ-nav-links {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-.lativ-nav-link {
-  background: transparent;
-  border: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
+.lativ-nav-btn,
+.lativ-nav-badge {
+  height: 38px;
+  line-height: 1;
+  padding: 0 16px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 4px 6px;
-  border-radius: 6px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
 }
 
-.lativ-nav-link:hover {
-  color: var(--color-accent-primary);
-  background: rgba(255, 117, 68, 0.08);
+.lativ-nav-btn {
+  cursor: pointer;
 }
 
-.lativ-nav-link.storage-link {
+.lativ-nav-btn:hover {
+  background: #ffedd5;
+  color: #ea580c;
+  border-color: #fdba74;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.12);
+}
+
+.lativ-nav-badge {
+  background: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
   cursor: default;
-}
-
-.lativ-divider {
-  color: #cbd5e1;
-  font-size: 0.85rem;
-  font-weight: 300;
-  user-select: none;
 }
 
 .lativ-auth-box {
@@ -106,30 +107,7 @@
   gap: 8px;
 }
 
-.lativ-pill-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-radius: 30px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #334155;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.lativ-pill-btn:hover {
-  background: #ffedd5;
-  color: #ea580c;
-  border-color: #fdba74;
-  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
-  transform: translateY(-1px);
-}
-
-.lativ-pill-btn.auth-cta {
+.lativ-nav-btn.pill-gradient {
   background: linear-gradient(135deg, #ff7544, #ff70a6);
   color: #ffffff;
   border: none;
@@ -137,27 +115,24 @@
   box-shadow: 0 3px 12px rgba(255, 117, 68, 0.3);
 }
 
-.lativ-pill-btn.auth-cta:hover {
-  transform: translateY(-1px);
+.lativ-nav-btn.pill-gradient:hover {
   box-shadow: 0 6px 16px rgba(255, 117, 68, 0.45);
+  transform: translateY(-1px);
   color: #ffffff;
 }
 
-.lativ-pill-btn.guest {
-  background: rgba(241, 245, 249, 0.8);
-  border: 1px solid #e2e8f0;
-}
-
-.pill-icon {
-  display: flex;
-  align-items: center;
+.lativ-nav-btn.pill-guest,
+.lativ-nav-btn.pill-user {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
 }
 
 .pill-badge {
   font-size: 0.72rem;
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 10px;
   font-weight: 700;
+  margin-left: 2px;
 }
 
 .pill-badge.warning {
@@ -168,6 +143,13 @@
 .pill-badge.info {
   background: #e0f2fe;
   color: #0369a1;
+}
+
+.lativ-divider {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 300;
+  user-select: none;
 }
 
 .home-title {

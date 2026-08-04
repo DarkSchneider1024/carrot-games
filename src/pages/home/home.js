@@ -40,35 +40,36 @@ export async function renderHome(container) {
 
         <!-- 🖥️ 桌面 lativ 極簡風格導覽列 (Lativ Minimalist Style Desktop Nav Menu) -->
         <div class="home-header-actions desktop-nav-menu lativ-style-nav">
-          <div class="lativ-nav-links">
-            <button class="lativ-nav-link" id="btn-game-guide">
-              遊戲玩法說明
-            </button>
-            <span class="lativ-divider">|</span>
-            <button class="lativ-nav-link" id="btn-pwa-guide">
-              ${SVG_ICONS.smartphone} <span>手機安裝指南</span>
-            </button>
-            <span class="lativ-divider">|</span>
-            <div class="lativ-nav-link storage-link" id="storage-badge">
-              ${SVG_ICONS.storage} <span>存檔準備中...</span>
-            </div>
+          <button class="lativ-nav-btn" id="btn-game-guide">
+            遊戲玩法說明
+          </button>
+          
+          <span class="lativ-divider">|</span>
+
+          <button class="lativ-nav-btn" id="btn-pwa-guide">
+            ${SVG_ICONS.smartphone} 手機安裝指南
+          </button>
+
+          <span class="lativ-divider">|</span>
+
+          <div class="lativ-nav-badge" id="storage-badge">
+            ${SVG_ICONS.storage} 存檔準備中...
           </div>
+
+          <span class="lativ-divider">|</span>
 
           <div class="lativ-auth-box">
             ${isLoggedUser ? `
-              <button class="lativ-pill-btn" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
-                <span class="pill-icon">${SVG_ICONS.user}</span>
-                <span id="display-player-name" class="pill-name">${initialName}</span>
+              <button class="lativ-nav-btn pill-user" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
+                ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
                 <span class="pill-badge warning" id="display-user-chips">${initialChipsText}</span>
               </button>
             ` : `
-              <button class="lativ-pill-btn auth-cta" id="btn-auth-login">
-                <span class="pill-icon">${SVG_ICONS.user}</span>
-                <span>登入 / 註冊</span>
+              <button class="lativ-nav-btn pill-gradient" id="btn-auth-login">
+                ${SVG_ICONS.user} 登入 / 註冊
               </button>
-              <button class="lativ-pill-btn guest" id="btn-player-profile" title="訪客模式">
-                <span class="pill-icon">${SVG_ICONS.user}</span>
-                <span id="display-player-name" class="pill-name">${initialName}</span>
+              <button class="lativ-nav-btn pill-guest" id="btn-player-profile" title="訪客模式">
+                ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
                 <span class="pill-badge info" id="display-user-chips">訪客</span>
               </button>
             `}
@@ -597,9 +598,8 @@ export async function renderHome(container) {
     await storage.init();
     const badge = document.getElementById('storage-badge');
     const drawerBadge = document.getElementById('drawer-storage-badge');
-    const badgeHTML = `<span class="badge badge-success">${SVG_ICONS.storage} 本機存檔已就緒</span>`;
-    if (badge) badge.innerHTML = badgeHTML;
-    if (drawerBadge) drawerBadge.innerHTML = badgeHTML;
+    if (badge) badge.innerHTML = `${SVG_ICONS.storage} 本機存檔已就緒`;
+    if (drawerBadge) drawerBadge.innerHTML = `<span class="badge badge-success">${SVG_ICONS.storage} 本機存檔已就緒</span>`;
   } catch (e) {
     console.warn('Storage init failed:', e);
   }
