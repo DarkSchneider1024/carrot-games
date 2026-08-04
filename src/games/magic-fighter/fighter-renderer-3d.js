@@ -163,75 +163,130 @@ export class FighterRenderer3D {
   _createPlayerJet3D() {
     this.playerGroup = new THREE.Group();
 
-    // Main Fuselage (Titanium Slate Body)
-    const noseGeo = new THREE.ConeGeometry(12, 38, 8);
-    const noseMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.2, metalness: 0.8 });
-    const noseMesh = new THREE.Mesh(noseGeo, noseMat);
+    const f16Mat = new THREE.MeshStandardMaterial({
+      color: 0x475569, // F-16 Tactical Dark Gunmetal Gray
+      roughness: 0.25,
+      metalness: 0.75
+    });
+
+    const f16DarkMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      roughness: 0.4
+    });
+
+    const missileMat = new THREE.MeshStandardMaterial({
+      color: 0xf8fafc, // White AIM-9 Sidewinder Missile Body
+      roughness: 0.1,
+      metalness: 0.3
+    });
+
+    // 1. Long Needle Pitot Airspeed Probe & Sharp Nose Radome Cone (空速管與雷達罩)
+    const probeGeo = new THREE.CylinderGeometry(0.5, 0.5, 16, 8);
+    const probeMesh = new THREE.Mesh(probeGeo, missileMat);
+    probeMesh.rotation.x = Math.PI / 2;
+    probeMesh.position.z = -28;
+    this.playerGroup.add(probeMesh);
+
+    const noseGeo = new THREE.ConeGeometry(8, 28, 12);
+    const noseMesh = new THREE.Mesh(noseGeo, f16Mat);
     noseMesh.rotation.x = Math.PI / 2;
-    noseMesh.position.z = -10;
+    noseMesh.position.z = -14;
     this.playerGroup.add(noseMesh);
 
-    // Glass Canopy Cockpit
-    const canopyGeo = new THREE.SphereGeometry(8, 12, 12);
+    // 2. F-16 Blended Fuselage Body
+    const bodyGeo = new THREE.CylinderGeometry(8.5, 10, 32, 12);
+    const bodyMesh = new THREE.Mesh(bodyGeo, f16Mat);
+    bodyMesh.rotation.x = Math.PI / 2;
+    bodyMesh.position.z = 6;
+    this.playerGroup.add(bodyMesh);
+
+    // 3. Ventral Air Intake Scoop (腹部進氣口 Scoop)
+    const intakeGeo = new THREE.BoxGeometry(9, 6, 16);
+    const intakeMesh = new THREE.Mesh(intakeGeo, f16DarkMat);
+    intakeMesh.position.set(0, -6, 2);
+    this.playerGroup.add(intakeMesh);
+
+    // 4. Gold/Cyan Tinted Bubble Canopy Cockpit (水滴型透光座艙罩)
+    const canopyGeo = new THREE.SphereGeometry(7, 16, 16);
     const canopyMat = new THREE.MeshStandardMaterial({
       color: 0x38bdf8,
       emissive: 0x0284c7,
       emissiveIntensity: 0.3,
       transparent: true,
       opacity: 0.75,
-      roughness: 0.1
+      roughness: 0.05
     });
     const canopyMesh = new THREE.Mesh(canopyGeo, canopyMat);
-    canopyMesh.scale.set(1, 0.7, 1.8);
+    canopyMesh.scale.set(0.9, 0.8, 2.2);
     canopyMesh.position.set(0, 7, -6);
     this.playerGroup.add(canopyMesh);
 
-    // Swept Main Wings with Orange Accents
-    const wingGeo = new THREE.BoxGeometry(46, 3, 16);
-    const wingMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.3, metalness: 0.6 });
-    const wingMesh = new THREE.Mesh(wingGeo, wingMat);
-    wingMesh.position.z = 2;
+    // Pilot Helmet Inside Cockpit
+    const pilotGeo = new THREE.SphereGeometry(2.2, 8, 8);
+    const pilotMat = new THREE.MeshStandardMaterial({ color: 0x090d16 });
+    const pilotMesh = new THREE.Mesh(pilotGeo, pilotMat);
+    pilotMesh.position.set(0, 6, -4);
+    this.playerGroup.add(pilotMesh);
+
+    // 5. F-16 Cropped Delta Wings & Leading-Edge Extensions (剪裁三角主翼)
+    const wingGeo = new THREE.BoxGeometry(48, 2.2, 18);
+    const wingMesh = new THREE.Mesh(wingGeo, f16Mat);
+    wingMesh.position.z = 6;
     this.playerGroup.add(wingMesh);
 
-    // Wingtip Missile Launchers
-    const launcherGeo = new THREE.CylinderGeometry(2, 2, 18, 6);
-    const launcherMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 });
+    // 6. Wingtip Rail Launchers & AIM-9 Sidewinder Missiles (翼尖響尾蛇導彈)
+    [-25, 25].forEach(xOff => {
+      const railGeo = new THREE.BoxGeometry(1.5, 1.5, 22);
+      const railMesh = new THREE.Mesh(railGeo, f16DarkMat);
+      railMesh.position.set(xOff, 0, 6);
+      this.playerGroup.add(railMesh);
 
-    const leftLauncher = new THREE.Mesh(launcherGeo, launcherMat);
-    leftLauncher.rotation.x = Math.PI / 2;
-    leftLauncher.position.set(-22, 0, 2);
-    this.playerGroup.add(leftLauncher);
+      const missileGeo = new THREE.CylinderGeometry(1.2, 1.2, 18, 8);
+      const missileMesh = new THREE.Mesh(missileGeo, missileMat);
+      missileMesh.rotation.x = Math.PI / 2;
+      missileMesh.position.set(xOff, -1, 6);
+      this.playerGroup.add(missileMesh);
+    });
 
-    const rightLauncher = new THREE.Mesh(launcherGeo, launcherMat);
-    rightLauncher.rotation.x = Math.PI / 2;
-    rightLauncher.position.set(22, 0, 2);
-    this.playerGroup.add(rightLauncher);
+    // 7. Underwing External Fuel Drop Tanks (翼下副油箱)
+    [-14, 14].forEach(xOff => {
+      const tankGeo = new THREE.CylinderGeometry(3, 3, 24, 8);
+      const tankMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.3 });
+      const tankMesh = new THREE.Mesh(tankGeo, tankMat);
+      tankMesh.rotation.x = Math.PI / 2;
+      tankMesh.position.set(xOff, -5, 6);
+      this.playerGroup.add(tankMesh);
+    });
 
-    // V-Tail Stabilizers
-    const tailGeo = new THREE.BoxGeometry(3, 14, 12);
-    const tailMat = new THREE.MeshStandardMaterial({ color: 0xf97316 });
+    // 8. Single Tall Vertical Tail Fin & Dual Ventral Fins (高聳單尾翼與雙腹鰭)
+    const tailFinGeo = new THREE.BoxGeometry(2.5, 22, 14);
+    const tailFinMesh = new THREE.Mesh(tailFinGeo, f16Mat);
+    tailFinMesh.rotation.x = -0.3;
+    tailFinMesh.position.set(0, 16, 16);
+    this.playerGroup.add(tailFinMesh);
 
-    const leftTail = new THREE.Mesh(tailGeo, tailMat);
-    leftTail.rotation.z = -0.3;
-    leftTail.position.set(-8, 8, 16);
-    this.playerGroup.add(leftTail);
+    // Dual Ventral Fins Under Rear Fuselage
+    [-4, 4].forEach(xOff => {
+      const ventralGeo = new THREE.BoxGeometry(1.2, 8, 8);
+      const ventralMesh = new THREE.Mesh(ventralGeo, f16DarkMat);
+      ventralMesh.rotation.x = 0.4;
+      ventralMesh.position.set(xOff, -6, 18);
+      this.playerGroup.add(ventralMesh);
+    });
 
-    const rightTail = new THREE.Mesh(tailGeo, tailMat);
-    rightTail.rotation.z = 0.3;
-    rightTail.position.set(8, 8, 16);
-    this.playerGroup.add(rightTail);
+    // 9. Single Circular Afterburner Exhaust Nozzle & Light (單引擎噴嘴與後燃器燈光)
+    const nozzleGeo = new THREE.CylinderGeometry(6, 6.5, 8, 12);
+    const nozzleMesh = new THREE.Mesh(nozzleGeo, f16DarkMat);
+    nozzleMesh.rotation.x = Math.PI / 2;
+    nozzleMesh.position.z = 24;
+    this.playerGroup.add(nozzleMesh);
 
-    // Twin Afterburner Engine Thruster Lights
-    const engineLight1 = new THREE.PointLight(0xf97316, 3.5, 80);
-    engineLight1.position.set(-6, 3, 20);
-    this.playerGroup.add(engineLight1);
+    const afterburnerLight = new THREE.PointLight(0xff7544, 4.0, 90);
+    afterburnerLight.position.set(0, 0, 26);
+    this.playerGroup.add(afterburnerLight);
 
-    const engineLight2 = new THREE.PointLight(0xf97316, 3.5, 80);
-    engineLight2.position.set(6, 3, 20);
-    this.playerGroup.add(engineLight2);
-
-    // Shield Geodesic Aura
-    const shieldGeo = new THREE.SphereGeometry(28, 16, 16);
+    // 10. Shield Geodesic Aura
+    const shieldGeo = new THREE.SphereGeometry(30, 16, 16);
     const shieldMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       transparent: true,

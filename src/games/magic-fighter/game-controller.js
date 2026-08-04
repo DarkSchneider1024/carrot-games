@@ -329,25 +329,50 @@ export class MagicFighterGame {
     const p = this.player;
     const isArmorPiercing = p.starLevel >= 3;
 
+    let bvx = 0;
+    let bvy = -12; // Default UP
+
+    if (p.direction === 'DOWN') {
+      bvx = 0;
+      bvy = 12;
+    } else if (p.direction === 'LEFT') {
+      bvx = -12;
+      bvy = 0;
+    } else if (p.direction === 'RIGHT') {
+      bvx = 12;
+      bvy = 0;
+    } else if (p.vx !== 0 || p.vy !== 0) {
+      const len = Math.hypot(p.vx, p.vy);
+      if (len > 0) {
+        bvx = (p.vx / len) * 12;
+        bvy = (p.vy / len) * 12;
+      }
+    }
+
+    const bulletSpeed = 12;
+
     if (p.starLevel >= 1) {
-      // Dual Bullets
+      // Dual Bullets (Parallel offset based on direction)
+      const perpX = -bvy / bulletSpeed * 8;
+      const perpY = bvx / bulletSpeed * 8;
+
       this.bullets.push({
-        x: p.x + 4,
-        y: p.y,
+        x: p.x + p.width / 2 - 5 + perpX,
+        y: p.y + p.height / 2 - 5 + perpY,
         width: 10,
         height: 10,
-        vx: 0,
-        vy: -10,
+        vx: bvx,
+        vy: bvy,
         isPlayer: true,
         isArmorPiercing
       });
       this.bullets.push({
-        x: p.x + p.width - 14,
-        y: p.y,
+        x: p.x + p.width / 2 - 5 - perpX,
+        y: p.y + p.height / 2 - 5 - perpY,
         width: 10,
         height: 10,
-        vx: 0,
-        vy: -10,
+        vx: bvx,
+        vy: bvy,
         isPlayer: true,
         isArmorPiercing
       });
@@ -355,11 +380,11 @@ export class MagicFighterGame {
       // Single Bullet
       this.bullets.push({
         x: p.x + p.width / 2 - 5,
-        y: p.y,
+        y: p.y + p.height / 2 - 5,
         width: 10,
         height: 10,
-        vx: 0,
-        vy: -10,
+        vx: bvx,
+        vy: bvy,
         isPlayer: true,
         isArmorPiercing
       });
