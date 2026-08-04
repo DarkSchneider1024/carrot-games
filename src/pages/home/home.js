@@ -70,7 +70,7 @@ export async function renderHome(container) {
       <div class="home-filter-section animate-fade-in-up">
         <div class="home-filter-title">
           <span>🎮 遊戲庫分類</span>
-          <span class="home-filter-count" id="filter-count">共 3 款遊戲</span>
+          <span class="home-filter-count" id="filter-count">共 4 款遊戲</span>
         </div>
         <div class="home-filter-pills" id="home-filter-pills">
           <button class="filter-pill active" data-filter="all">🌟 全部遊戲</button>

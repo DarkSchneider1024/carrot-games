@@ -37,29 +37,30 @@ function _renderProfileModal(user, profile) {
   const pokerStats = profile.stats?.poker || { played: 0, won: 0, netProfit: 0 };
   const xiangqiStats = profile.stats?.xiangqi || { played: 0, won: 0 };
   const tetrisStats = profile.stats?.tetris || { played: 0, won: 0 };
+  const magicFighterStats = profile.stats?.magicFighter || { played: 0, won: 0, netProfit: 0 };
 
   const providerName = user.providerData?.[0]?.providerId === 'google.com' ? 'Google 聯動帳號' : '電子郵件帳號';
 
   showModal({
     title: '👤 玩家帳號與戰績管理',
     content: `
-      <div class="auth-profile-modal">
-        <!-- Account Card Header -->
-        <div class="profile-card-header glass" style="padding:1rem;border-radius:12px;display:flex;align-items:center;gap:1rem;background:rgba(255,255,255,0.05);margin-bottom:1rem;">
-          <div class="profile-avatar" style="width:48px;height:48px;border-radius:50%;background:var(--gradient-hero);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:white;font-weight:bold;">
-            ${(profile.displayName || ' Carrot ').charAt(0).toUpperCase()}
+      <div class="profile-modal-container" style="display:flex;flex-direction:column;gap:16px;">
+        <!-- User Info Card -->
+        <div class="profile-user-card glass" style="display:flex;align-items:center;gap:16px;padding:16px;border-radius:16px;">
+          <div class="profile-avatar-wrapper" style="position:relative;">
+            <div class="profile-avatar" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg, #ff7544, #ff70a6);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:bold;box-shadow:0 4px 12px rgba(255,117,68,0.4);">
+              ${(profile.displayName || user.displayName || '蘿')[0]}
+            </div>
           </div>
           <div style="flex:1;">
-            <h4 style="margin:0;font-size:1.1rem;color:var(--color-text-primary);">${profile.displayName || '玩家'}</h4>
-            <span style="font-size:0.75rem;color:var(--color-text-muted);">${profile.email || providerName}</span>
-            <div style="margin-top:4px;">
-              <span class="badge badge-info" style="font-size:10px;">${providerName}</span>
-            </div>
+            <h4 style="margin:0;font-size:1.2rem;color:var(--color-text-primary);">${profile.displayName || user.displayName || '蘿蔔玩家'}</h4>
+            <p style="margin:2px 0 6px 0;font-size:0.8rem;color:var(--color-text-muted);">${user.email || '線上玩家'}</p>
+            <span class="badge badge-info" style="font-size:0.7rem;">${providerName}</span>
           </div>
         </div>
 
-        <!-- Chips Wallet Section -->
-        <div class="profile-wallet-box glass" style="padding:1rem;border-radius:12px;background:rgba(255,117,68,0.08);border:1px solid rgba(255,117,68,0.2);margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;">
+        <!-- Chips & Money Balance -->
+        <div class="profile-chips-card glass" style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-radius:16px;background:rgba(255, 117, 68, 0.08);border:1px solid rgba(255, 117, 68, 0.2);">
           <div>
             <span style="font-size:0.8rem;color:var(--color-text-secondary);display:block;">💰 帳號籌碼本金</span>
             <strong style="font-size:1.6rem;color:var(--color-accent-primary);font-family:var(--font-family-mono);">$${(profile.chips || 0).toLocaleString()}</strong>
@@ -70,7 +71,7 @@ function _renderProfileModal(user, profile) {
         </div>
 
         <!-- Nickname Edit -->
-        <div style="margin-bottom:1.25rem;">
+        <div style="margin-bottom:0.25rem;">
           <label style="font-size:0.8rem;color:var(--color-text-secondary);margin-bottom:4px;display:block;">修改顯示暱稱：</label>
           <div style="display:flex;gap:8px;">
             <input type="text" class="input" id="input-edit-nickname" value="${profile.displayName || ''}" maxlength="16" placeholder="輸入新暱稱..." style="flex:1;" />
@@ -81,8 +82,8 @@ function _renderProfileModal(user, profile) {
         <!-- Game Statistics -->
         <div class="profile-stats-section">
           <h5 style="margin:0 0 8px 0;font-size:0.875rem;color:var(--color-text-primary);">📊 遊戲對戰紀錄</h5>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:8px;">
-            <div class="stat-card glass" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:8px;">
+            <div class="stat-card glass" style="padding:8px 10px;border-radius:8px;font-size:0.75rem;">
               <span style="color:var(--color-accent-cyan);font-weight:bold;">🂡 德州撲克</span>
               <div style="margin-top:4px;color:var(--color-text-secondary);">
                 對局: ${pokerStats.played} 局<br/>
@@ -91,7 +92,7 @@ function _renderProfileModal(user, profile) {
               </div>
             </div>
 
-            <div class="stat-card glass" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;">
+            <div class="stat-card glass" style="padding:8px 10px;border-radius:8px;font-size:0.75rem;">
               <span style="color:var(--color-accent-gold);font-weight:bold;">♟️ 中國象棋</span>
               <div style="margin-top:4px;color:var(--color-text-secondary);">
                 對局: ${xiangqiStats.played} 局<br/>
@@ -99,11 +100,20 @@ function _renderProfileModal(user, profile) {
               </div>
             </div>
 
-            <div class="stat-card glass" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;">
+            <div class="stat-card glass" style="padding:8px 10px;border-radius:8px;font-size:0.75rem;">
               <span style="color:var(--color-accent-pink);font-weight:bold;">🧩 俄羅斯方塊</span>
               <div style="margin-top:4px;color:var(--color-text-secondary);">
                 對局: ${tetrisStats.played} 局<br/>
                 勝場: ${tetrisStats.won} 局
+              </div>
+            </div>
+
+            <div class="stat-card glass" style="padding:8px 10px;border-radius:8px;font-size:0.75rem;">
+              <span style="color:#ff7544;font-weight:bold;">✈️ 魔法對戰</span>
+              <div style="margin-top:4px;color:var(--color-text-secondary);">
+                對局: ${magicFighterStats.played} 局<br/>
+                勝場: ${magicFighterStats.won} 局<br/>
+                獎金: <strong style="color:${magicFighterStats.netProfit >= 0 ? '#2ec4b6' : '#ef4444'}">${magicFighterStats.netProfit >= 0 ? '+' : ''}$${magicFighterStats.netProfit}</strong>
               </div>
             </div>
           </div>
