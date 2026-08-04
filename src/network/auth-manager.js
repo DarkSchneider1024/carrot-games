@@ -249,10 +249,11 @@ export async function signUpWithEmail(email, password, displayName) {
 
     const name = displayName?.trim() || email.split('@')[0] || '蘿蔔玩家';
 
+    // Update display name in Firebase Auth (non-critical, failure won't block registration)
     try {
       await updateProfile(user, { displayName: name });
     } catch (e) {
-      console.warn('updateProfile warning:', e);
+      console.warn('updateProfile warning (non-fatal):', e);
     }
     setPlayerName(name);
 
@@ -269,24 +270,28 @@ export async function signUpWithEmail(email, password, displayName) {
       updatedAt: Date.now()
     };
 
+    // Write initial profile to RTDB (non-critical, failure won't block registration success)
     if (db) {
-      await set(ref(db, `users/${user.uid}`), initialData);
+      set(ref(db, `users/${user.uid}`), initialData).catch(err =>
+        console.warn('Initial DB write warning (non-fatal, will retry on next login):', err)
+      );
     }
 
     currentProfile = initialData;
     _saveLocalProfile(currentProfile);
     _notifyAuthListeners();
 
-    showToast(`歡迎加入 Carrot Games！已發放初始 $${DEFAULT_STARTING_CHIPS} 籌碼本金！`, 'success');
+    showToast(`🎉 歡迎加入 Carrot Games！已發放初始 $${DEFAULT_STARTING_CHIPS} 籌碼本金！`, 'success');
     return { success: true, user };
   } catch (err) {
     console.error('Sign up error:', err);
-    let msg = '註冊失敗';
+    let msg = '註冊失敗，請稍後再試';
     if (err.code === 'auth/email-already-in-use') msg = '該 Email 已被註冊使用，請直接輸入密碼登入';
     else if (err.code === 'auth/weak-password') msg = '密碼強度不足，長度至少需要 6 個字元';
     else if (err.code === 'auth/invalid-email') msg = 'Email 格式無效，請確認未填入首尾空格';
     else if (err.code === 'auth/invalid-credential') msg = '憑證無效，請檢查 Email 格式與密碼';
-    else if (err.code === 'auth/network-request-failed') msg = '手機網路連線失敗，請檢查網路訊號';
+    else if (err.code === 'auth/network-request-failed') msg = '網路連線失敗，請檢查網路訊號後再試';
+    else if (err.code === 'auth/too-many-requests') msg = '操作過於頻繁，請稍後再試';
 
     showToast(msg, 'warning');
     return { success: false, reason: msg };
