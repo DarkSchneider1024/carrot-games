@@ -1,6 +1,6 @@
 /**
  * Fruit Havoc Page — 2D Party Trap Platformer (水果傷害 2D 派對對戰)
- * Features Chiikawa / Sanrio Kawaii Fruit Characters, 20 Placement Traps, & Super Chicken Horse Race Dynamics.
+ * Features Drag & Drop Placement System (拖拉擺放陷阱), Chiikawa Fruit Characters, & 20 Trap Items.
  */
 
 import { SVG_ICONS } from '../../components/icons.js';
@@ -43,6 +43,11 @@ export async function renderFruitHavoc(container, params = {}) {
 
   let selectedChar = FRUIT_CHARACTERS[0];
   let selectedTrap = TRAP_ITEMS[0];
+  let placedTraps = [
+    { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9 }, // 預設擺放彈簧手套
+    { id: 2, trap: TRAP_ITEMS[1], gridX: 9, gridY: 7 }  // 預設擺放電鋸
+  ];
+  let hoverGrid = null; // { gridX, gridY } for drag preview
 
   container.innerHTML = `
     <div class="fruit-havoc-page animate-fade-in">
@@ -66,7 +71,7 @@ export async function renderFruitHavoc(container, params = {}) {
 
       <!-- Main Workspace -->
       <div class="fruit-havoc-main">
-        <!-- Left Panel: Character & Trap Selection -->
+        <!-- Left Panel: Character & Drag Trap Selection -->
         <aside class="fruit-panel-left">
           <!-- Character Selector -->
           <div class="panel-card glass">
@@ -86,28 +91,35 @@ export async function renderFruitHavoc(container, params = {}) {
             </div>
           </div>
 
-          <!-- Trap Selector (20 Traps) -->
+          <!-- Draggable Trap Selector (20 Traps) -->
           <div class="panel-card glass">
-            <h4 class="panel-title">2. 擺放階段陷阱清單 (20種)</h4>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h4 class="panel-title">2. 拖拉道具至右側地圖 (20種)</h4>
+              <span class="badge badge-warning" style="font-size:0.7rem;">按住拖拽放置 ✋</span>
+            </div>
             <div class="trap-selector-grid">
               ${TRAP_ITEMS.map(t => `
-                <button class="trap-select-item ${t.id === selectedTrap.id ? 'active' : ''}" data-trap-id="${t.id}" title="${t.name}: ${t.desc}">
+                <div class="trap-select-item ${t.id === selectedTrap.id ? 'active' : ''}" 
+                     draggable="true" 
+                     data-trap-id="${t.id}" 
+                     title="按住滑鼠拖拉此道具至右側地圖上！">
                   <span class="trap-icon">${t.icon}</span>
                   <span class="trap-name">${t.name}</span>
-                </button>
+                  <span class="drag-handle-hint">⋮⋮</span>
+                </div>
               `).join('')}
             </div>
           </div>
         </aside>
 
-        <!-- Right Panel: 2D Stage Canvas & Race Field -->
+        <!-- Right Panel: 2D Stage Canvas & Drop Zone -->
         <main class="fruit-stage-area glass">
           <div class="stage-header">
             <span class="badge badge-info">第 1 / 5 輪次：擺放與競速中</span>
-            <span class="stage-tip">點擊地圖選擇格子以放置 ${selectedTrap.name}</span>
+            <span class="stage-tip" id="stage-tip">🖐️ 請將左側道具【拖拉放至】右側藍色網格地圖！</span>
           </div>
 
-          <div class="canvas-wrapper">
+          <div class="canvas-wrapper" id="canvas-drop-zone">
             <canvas id="fruit-canvas" width="640" height="480"></canvas>
             <div class="canvas-overlay-ui" id="canvas-overlay-ui">
               <button class="btn btn-primary btn-lg" id="btn-start-round" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;box-shadow:0 4px 16px rgba(255,117,68,0.4);">
@@ -120,7 +132,7 @@ export async function renderFruitHavoc(container, params = {}) {
     </div>
   `;
 
-  // Attach Event Handlers
+  // Attach Navigation Event Handlers
   container.querySelector('#btn-back')?.addEventListener('click', () => navigate('/'));
   container.querySelector('#btn-settings')?.addEventListener('click', () => navigate('/guide?game=fruitHavoc'));
 
@@ -139,10 +151,87 @@ export async function renderFruitHavoc(container, params = {}) {
       if (traitEl) traitEl.textContent = selectedChar.trait;
 
       showToast(`已選擇角色：${selectedChar.name}`, 'info');
+      drawStage();
     });
   });
 
-  // Trap Selector Handlers
+  // Canvas & Trap Placement Logic
+  const canvas = container.querySelector('#fruit-canvas');
+  const dropZone = container.querySelector('#canvas-drop-zone');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+  const TILE_SIZE = 40;
+
+  const drawStage = () => {
+    if (!ctx) return;
+    ctx.fillStyle = '#f0f9ff';
+    ctx.fillRect(0, 0, 640, 480);
+
+    // Grid Lines
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.18)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= 640; x += TILE_SIZE) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, 480);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= 480; y += TILE_SIZE) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(640, y);
+      ctx.stroke();
+    }
+
+    // Platforms
+    ctx.fillStyle = '#fdba74';
+    ctx.fillRect(40, 400, 160, 40); // Start Platform
+    ctx.fillRect(440, 200, 160, 40); // Goal Platform
+
+    // Goal Flag
+    ctx.font = '28px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🏆', 540, 180);
+    ctx.fillText('🎂', 480, 180);
+
+    // Start Player Position
+    ctx.fillText(selectedChar.icon, 80, 380);
+
+    // Draw All Placed Traps
+    placedTraps.forEach(pt => {
+      const px = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
+      const py = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
+
+      // Trap Background Tile Highlight
+      ctx.fillStyle = 'rgba(255, 237, 213, 0.85)';
+      ctx.fillRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.strokeStyle = '#fdba74';
+      ctx.strokeRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+
+      // Icon
+      ctx.font = '24px sans-serif';
+      ctx.fillText(pt.trap.icon, px, py);
+    });
+
+    // Draw Drag Hover Preview Ghost (若正將道具拖懸到地圖上方)
+    if (hoverGrid) {
+      const gx = hoverGrid.gridX * TILE_SIZE;
+      const gy = hoverGrid.gridY * TILE_SIZE;
+
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.35)';
+      ctx.fillRect(gx + 2, gy + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(gx + 2, gy + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+
+      ctx.font = '26px sans-serif';
+      ctx.fillText(selectedTrap.icon, gx + TILE_SIZE / 2, gy + TILE_SIZE / 2);
+    }
+  };
+
+  // HTML5 Drag & Drop Event Listeners
+  let draggedTrapId = null;
+
   container.querySelectorAll('.trap-select-item').forEach(item => {
     item.addEventListener('click', () => {
       container.querySelectorAll('.trap-select-item').forEach(i => i.classList.remove('active'));
@@ -150,59 +239,114 @@ export async function renderFruitHavoc(container, params = {}) {
 
       const trapId = parseInt(item.dataset.trapId, 10);
       selectedTrap = TRAP_ITEMS.find(t => t.id === trapId);
+      draggedTrapId = trapId;
 
-      showToast(`準備放置陷阱：${selectedTrap.name}`, 'info');
+      showToast(`已選中：${selectedTrap.name} (可拖拉至地圖放開)`, 'info');
+    });
+
+    item.addEventListener('dragstart', (e) => {
+      const trapId = parseInt(item.dataset.trapId, 10);
+      draggedTrapId = trapId;
+      selectedTrap = TRAP_ITEMS.find(t => t.id === trapId);
+
+      container.querySelectorAll('.trap-select-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      item.classList.add('is-dragging');
+
+      e.dataTransfer.setData('text/plain', trapId.toString());
+      e.dataTransfer.effectAllowed = 'copy';
+    });
+
+    item.addEventListener('dragend', () => {
+      item.classList.remove('is-dragging');
+      hoverGrid = null;
+      drawStage();
     });
   });
 
-  // Start Round Button
+  // Drop Zone DragOver & Drop Event Handlers
+  if (dropZone && canvas) {
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+
+      const relX = (clientX - rect.left) * scaleX;
+      const relY = (clientY - rect.top) * scaleY;
+
+      if (relX >= 0 && relX < 640 && relY >= 0 && relY < 480) {
+        const gridX = Math.floor(relX / TILE_SIZE);
+        const gridY = Math.floor(relY / TILE_SIZE);
+
+        if (!hoverGrid || hoverGrid.gridX !== gridX || hoverGrid.gridY !== gridY) {
+          hoverGrid = { gridX, gridY };
+          drawStage();
+        }
+      }
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      hoverGrid = null;
+      drawStage();
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      hoverGrid = null;
+
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const relX = (e.clientX - rect.left) * scaleX;
+      const relY = (e.clientY - rect.top) * scaleY;
+
+      if (relX >= 0 && relX < 640 && relY >= 0 && relY < 480) {
+        const gridX = Math.floor(relX / TILE_SIZE);
+        const gridY = Math.floor(relY / TILE_SIZE);
+
+        const targetTrap = TRAP_ITEMS.find(t => t.id === (draggedTrapId || selectedTrap.id)) || selectedTrap;
+
+        // Check if tile already has a trap (若格子已有陷阱則蓋過)
+        placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
+        placedTraps.push({ id: Date.now(), trap: targetTrap, gridX, gridY });
+
+        showToast(`🎉 成功拖放放置【${targetTrap.icon} ${targetTrap.name}】至座標 (${gridX}, ${gridY})！`, 'success');
+        drawStage();
+      }
+    });
+
+    // Support Click-to-Place Alternative (點擊畫布亦可直接擺放)
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const relX = (e.clientX - rect.left) * scaleX;
+      const relY = (e.clientY - rect.top) * scaleY;
+
+      const gridX = Math.floor(relX / TILE_SIZE);
+      const gridY = Math.floor(relY / TILE_SIZE);
+
+      placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
+      placedTraps.push({ id: Date.now(), trap: selectedTrap, gridX, gridY });
+
+      showToast(`📍 點擊放置【${selectedTrap.icon} ${selectedTrap.name}】至 (${gridX}, ${gridY})`, 'success');
+      drawStage();
+    });
+  }
+
+  // Start Round Button Handler
   container.querySelector('#btn-start-round')?.addEventListener('click', () => {
-    showToast(`🍓 ${selectedChar.name} 開啟極速衝刺！通過陷阱到達終點吧！`, 'success');
+    showToast(`🍓 ${selectedChar.name} 踏入關卡出發！已佈置 ${placedTraps.length} 個陷阱與障礙！`, 'success');
   });
 
-  // 2D Canvas Simple Demo Render
-  const canvas = container.querySelector('#fruit-canvas');
-  if (canvas) {
-    const ctx = canvas.getContext('2d');
-    const drawStage = () => {
-      ctx.fillStyle = '#f0f9ff';
-      ctx.fillRect(0, 0, 640, 480);
-
-      // Grid Lines
-      ctx.strokeStyle = 'rgba(2, 132, 199, 0.15)';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < 640; x += 40) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, 480);
-        ctx.stroke();
-      }
-      for (let y = 0; y < 480; y += 40) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(640, y);
-        ctx.stroke();
-      }
-
-      // Platforms
-      ctx.fillStyle = '#fdba74';
-      ctx.fillRect(40, 400, 160, 40); // Start Platform
-      ctx.fillRect(440, 200, 160, 40); // Goal Platform
-
-      // Goal Flag
-      ctx.font = '28px sans-serif';
-      ctx.fillText('🏆', 540, 190);
-      ctx.fillText('🎂', 480, 190);
-
-      // Start Player
-      ctx.fillText(selectedChar.icon, 80, 390);
-
-      // Traps Demo
-      ctx.fillText('🥊', 240, 400);
-      ctx.fillText('🪚', 360, 300);
-      ctx.fillText('🍄', 320, 420);
-    };
-
-    drawStage();
-  }
+  // Initial Draw
+  drawStage();
 }
