@@ -231,13 +231,13 @@ export async function renderFruitHavoc(container, params = {}) {
             </button>
           </div>
 
-          <!-- 4. 場景 4: 獲勝影片場景 (Victory Scene) 3 秒 AI 畫風慶祝動態 Canvas -->
+          <!-- 4. 場景 4: 獲勝影片場景 (Victory Scene) 播放剪輯出來的 3 秒角色 AI 慶祝短片 -->
           <div class="scene-container" id="scene-victory" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:480px;text-align:center;">
             <h2 style="font-size:2rem;margin:0;color:#ea580c;text-shadow:0 2px 10px rgba(234,88,12,0.2);" id="victory-title-text">
               👑 恭喜獲得總冠軍！
             </h2>
-            <div style="position:relative;width:400px;height:300px;border-radius:20px;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.25);border:3px solid #fdba74;">
-              <canvas id="victory-video-canvas" width="400" height="300"></canvas>
+            <div style="position:relative;width:520px;height:292px;border-radius:20px;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.25);border:3px solid #fdba74;background:#000;">
+              <video id="victory-video-player" width="520" height="292" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
             </div>
             <p style="font-size:1.1rem;font-weight:700;color:var(--color-text-primary);" id="victory-winner-desc">水果大師強勢登頂！</p>
             <button class="btn btn-primary btn-lg" id="btn-victory-restart" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;padding:12px 36px;font-size:1.1rem;">
@@ -352,11 +352,11 @@ export async function renderFruitHavoc(container, params = {}) {
       panelLeft.style.display = 'none';
       sceneScore.style.display = 'flex';
       _renderScoreboardSceneAnimation();
-    } else if (targetScene === 4) { // 4. 獲勝影片場景 (3秒 AI 風格動態影片)
+    } else if (targetScene === 4) { // 4. 獲勝影片場景 (隨機 AI 短影片)
       if (sceneBadge) sceneBadge.textContent = '4. 獲勝慶典影片';
       panelLeft.style.display = 'none';
       sceneVictory.style.display = 'flex';
-      _startVictoryVideoCanvas();
+      _startVictoryVideoPlayer();
     }
   }
 
@@ -391,75 +391,23 @@ export async function renderFruitHavoc(container, params = {}) {
   }
 
   // ----------------------------------------------------
-  // 4. 場景 4: 獲勝影片場景 (3秒 AI 風格角色慶祝動態 Canvas)
+  // 4. 場景 4: 獲勝影片場景 (隨機播放該角色的 3 秒 AI 生成短影片)
   // ----------------------------------------------------
-  function _startVictoryVideoCanvas() {
-    const vCanvas = container.querySelector('#victory-video-canvas');
-    if (!vCanvas || !winnerPlayer) return;
-    const vCtx = vCanvas.getContext('2d');
+  function _startVictoryVideoPlayer() {
+    const videoPlayer = container.querySelector('#victory-video-player');
+    if (!videoPlayer || !winnerPlayer) return;
 
-    const winnerImg = new Image();
-    winnerImg.src = winnerPlayer.char.img;
+    const charId = winnerPlayer.char.id; // 'strawberry', 'banana', 'melon', 'peach', 'grape'
+    // 隨機挑選該角色的 2 個動作影片之一 (1 或 2)
+    const randomIdx = Math.random() < 0.5 ? 1 : 2;
+    const videoSrc = `./assets/video/victory_${charId}_${randomIdx}.mp4`;
+
+    videoPlayer.src = videoSrc;
+    videoPlayer.load();
+    videoPlayer.play().catch(e => console.warn('Video autoplay:', e));
 
     const winnerText = container.querySelector('#victory-winner-desc');
-    if (winnerText) winnerText.textContent = `👑 恭喜 ${winnerPlayer.char.icon} ${winnerPlayer.name} 贏得全場總冠軍！`;
-
-    // Confetti Particles Array (40 顆彩帶雨)
-    const confetti = Array.from({ length: 40 }, () => ({
-      x: Math.random() * 400,
-      y: Math.random() * 300 - 300,
-      size: Math.random() * 8 + 4,
-      color: ['#ff7544', '#ff70a6', '#38bdf8', '#facc15', '#4ade80'][Math.floor(Math.random() * 5)],
-      vy: Math.random() * 2 + 1.5,
-      vx: Math.sin(Math.random() * Math.PI) * 1
-    }));
-
-    let startTime = Date.now();
-
-    const renderVictoryFrame = () => {
-      const elapsed = (Date.now() - startTime) / 1000;
-
-      vCtx.fillStyle = '#f0f9ff';
-      vCtx.fillRect(0, 0, 400, 300);
-
-      // Gold Glow Background
-      const grad = vCtx.createRadialGradient(200, 150, 20, 200, 150, 180);
-      grad.addColorStop(0, 'rgba(254, 240, 138, 0.6)');
-      grad.addColorStop(1, 'rgba(253, 186, 116, 0.1)');
-      vCtx.fillStyle = grad;
-      vCtx.fillRect(0, 0, 400, 300);
-
-      // Draw Character Image with Bounce Animation (3秒 歡快跳躍)
-      const bounceY = Math.abs(Math.sin(elapsed * 5)) * 25;
-      if (winnerImg.complete && winnerImg.naturalWidth !== 0) {
-        vCtx.drawImage(winnerImg, 140, 90 - bounceY, 120, 120);
-      } else {
-        vCtx.font = '64px sans-serif';
-        vCtx.textAlign = 'center';
-        vCtx.fillText(winnerPlayer.char.icon, 200, 150 - bounceY);
-      }
-
-      // Draw Trophy 🏆
-      vCtx.font = '36px sans-serif';
-      vCtx.textAlign = 'center';
-      vCtx.fillText('🏆', 200, 230);
-
-      // Render Falling Confetti
-      confetti.forEach(c => {
-        c.y += c.vy;
-        c.x += c.vx;
-        if (c.y > 300) c.y = -10;
-
-        vCtx.fillStyle = c.color;
-        vCtx.beginPath();
-        vCtx.arc(c.x, c.y, c.size / 2, 0, Math.PI * 2);
-        vCtx.fill();
-      });
-
-      victoryAnimId = requestAnimationFrame(renderVictoryFrame);
-    };
-
-    renderVictoryFrame();
+    if (winnerText) winnerText.textContent = `👑 恭喜 ${winnerPlayer.char.icon} ${winnerPlayer.name} 贏得全場總冠軍！(動作影片 #${randomIdx})`;
   }
 
   // ----------------------------------------------------
