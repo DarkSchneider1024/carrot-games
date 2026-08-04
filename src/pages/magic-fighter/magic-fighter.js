@@ -1,6 +1,6 @@
 /**
  * Magic Fighter 3D Battle Page (全 3D 魔法對戰主頁面)
- * Refactored to align with the Unified Glassmorphism Game Layout Component across Xiangqi, Tetris, & Poker.
+ * Features Detailed Futuristic Fighter Jet vs 3D Magic Monsters (Bat, Griffin, Wyvern Dragon).
  */
 
 import { MagicFighterGame } from '../../games/magic-fighter/game-controller.js';
@@ -23,7 +23,7 @@ export async function renderMagicFighter(container, params = {}) {
   container.innerHTML = `
     <div class="magic-fighter-page animate-fade-in">
       <!-- Unified Topbar Header Component -->
-      <div class="topbar glass">
+      <div class="topbar">
         <div class="topbar-left">
           <button class="btn btn-ghost btn-sm" id="btn-back" title="返回大廳">
             ${SVG_ICONS.back} <span>大廳</span>
@@ -56,7 +56,7 @@ export async function renderMagicFighter(container, params = {}) {
         <aside class="magic-panel-left ${activeTab === 'setup' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-setup">
           <div class="panel-card">
             <h3 class="panel-subtitle">3D 水晶戰場動態</h3>
-            <p class="panel-desc">Three.js WebGL 3D 魔法空戰對決！保護 3D 蘿蔔水晶基地，破壞磚牆，擊退敵軍！</p>
+            <p class="panel-desc">駕駛細緻 3D 戰鬥機，迎戰 3D 魔法怪物（暗夜魔蝙蝠、疾風鷹獅、烈焰飛龍）！保護 3D 蘿蔔水晶基地！</p>
 
             <!-- Stats & Chips HUD Box -->
             <div class="hud-box">
@@ -69,7 +69,7 @@ export async function renderMagicFighter(container, params = {}) {
                 <span class="hud-value" id="hud-wave">1 / 5</span>
               </div>
               <div class="hud-item">
-                <span class="hud-label">剩餘敵機 ENEMIES</span>
+                <span class="hud-label">剩餘敵軍 ENEMIES</span>
                 <span class="hud-value" id="hud-enemies" style="color:#06b6d4;">16</span>
               </div>
               <div class="hud-item">
@@ -98,9 +98,9 @@ export async function renderMagicFighter(container, params = {}) {
 
             <!-- Instructions Guide Box -->
             <div class="guide-box">
-              <h4>3D 控制說明</h4>
-              <p>**電腦**：方向鍵 / WASD 自由飛行，【空白鍵 Space】發射魔法子彈。</p>
-              <p>**手機**：左半螢幕按住觸控滑動 **360° 模擬搖桿** 進行飛行，右側點擊 **【開火】**。</p>
+              <h4>3D 控制與魔法怪物</h4>
+              <p>**敵軍怪物**：暗夜魔蝙蝠 (基礎)、疾風鷹獅 (高速)、烈焰飛龍 (重裝 3HP 變色)、赤紅魔龍 (寶物機)。</p>
+              <p>**操控說明**：鍵盤 WASD / 方向鍵，【空白鍵 Space】發射魔法彈。手機可使用 360° 滑動搖桿。</p>
             </div>
           </div>
         </aside>
@@ -110,7 +110,7 @@ export async function renderMagicFighter(container, params = {}) {
           <div class="canvas-wrapper-3d" id="three-container">
             <!-- Unified Game Over Modal Overlay Component -->
             <div class="game-over-overlay" id="game-over-modal" style="display:none;">
-              <div class="game-over-content glass animate-scale-up">
+              <div class="game-over-content animate-scale-up">
                 <h2 id="go-title">3D 戰局結束</h2>
                 <p id="go-desc">蘿蔔基地已失守！</p>
                 <div class="go-reward" id="go-reward-chips">+ $0 籌碼</div>
@@ -173,17 +173,66 @@ export async function renderMagicFighter(container, params = {}) {
   game = new MagicFighterGame();
   renderer3D = new FighterRenderer3D();
 
-  const cWidth = threeContainer.clientWidth || 600;
-  const cHeight = threeContainer.clientHeight || 600;
+  const cWidth = threeContainer.clientWidth || 640;
+  const cHeight = threeContainer.clientHeight || 640;
 
   renderer3D.init(threeContainer, cWidth, cHeight);
+
+  // Attach State Sync Callback BEFORE calling game.init()
+  game.onStateChange = (state) => {
+    if (renderer3D) renderer3D.render(state);
+
+    const hudScore = container.querySelector('#hud-score');
+    const hudWave = container.querySelector('#hud-wave');
+    const hudEnemies = container.querySelector('#hud-enemies');
+    const hudPower = container.querySelector('#hud-power');
+    const hudHp = container.querySelector('#hud-hp');
+    const hudBase = container.querySelector('#hud-base-status');
+
+    if (hudScore) hudScore.textContent = state.score;
+    if (hudWave) hudWave.textContent = `${state.wave} / ${state.maxWaves}`;
+    if (hudEnemies) hudEnemies.textContent = Math.max(0, state.enemiesRemaining);
+    if (hudPower) {
+      const pLvl = state.player.starLevel || 0;
+      const labels = ['LV.1 標準', 'LV.2 雙發', 'LV.3 雙發', 'LV.4 貫穿'];
+      hudPower.textContent = labels[pLvl] || 'LV.1';
+    }
+    if (hudHp) hudHp.textContent = `${Math.max(0, state.player.hp)} / ${state.player.maxHp}`;
+    if (hudBase) hudBase.textContent = state.base.destroyed ? '毀壞' : (state.fortifyHqTime > 0 ? '鋼牆防禦中' : '完好');
+  };
+
+  // Game Over Callback
+  game.onGameOver = async ({ victory, score, reason }) => {
+    const modal = container.querySelector('#game-over-modal');
+    const titleEl = container.querySelector('#go-title');
+    const descEl = container.querySelector('#go-desc');
+    const rewardEl = container.querySelector('#go-reward-chips');
+
+    const reward = victory ? 400 + score : Math.floor(score / 2);
+    if (reward > 0) {
+      const profile = getUserProfile();
+      await updateUserChips(profile.chips + reward);
+    }
+    await updateUserStats('magicFighter', { isWin: victory, netProfit: reward });
+
+    if (titleEl) titleEl.textContent = victory ? '3D 空戰全勝！' : '3D 戰局結束';
+    if (descEl) descEl.textContent = reason;
+    if (rewardEl) rewardEl.textContent = `獲得帳號籌碼本金：+$${reward.toLocaleString()}`;
+
+    if (modal) modal.style.display = 'flex';
+  };
+
+  // Start Game Engine
   game.init(null);
+
+  // Trigger initial frame render
+  renderer3D.render(game.getState());
 
   // ResizeObserver for dynamic responsiveness
   const resizeObserver = new ResizeObserver(() => {
     if (renderer3D && threeContainer) {
-      const w = threeContainer.clientWidth || 600;
-      const h = threeContainer.clientHeight || 600;
+      const w = threeContainer.clientWidth || 640;
+      const h = threeContainer.clientHeight || 640;
       renderer3D.setSize(w, h);
     }
   });
@@ -256,50 +305,6 @@ export async function renderMagicFighter(container, params = {}) {
     game.firePlayerBullet();
   });
   btnFire?.addEventListener('click', () => game.firePlayerBullet());
-
-  // Engine State Sync
-  game.onStateChange = (state) => {
-    renderer3D.render(state);
-
-    const hudScore = container.querySelector('#hud-score');
-    const hudWave = container.querySelector('#hud-wave');
-    const hudEnemies = container.querySelector('#hud-enemies');
-    const hudPower = container.querySelector('#hud-power');
-    const hudHp = container.querySelector('#hud-hp');
-    const hudBase = container.querySelector('#hud-base-status');
-
-    if (hudScore) hudScore.textContent = state.score;
-    if (hudWave) hudWave.textContent = `${state.wave} / ${state.maxWaves}`;
-    if (hudEnemies) hudEnemies.textContent = Math.max(0, state.enemiesRemaining);
-    if (hudPower) {
-      const pLvl = state.player.starLevel || 0;
-      const labels = ['LV.1 標準', 'LV.2 雙發', 'LV.3 雙發', 'LV.4 貫穿'];
-      hudPower.textContent = labels[pLvl] || 'LV.1';
-    }
-    if (hudHp) hudHp.textContent = `${Math.max(0, state.player.hp)} / ${state.player.maxHp}`;
-    if (hudBase) hudBase.textContent = state.base.destroyed ? '毀壞' : (state.fortifyHqTime > 0 ? '鋼牆防禦中' : '完好');
-  };
-
-  // Game Over Callback
-  game.onGameOver = async ({ victory, score, reason }) => {
-    const modal = container.querySelector('#game-over-modal');
-    const titleEl = container.querySelector('#go-title');
-    const descEl = container.querySelector('#go-desc');
-    const rewardEl = container.querySelector('#go-reward-chips');
-
-    const reward = victory ? 400 + score : Math.floor(score / 2);
-    if (reward > 0) {
-      const profile = getUserProfile();
-      await updateUserChips(profile.chips + reward);
-    }
-    await updateUserStats('magicFighter', { isWin: victory, netProfit: reward });
-
-    if (titleEl) titleEl.textContent = victory ? '3D 空戰全勝！' : '3D 戰局結束';
-    if (descEl) descEl.textContent = reason;
-    if (rewardEl) rewardEl.textContent = `獲得帳號籌碼本金：+$${reward.toLocaleString()}`;
-
-    if (modal) modal.style.display = 'flex';
-  };
 
   const restartGame = () => {
     const modal = container.querySelector('#game-over-modal');

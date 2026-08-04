@@ -17,6 +17,34 @@
   -webkit-user-select: none;
 }
 
+/* Custom Topbar Header for 3D Dark Mode */
+.magic-fighter-page .topbar {
+  background: rgba(30, 41, 59, 0.9) !important;
+  border-bottom: 1.5px solid rgba(255, 117, 68, 0.4) !important;
+  color: #f8fafc !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+}
+
+.magic-fighter-page .topbar .topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.magic-fighter-page .topbar .game-name {
+  color: #ff7544 !important;
+  font-family: var(--font-family-display, sans-serif);
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.magic-fighter-page .topbar .btn-ghost {
+  color: #f8fafc !important;
+}
+
 .magic-fighter-main {
   flex: 1;
   display: flex;
@@ -140,7 +168,7 @@
   width: 100%;
   max-width: 600px;
   aspect-ratio: 1 / 1;
-  background: #1e293b !important; /* Dark 3D Background */
+  background: #0f172a !important; /* Dark 3D Canvas Base */
   border-radius: 24px;
   border: 2.5px solid rgba(255, 117, 68, 0.5);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 117, 68, 0.2);
