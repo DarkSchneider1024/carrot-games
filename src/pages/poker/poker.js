@@ -429,17 +429,29 @@ function _updatePokerUI(engine) {
     }
   });
 
-  // Handle Game Over / Showdown & Account Sync
+  // Action Buttons State & Visibility Sync
+  const foldBtn = document.getElementById('pbtn-fold');
+  const checkBtn = document.getElementById('pbtn-check');
+  const callBtn = document.getElementById('pbtn-call');
+  const raiseBtn = document.getElementById('pbtn-raise');
+  const nextBtn = document.getElementById('pbtn-next');
+
+  const isUserTurn = engine.currentTurnIdx === 0 && !engine.gameOver;
+
   if (engine.gameOver) {
+    if (foldBtn) foldBtn.style.display = 'none';
+    if (checkBtn) checkBtn.style.display = 'none';
+    if (callBtn) callBtn.style.display = 'none';
+    if (raiseBtn) raiseBtn.style.display = 'none';
+
     const banner = document.getElementById('winner-banner');
     const winnerText = document.getElementById('winner-text');
-    const nextBtn = document.getElementById('pbtn-next');
 
-    if (banner && winnerText && nextBtn) {
+    if (banner && winnerText) {
       winnerText.textContent = engine.winnerMsg;
       banner.style.display = 'flex';
-      nextBtn.style.display = 'inline-flex';
     }
+    if (nextBtn) nextBtn.style.display = 'inline-flex';
 
     // Record stats and sync chips
     const userPlayer = engine.players[0];
@@ -449,6 +461,29 @@ function _updatePokerUI(engine) {
         const isWin = engine.winnerMsg.includes(userPlayer.name) || engine.winnerMsg.includes('你');
         updateUserStats('poker', { isWin, netProfit: userPlayer.chips - initialUserChips });
       }
+    }
+  } else {
+    const banner = document.getElementById('winner-banner');
+    if (banner) banner.style.display = 'none';
+
+    if (foldBtn) {
+      foldBtn.style.display = 'inline-flex';
+      foldBtn.disabled = !isUserTurn;
+    }
+    if (checkBtn) {
+      checkBtn.style.display = 'inline-flex';
+      checkBtn.disabled = !isUserTurn;
+    }
+    if (callBtn) {
+      callBtn.style.display = 'inline-flex';
+      callBtn.disabled = !isUserTurn;
+    }
+    if (raiseBtn) {
+      raiseBtn.style.display = 'inline-flex';
+      raiseBtn.disabled = !isUserTurn;
+    }
+    if (nextBtn) {
+      nextBtn.style.display = 'none';
     }
   }
 
