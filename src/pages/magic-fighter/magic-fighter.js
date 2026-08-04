@@ -53,11 +53,19 @@ export async function renderMagicFighter(container, params = {}) {
                 <span class="hud-value" id="hud-wave">1 / 5</span>
               </div>
               <div class="hud-item">
-                <span class="hud-label">戰機 HP</span>
-                <span class="hud-value" id="hud-hp">3</span>
+                <span class="hud-label">剩餘敵機 ENEMIES</span>
+                <span class="hud-value" id="hud-enemies" style="color:#06b6d4;">16</span>
               </div>
               <div class="hud-item">
-                <span class="hud-label">蘿蔔水晶基地</span>
+                <span class="hud-label">火力等級 STAR</span>
+                <span class="hud-value" id="hud-power" style="color:#eab308;">LV.1</span>
+              </div>
+              <div class="hud-item">
+                <span class="hud-label">戰機 HP</span>
+                <span class="hud-value" id="hud-hp">3 / 5</span>
+              </div>
+              <div class="hud-item">
+                <span class="hud-label">蘿蔔 HQ 總部</span>
                 <span class="hud-value" id="hud-base-status">完好</span>
               </div>
             </div>
@@ -223,13 +231,21 @@ export async function renderMagicFighter(container, params = {}) {
 
     const hudScore = container.querySelector('#hud-score');
     const hudWave = container.querySelector('#hud-wave');
+    const hudEnemies = container.querySelector('#hud-enemies');
+    const hudPower = container.querySelector('#hud-power');
     const hudHp = container.querySelector('#hud-hp');
     const hudBase = container.querySelector('#hud-base-status');
 
     if (hudScore) hudScore.textContent = state.score;
     if (hudWave) hudWave.textContent = `${state.wave} / ${state.maxWaves}`;
-    if (hudHp) hudHp.textContent = `${Math.max(0, state.player.hp)} / 3`;
-    if (hudBase) hudBase.textContent = state.base.destroyed ? '毀壞' : '完好';
+    if (hudEnemies) hudEnemies.textContent = Math.max(0, state.enemiesRemaining);
+    if (hudPower) {
+      const pLvl = state.player.starLevel || 0;
+      const labels = ['LV.1 標準', 'LV.2 雙發', 'LV.3 雙發', 'LV.4 貫穿'];
+      hudPower.textContent = labels[pLvl] || 'LV.1';
+    }
+    if (hudHp) hudHp.textContent = `${Math.max(0, state.player.hp)} / ${state.player.maxHp}`;
+    if (hudBase) hudBase.textContent = state.base.destroyed ? '毀壞' : (state.fortifyHqTime > 0 ? '鋼牆防禦中' : '完好');
   };
 
   // Game Over Callback
