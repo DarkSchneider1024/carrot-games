@@ -37,7 +37,9 @@ export async function renderHome(container) {
             <p class="home-subtitle">線上休閒對戰遊戲大廳</p>
           </div>
         </div>
-        <div class="home-header-actions">
+
+        <!-- 🖥️ 桌面寬度導覽列 (Desktop Nav Menu) -->
+        <div class="home-header-actions desktop-nav-menu">
           <!-- 🔐 Auth CTA: Login/Register or Account Management -->
           ${isLoggedUser ? `
             <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
@@ -65,7 +67,87 @@ export async function renderHome(container) {
             <span class="badge badge-info">${SVG_ICONS.storage} 存檔準備中...</span>
           </div>
         </div>
+
+        <!-- 🍔 響應式 / 手機端 漢堡選單觸發鈕 (Mobile Hamburger Menu Toggle Button) -->
+        <button class="mobile-menu-toggle-btn" id="btn-toggle-menu" aria-label="開啟選單">
+          ${SVG_ICONS.menu}
+        </button>
       </header>
+
+      <!-- 📱 Nike 風格右側側滑 Offcanvas 抽屜選單 (Right Side Drawer Menu) -->
+      <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+      <aside class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">
+          <div class="nav-drawer-brand">
+            <img src="./assets/images/logo_carrot.png" alt="Logo" class="nav-drawer-logo" />
+            <span class="nav-drawer-title">功能選單</span>
+          </div>
+          <button class="nav-drawer-close" id="btn-close-drawer" aria-label="關閉選單">
+            ${SVG_ICONS.close}
+          </button>
+        </div>
+
+        <div class="nav-drawer-body">
+          <!-- 帳號 / 登入卡片 -->
+          <div class="drawer-user-card" id="drawer-user-card">
+            <div class="drawer-avatar">
+              ${SVG_ICONS.user}
+            </div>
+            <div class="drawer-user-info">
+              <strong id="drawer-display-name">${initialName}</strong>
+              <span id="drawer-display-chips" class="badge ${initialBadgeClass}" style="margin-top:2px;display:inline-block;">
+                ${initialChipsText}
+              </span>
+            </div>
+          </div>
+
+          <!-- 功能選單列表 -->
+          <div class="drawer-menu-list">
+            <button class="drawer-menu-item" id="drawer-btn-auth-login">
+              <span class="drawer-item-icon">${SVG_ICONS.user}</span>
+              <div class="drawer-item-text">
+                <strong>帳號登入 / 註冊</strong>
+                <small>開戶即贈 $1,000 本金紀錄</small>
+              </div>
+              <span class="drawer-chevron">›</span>
+            </button>
+
+            <button class="drawer-menu-item" id="drawer-btn-profile">
+              <span class="drawer-item-icon">${SVG_ICONS.user}</span>
+              <div class="drawer-item-text">
+                <strong>帳號與戰績管理</strong>
+                <small>查看對戰勝率與籌碼本金</small>
+              </div>
+              <span class="drawer-chevron">›</span>
+            </button>
+
+            <button class="drawer-menu-item" id="drawer-btn-game-guide">
+              <span class="drawer-item-icon" style="color:#ea580c;">📖</span>
+              <div class="drawer-item-text">
+                <strong>遊戲玩法說明全書</strong>
+                <small>3D 角色技能與寶箱說明</small>
+              </div>
+              <span class="drawer-chevron">›</span>
+            </button>
+
+            <button class="drawer-menu-item" id="drawer-btn-pwa-guide">
+              <span class="drawer-item-icon">${SVG_ICONS.smartphone}</span>
+              <div class="drawer-item-text">
+                <strong>手機 App 安裝指南</strong>
+                <small>體驗無邊框全螢幕與極速載入</small>
+              </div>
+              <span class="drawer-chevron">›</span>
+            </button>
+          </div>
+
+          <div class="drawer-footer">
+            <div id="drawer-storage-badge">
+              <span class="badge badge-info">${SVG_ICONS.storage} 存檔準備中...</span>
+            </div>
+            <p class="drawer-footer-copyright">CARROT GAMES © 2026</p>
+          </div>
+        </div>
+      </aside>
 
       <!-- Hero Section -->
       <section class="home-hero animate-fade-in-up">
@@ -315,49 +397,101 @@ export async function renderHome(container) {
     chatEl.scrollTop = chatEl.scrollHeight;
   });
 
+  // 📱 Offcanvas Drawer Menu Control (Nike Style Slide-over)
+  const backdrop = document.getElementById('nav-drawer-backdrop');
+  const drawer = document.getElementById('nav-drawer');
+
+  const openNavDrawer = () => {
+    backdrop?.classList.add('active');
+    drawer?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeNavDrawer = () => {
+    backdrop?.classList.remove('active');
+    drawer?.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  document.getElementById('btn-toggle-menu')?.addEventListener('click', openNavDrawer);
+  document.getElementById('btn-close-drawer')?.addEventListener('click', closeNavDrawer);
+  backdrop?.addEventListener('click', closeNavDrawer);
+
   // Init Auth System & Subscribe Profile UI Changes
   const updateHeaderUI = (user, profile) => {
     const displayEl = document.getElementById('display-player-name');
     const chipBadge = document.getElementById('display-user-chips');
     const authLoginBtn = document.getElementById('btn-auth-login');
+
+    const drawerNameEl = document.getElementById('drawer-display-name');
+    const drawerChipsEl = document.getElementById('drawer-display-chips');
+    const drawerAuthLoginBtn = document.getElementById('drawer-btn-auth-login');
+
     const activeUser = user || getCurrentUser();
     const activeProfile = profile || getUserProfile();
     const isLogged = !!(activeUser && !activeUser.isAnonymous);
+    const nameText = activeProfile?.displayName || activeUser?.displayName || getPlayerName() || '匿名訪客';
 
-    if (displayEl) {
-      displayEl.textContent = activeProfile?.displayName || activeUser?.displayName || getPlayerName() || '匿名訪客';
-    }
-    if (chipBadge) {
-      if (isLogged) {
-        const chips = activeProfile?.chips !== undefined ? activeProfile.chips : 1000;
-        chipBadge.textContent = `$${chips.toLocaleString()}`;
+    if (displayEl) displayEl.textContent = nameText;
+    if (drawerNameEl) drawerNameEl.textContent = nameText;
+
+    if (isLogged) {
+      const chips = activeProfile?.chips !== undefined ? activeProfile.chips : 1000;
+      const chipsText = `$${chips.toLocaleString()}`;
+      if (chipBadge) {
+        chipBadge.textContent = chipsText;
         chipBadge.className = 'badge badge-warning';
-      } else {
+      }
+      if (drawerChipsEl) {
+        drawerChipsEl.textContent = chipsText;
+        drawerChipsEl.className = 'badge badge-warning';
+      }
+    } else {
+      if (chipBadge) {
         chipBadge.textContent = '訪客';
         chipBadge.className = 'badge badge-info';
       }
+      if (drawerChipsEl) {
+        drawerChipsEl.textContent = '訪客模式';
+        drawerChipsEl.className = 'badge badge-info';
+      }
     }
+
     // Hide the Login/Register CTA button after user logs in
-    if (authLoginBtn) {
-      authLoginBtn.style.display = isLogged ? 'none' : '';
-    }
+    if (authLoginBtn) authLoginBtn.style.display = isLogged ? 'none' : '';
+    if (drawerAuthLoginBtn) drawerAuthLoginBtn.style.display = isLogged ? 'none' : '';
   };
 
   initAuth(updateHeaderUI);
   updateHeaderUI(getCurrentUser(), getUserProfile());
 
-  // Open Auth Modal (Player Profile button — always visible)
-  document.getElementById('btn-player-profile')?.addEventListener('click', () => {
+  // Desktop & Mobile Drawer Button Event Listeners
+  const handleAuthModal = () => {
+    closeNavDrawer();
     showAuthModal();
+  };
+
+  document.getElementById('btn-player-profile')?.addEventListener('click', handleAuthModal);
+  document.getElementById('btn-auth-login')?.addEventListener('click', handleAuthModal);
+  document.getElementById('drawer-btn-auth-login')?.addEventListener('click', handleAuthModal);
+  document.getElementById('drawer-btn-profile')?.addEventListener('click', handleAuthModal);
+
+  document.getElementById('btn-game-guide')?.addEventListener('click', () => {
+    closeNavDrawer();
+    navigate('/guide');
+  });
+  document.getElementById('drawer-btn-game-guide')?.addEventListener('click', () => {
+    closeNavDrawer();
+    navigate('/guide');
   });
 
-  // Open Auth Modal (Dedicated Login/Register CTA — only shown when not logged in)
-  document.getElementById('btn-auth-login')?.addEventListener('click', () => {
-    showAuthModal();
+  document.getElementById('btn-pwa-guide')?.addEventListener('click', () => {
+    closeNavDrawer();
+    navigate('/pwa-guide');
   });
-  // Open Game Guide Rulebook Page
-  document.getElementById('btn-game-guide')?.addEventListener('click', () => {
-    navigate('/guide');
+  document.getElementById('drawer-btn-pwa-guide')?.addEventListener('click', () => {
+    closeNavDrawer();
+    navigate('/pwa-guide');
   });
 
   // Chat Form Submission
@@ -424,9 +558,10 @@ export async function renderHome(container) {
   try {
     await storage.init();
     const badge = document.getElementById('storage-badge');
-    if (badge) {
-      badge.innerHTML = `<span class="badge badge-success">${SVG_ICONS.storage} 本機存檔已就緒</span>`;
-    }
+    const drawerBadge = document.getElementById('drawer-storage-badge');
+    const badgeHTML = `<span class="badge badge-success">${SVG_ICONS.storage} 本機存檔已就緒</span>`;
+    if (badge) badge.innerHTML = badgeHTML;
+    if (drawerBadge) drawerBadge.innerHTML = badgeHTML;
   } catch (e) {
     console.warn('Storage init failed:', e);
   }
