@@ -45,7 +45,7 @@ export async function renderHome(container) {
             </span>
           </button>
           <button class="btn btn-primary btn-sm" id="btn-game-guide">
-            📖 遊戲玩法說明
+            遊戲玩法說明
           </button>
           <button class="btn btn-secondary btn-sm" id="btn-pwa-guide">
             ${SVG_ICONS.smartphone} 手機安裝指南

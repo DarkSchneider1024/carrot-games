@@ -17,7 +17,7 @@ export async function renderGameGuide(container, params = {}) {
           ${SVG_ICONS.back} <span>返回遊戲大廳</span>
         </button>
         <div class="guide-header-title">
-          <h2>📖 CARROT GAMES 遊戲玩法說明大全</h2>
+          <h2>CARROT GAMES 遊戲玩法說明大全</h2>
           <p>提供平台上 4 款對戰遊戲的詳細玩法規則、道具手冊與控制指令</p>
         </div>
       </header>
@@ -25,16 +25,16 @@ export async function renderGameGuide(container, params = {}) {
       <!-- Navigation Tabs -->
       <div class="guide-tabs-bar">
         <button class="guide-tab-btn ${defaultTab === 'xiangqi' ? 'active' : ''}" data-tab="xiangqi">
-          ♟️ 中國象棋
+          中國象棋
         </button>
         <button class="guide-tab-btn ${defaultTab === 'tetris' ? 'active' : ''}" data-tab="tetris">
-          🧩 俄羅斯方塊對戰
+          俄羅斯方塊對戰
         </button>
         <button class="guide-tab-btn ${defaultTab === 'poker' ? 'active' : ''}" data-tab="poker">
-          🃏 德州撲克
+          德州撲克
         </button>
         <button class="guide-tab-btn ${defaultTab === 'magicFighter' ? 'active' : ''}" data-tab="magicFighter">
-          ✈️ 魔法對戰 3D
+          魔法對戰 3D
         </button>
       </div>
 
@@ -42,7 +42,7 @@ export async function renderGameGuide(container, params = {}) {
       <main class="guide-content-area glass">
         <!-- 1. Chinese Chess Guide -->
         <article class="guide-article ${defaultTab === 'xiangqi' ? 'active' : ''}" id="guide-xiangqi">
-          <h3>♟️ 中國象棋 (XIANGQI) 玩法與規則指南</h3>
+          <h3>中國象棋 (XIANGQI) 玩法與規則指南</h3>
           
           <section class="guide-section">
             <h4>1. 遊戲目標與勝負判定</h4>
@@ -71,7 +71,7 @@ export async function renderGameGuide(container, params = {}) {
 
         <!-- 2. Tetris Guide -->
         <article class="guide-article ${defaultTab === 'tetris' ? 'active' : ''}" id="guide-tetris">
-          <h3>🧩 俄羅斯方塊 (TETRIS BATTLE 2P) 對戰手冊</h3>
+          <h3>俄羅斯方塊 (TETRIS BATTLE 2P) 對戰手冊</h3>
 
           <section class="guide-section">
             <h4>1. 經典 2 分鐘對決規則</h4>
@@ -99,7 +99,7 @@ export async function renderGameGuide(container, params = {}) {
 
         <!-- 3. Poker Guide -->
         <article class="guide-article ${defaultTab === 'poker' ? 'active' : ''}" id="guide-poker">
-          <h3>🃏 德州撲克 (TEXAS HOLD'EM POKER) 規則手冊</h3>
+          <h3>德州撲克 (TEXAS HOLD'EM POKER) 規則手冊</h3>
 
           <section class="guide-section">
             <h4>1. 基本概念與籌碼本金</h4>
@@ -136,7 +136,7 @@ export async function renderGameGuide(container, params = {}) {
 
         <!-- 4. Magic Fighter Guide -->
         <article class="guide-article ${defaultTab === 'magicFighter' ? 'active' : ''}" id="guide-magicFighter">
-          <h3>✈️ 魔法對戰 3D (MAGIC FIGHTER) 手冊與道具大全</h3>
+          <h3>魔法對戰 3D (MAGIC FIGHTER) 手冊與道具大全</h3>
 
           <section class="guide-section">
             <h4>1. 遊戲核心目標</h4>
@@ -146,12 +146,12 @@ export async function renderGameGuide(container, params = {}) {
           <section class="guide-section">
             <h4>2. 經典 6 大寶箱道具功能列表</h4>
             <ul>
-              <li>🛡️ <strong>頭盔 / 護盾 (Helmet)</strong>：觸發 8 秒藍色無敵光罩，防禦所有子彈攻擊。</li>
-              <li>⏱️ <strong>時鐘 / 定身 (Clock)</strong>：凍結全場所有敵機 6 秒，敵機停止移動與射擊。</li>
-              <li>💣 <strong>手榴彈 / 全滅爆破 (Grenade / Bomb)</strong>：引爆當前全場畫面上所有敵機，獲得相應得分！</li>
-              <li>⭐️ <strong>星星 / 火力升級 (Star)</strong>：升級戰機火力。LV.1 標準 -> LV.2 雙發子彈 -> LV.4 破鋼貫穿子彈（可打碎鋼鐵牆）。</li>
-              <li>🏰 <strong>鐵鏟 / 總部加固 (Shovel)</strong>：將總部四周磚牆瞬間升級為堅硬鋼鐵牆 (Steel Wall) 15 秒！</li>
-              <li>🛩️ <strong>戰機加命 (Extra Life)</strong>：戰機生命值 HP +1（最高上限 5 HP）。</li>
+              <li><strong>頭盔 / 護盾 (Helmet)</strong>：觸發 8 秒藍色無敵光罩，防禦所有子彈攻擊。</li>
+              <li><strong>時鐘 / 定身 (Clock)</strong>：凍結全場所有敵機 6 秒，敵機停止移動與射擊。</li>
+              <li><strong>手榴彈 / 全滅爆破 (Grenade / Bomb)</strong>：引爆當前全場畫面上所有敵機，獲得相應得分！</li>
+              <li><strong>星星 / 火力升級 (Star)</strong>：升級戰機火力。LV.1 標準 -> LV.2 雙發子彈 -> LV.4 破鋼貫穿子彈（可打碎鋼鐵牆）。</li>
+              <li><strong>鐵鏟 / 總部加固 (Shovel)</strong>：將總部四周磚牆瞬間升級為堅硬鋼鐵牆 (Steel Wall) 15 秒！</li>
+              <li><strong>戰機加命 (Extra Life)</strong>：戰機生命值 HP +1（最高上限 5 HP）。</li>
             </ul>
           </section>
 
