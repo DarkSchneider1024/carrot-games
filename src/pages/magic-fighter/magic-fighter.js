@@ -1,6 +1,6 @@
 /**
- * Magic Fighter 3D Battle Page (全 3D 魔法對戰主頁面)
- * Features Detailed Futuristic Fighter Jet vs 3D Magic Monsters (Bat, Griffin, Wyvern Dragon).
+ * Magic Fighter 3D Battle Page (全 3D 魔法 MOBA 塔防對戰主頁面)
+ * Features Dual HQ Towers, Mana Resource Economy, Monster Creep Summoning, & 3D WebGL Engine.
  */
 
 import { MagicFighterGame } from '../../games/magic-fighter/game-controller.js';
@@ -30,7 +30,7 @@ export async function renderMagicFighter(container, params = {}) {
           </button>
           <div class="topbar-title">
             <span class="game-name">魔法對戰 3D (MAGIC FIGHTER)</span>
-            <span class="badge badge-warning">${mode === 'ai' ? 'AI 波次關卡對決' : '線上 P2P 連線對抗'}</span>
+            <span class="badge badge-warning">${mode === 'ai' ? 'AI 雙塔 MOBA 對決' : '線上 P2P 連線對抗'}</span>
           </div>
         </div>
         <div class="topbar-actions">
@@ -43,7 +43,7 @@ export async function renderMagicFighter(container, params = {}) {
       <!-- Unified Mobile Navigation Tabs -->
       <div class="game-mobile-tabs">
         <button class="mobile-tab-btn" id="mtab-setup">
-          戰報與設定
+          戰務與招募
         </button>
         <button class="mobile-tab-btn active" id="mtab-game">
           3D 對戰區
@@ -55,52 +55,63 @@ export async function renderMagicFighter(container, params = {}) {
         <!-- Sidebar Controls & Setup Panel -->
         <aside class="magic-panel-left ${activeTab === 'setup' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-setup">
           <div class="panel-card">
-            <h3 class="panel-subtitle">3D 水晶戰場動態</h3>
-            <p class="panel-desc">駕駛細緻 3D 戰鬥機，迎戰 3D 魔法怪物（暗夜魔蝙蝠、疾風鷹獅、烈焰飛龍）！保護 3D 蘿蔔水晶基地！</p>
+            <h3 class="panel-subtitle">3D MOBA 塔防戰報</h3>
+            <p class="panel-desc">獲取魔法 Mana 資源！摧毀頂部敵方魔龍主塔獲勝，保護底部我方藍晶主塔！中間中立野怪區可刷 Mana！</p>
 
             <!-- Stats & Chips HUD Box -->
             <div class="hud-box">
+              <div class="hud-item" style="grid-column: span 2;">
+                <span class="hud-label">魔法資源 MANA</span>
+                <span class="hud-value" id="hud-mana" style="color:#2ec4b6;font-size:1.3rem;">120 / 999 (+5/s)</span>
+              </div>
+              <div class="hud-item">
+                <span class="hud-label">我方藍晶主塔</span>
+                <span class="hud-value" id="hud-player-base" style="color:#38bdf8;">500 / 500</span>
+              </div>
+              <div class="hud-item">
+                <span class="hud-label">敵方魔龍主塔</span>
+                <span class="hud-value" id="hud-enemy-base" style="color:#ef4444;">500 / 500</span>
+              </div>
               <div class="hud-item">
                 <span class="hud-label">得分 SCORE</span>
                 <span class="hud-value" id="hud-score">0</span>
               </div>
               <div class="hud-item">
-                <span class="hud-label">當前波次 WAVE</span>
-                <span class="hud-value" id="hud-wave">1 / 5</span>
-              </div>
-              <div class="hud-item">
-                <span class="hud-label">剩餘敵軍 ENEMIES</span>
-                <span class="hud-value" id="hud-enemies" style="color:#06b6d4;">16</span>
-              </div>
-              <div class="hud-item">
                 <span class="hud-label">火力等級 STAR</span>
                 <span class="hud-value" id="hud-power" style="color:#eab308;">LV.1</span>
               </div>
-              <div class="hud-item">
-                <span class="hud-label">戰機 HP</span>
-                <span class="hud-value" id="hud-hp">3 / 5</span>
-              </div>
-              <div class="hud-item">
-                <span class="hud-label">蘿蔔 HQ 總部</span>
-                <span class="hud-value" id="hud-base-status">完好</span>
+            </div>
+
+            <!-- Monster Summoning & Shop Actions -->
+            <div class="summon-shop-box">
+              <h4 style="margin:0 0 6px 0;font-size:0.85rem;color:#ff7544;">魔法怪兵招募與強化</h4>
+              <div class="summon-btn-grid">
+                <button class="btn btn-secondary btn-sm summon-btn" id="btn-summon-bat">
+                  🦇 蝙蝠魔 ($50)
+                </button>
+                <button class="btn btn-secondary btn-sm summon-btn" id="btn-summon-griffin">
+                  🦅 鷹獅 ($100)
+                </button>
+                <button class="btn btn-secondary btn-sm summon-btn" id="btn-summon-dragon">
+                  🐲 烈焰龍 ($200)
+                </button>
+                <button class="btn btn-cyan btn-sm summon-btn" id="btn-upgrade-star">
+                  ⭐️ 升級火力 ($150)
+                </button>
+                <button class="btn btn-primary btn-sm summon-btn" id="btn-fortify-base" style="grid-column: span 2;">
+                  🏰 加固主塔鋼牆 ($150)
+                </button>
               </div>
             </div>
 
             <!-- Game Actions Bar -->
             <div class="actions-box">
               <button class="btn btn-primary btn-block" id="btn-restart-game">
-                ${SVG_ICONS.refresh} 重新開始 3D 遊戲
+                ${SVG_ICONS.refresh} 重新開始 MOBA 對決
               </button>
               <a href="#/" class="btn btn-secondary btn-block" style="text-align:center;">
                 ${SVG_ICONS.home} 返回遊戲大廳
               </a>
-            </div>
-
-            <!-- Instructions Guide Box -->
-            <div class="guide-box">
-              <h4>3D 控制與魔法怪物</h4>
-              <p>**敵軍怪物**：暗夜魔蝙蝠 (基礎)、疾風鷹獅 (高速)、烈焰飛龍 (重裝 3HP 變色)、赤紅魔龍 (寶物機)。</p>
-              <p>**操控說明**：鍵盤 WASD / 方向鍵，【空白鍵 Space】發射魔法彈。手機可使用 360° 滑動搖桿。</p>
             </div>
           </div>
         </aside>
@@ -112,7 +123,7 @@ export async function renderMagicFighter(container, params = {}) {
             <div class="game-over-overlay" id="game-over-modal" style="display:none;">
               <div class="game-over-content animate-scale-up">
                 <h2 id="go-title">3D 戰局結束</h2>
-                <p id="go-desc">蘿蔔基地已失守！</p>
+                <p id="go-desc">主塔已被摧毀！</p>
                 <div class="go-reward" id="go-reward-chips">+ $0 籌碼</div>
                 <div class="game-over-actions">
                   <button class="btn btn-primary" id="btn-modal-restart">${SVG_ICONS.refresh} 再玩一局</button>
@@ -120,6 +131,22 @@ export async function renderMagicFighter(container, params = {}) {
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Quick Summon Action Bar Overlay on 3D Stage (Bottom Right) -->
+          <div class="quick-summon-bar glass">
+            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-bat" title="召喚蝙蝠魔 ($50)">
+              🦇 $50
+            </button>
+            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-griffin" title="召喚鷹獅 ($100)">
+              🦅 $100
+            </button>
+            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-dragon" title="召喚烈焰飛龍 ($200)">
+              🐲 $200
+            </button>
+            <button class="btn btn-xs btn-cyan qsummon-btn" id="qbtn-star" title="升級戰機火力 ($150)">
+              ⭐️ $150
+            </button>
           </div>
 
           <!-- Mobile Virtual Controls Bar -->
@@ -182,23 +209,21 @@ export async function renderMagicFighter(container, params = {}) {
   game.onStateChange = (state) => {
     if (renderer3D) renderer3D.render(state);
 
+    const hudMana = container.querySelector('#hud-mana');
+    const hudPBase = container.querySelector('#hud-player-base');
+    const hudEBase = container.querySelector('#hud-enemy-base');
     const hudScore = container.querySelector('#hud-score');
-    const hudWave = container.querySelector('#hud-wave');
-    const hudEnemies = container.querySelector('#hud-enemies');
     const hudPower = container.querySelector('#hud-power');
-    const hudHp = container.querySelector('#hud-hp');
-    const hudBase = container.querySelector('#hud-base-status');
 
+    if (hudMana) hudMana.textContent = `${Math.floor(state.playerMana)} / 999 (+5/s)`;
+    if (hudPBase) hudPBase.textContent = `${Math.max(0, state.playerBase.hp)} / 500`;
+    if (hudEBase) hudEBase.textContent = `${Math.max(0, state.enemyBase.hp)} / 500`;
     if (hudScore) hudScore.textContent = state.score;
-    if (hudWave) hudWave.textContent = `${state.wave} / ${state.maxWaves}`;
-    if (hudEnemies) hudEnemies.textContent = Math.max(0, state.enemiesRemaining);
     if (hudPower) {
       const pLvl = state.player.starLevel || 0;
       const labels = ['LV.1 標準', 'LV.2 雙發', 'LV.3 雙發', 'LV.4 貫穿'];
       hudPower.textContent = labels[pLvl] || 'LV.1';
     }
-    if (hudHp) hudHp.textContent = `${Math.max(0, state.player.hp)} / ${state.player.maxHp}`;
-    if (hudBase) hudBase.textContent = state.base.destroyed ? '毀壞' : (state.fortifyHqTime > 0 ? '鋼牆防禦中' : '完好');
   };
 
   // Game Over Callback
@@ -208,14 +233,14 @@ export async function renderMagicFighter(container, params = {}) {
     const descEl = container.querySelector('#go-desc');
     const rewardEl = container.querySelector('#go-reward-chips');
 
-    const reward = victory ? 400 + score : Math.floor(score / 2);
+    const reward = victory ? 600 + score : Math.floor(score / 2);
     if (reward > 0) {
       const profile = getUserProfile();
       await updateUserChips(profile.chips + reward);
     }
     await updateUserStats('magicFighter', { isWin: victory, netProfit: reward });
 
-    if (titleEl) titleEl.textContent = victory ? '3D 空戰全勝！' : '3D 戰局結束';
+    if (titleEl) titleEl.textContent = victory ? '摧毀敵方魔龍主塔！勝仗！' : '藍晶主塔被摧毀！敗陣！';
     if (descEl) descEl.textContent = reason;
     if (rewardEl) rewardEl.textContent = `獲得帳號籌碼本金：+$${reward.toLocaleString()}`;
 
@@ -224,9 +249,48 @@ export async function renderMagicFighter(container, params = {}) {
 
   // Start Game Engine
   game.init(null);
-
-  // Trigger initial frame render
   renderer3D.render(game.getState());
+
+  // Bind Summoning & Shop Buttons
+  const handleSummon = (type, name, cost) => {
+    if (game.summonPlayerCreep(type)) {
+      showToast(`成功召喚【${name}】出戰！(-$${cost} Mana)`, 'success');
+    } else {
+      showToast(`魔法資源 Mana 不足！(需要 $${cost} Mana)`, 'warning');
+    }
+  };
+
+  container.querySelector('#btn-summon-bat')?.addEventListener('click', () => handleSummon('bat', '蝙蝠魔', 50));
+  container.querySelector('#qbtn-bat')?.addEventListener('click', () => handleSummon('bat', '蝙蝠魔', 50));
+
+  container.querySelector('#btn-summon-griffin')?.addEventListener('click', () => handleSummon('griffin', '疾風鷹獅', 100));
+  container.querySelector('#qbtn-griffin')?.addEventListener('click', () => handleSummon('griffin', '疾風鷹獅', 100));
+
+  container.querySelector('#btn-summon-dragon')?.addEventListener('click', () => handleSummon('dragon', '烈焰飛龍', 200));
+  container.querySelector('#qbtn-dragon')?.addEventListener('click', () => handleSummon('dragon', '烈焰飛龍', 200));
+
+  container.querySelector('#btn-upgrade-star')?.addEventListener('click', () => {
+    if (game.upgradePlayerFighter()) {
+      showToast('戰機火力成功升級！(-$150 Mana)', 'success');
+    } else {
+      showToast('Mana 不足或已達最高火力等級！', 'warning');
+    }
+  });
+  container.querySelector('#qbtn-star')?.addEventListener('click', () => {
+    if (game.upgradePlayerFighter()) {
+      showToast('戰機火力成功升級！(-$150 Mana)', 'success');
+    } else {
+      showToast('Mana 不足或已達最高火力等級！', 'warning');
+    }
+  });
+
+  container.querySelector('#btn-fortify-base')?.addEventListener('click', () => {
+    if (game.fortifyPlayerBase()) {
+      showToast('主塔血量修復並建構鋼牆護盾 15 秒！(-$150 Mana)', 'success');
+    } else {
+      showToast('Mana 不足 $150，無法加固主塔！', 'warning');
+    }
+  });
 
   // ResizeObserver for dynamic responsiveness
   const resizeObserver = new ResizeObserver(() => {
@@ -309,7 +373,7 @@ export async function renderMagicFighter(container, params = {}) {
   const restartGame = () => {
     const modal = container.querySelector('#game-over-modal');
     if (modal) modal.style.display = 'none';
-    game.newGame(1);
+    game.newGame();
   };
 
   container.querySelector('#btn-restart-game')?.addEventListener('click', restartGame);

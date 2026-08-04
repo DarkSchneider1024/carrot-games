@@ -1,12 +1,7 @@
 /**
- * Three.js WebGL 3D Fighter & Magic Monsters Renderer
+ * Three.js WebGL 3D Fighter & MOBA Strategy Renderer
  *
- * Player: Detailed Futuristic Fighter Jet with Canopy, Twin Afterburners & Geodesic Shield.
- * Monsters (3D 魔法敵軍):
- * - 🦇 暗夜魔蝙蝠 (Basic Monster) — Deep Purple Body, Red Eyes, Flapping Wings
- * - 🦅 疾風鷹獅 (Fast Griffin) — Golden Beak Head, Lion Torso, Rapid Feather Wings
- * - 🐲 烈焰飛龍 (Heavy Wyvern Dragon) — Crimson Spiked Dragon, Horns, HP Color Shift
- * - 🌟 赤紅魔龍 (Red Carrier Dragon) — Pulsing Emissive Core
+ * Renders Dual Base HQ Towers, Player Fighter Jet, Friendly Summoned Monster Creeps, & Enemy Monsters.
  */
 
 import * as THREE from 'three';
@@ -34,11 +29,14 @@ export class FighterRenderer3D {
 
     this.playerGroup = null;
     this.enemyMeshes = new Map();
+    this.playerCreepMeshes = new Map();
     this.bulletPool = [];
     this.powerupPool = [];
     this.terrainGroup = null;
-    this.baseGroup = null;
-    this.crystalMesh = null;
+    this.playerBaseGroup = null;
+    this.enemyBaseGroup = null;
+    this.playerCrystalMesh = null;
+    this.enemyCrystalMesh = null;
 
     this._lastMapHash = '';
     this.initialized = false;
@@ -122,8 +120,8 @@ export class FighterRenderer3D {
     // Build 3D Detailed Player Jet
     this._createPlayerJet3D();
 
-    // Build 3D Base HQ
-    this._createBase3D();
+    // Build Dual Base HQ Towers
+    this._createDualBases3D();
 
     this.initialized = true;
   }
@@ -213,70 +211,72 @@ export class FighterRenderer3D {
     this.scene.add(this.playerGroup);
   }
 
-  _createBase3D() {
-    this.baseGroup = new THREE.Group();
-
-    // Pedestal Fortress
+  _createDualBases3D() {
+    // 1. Player Base HQ Tower (Bottom)
+    this.playerBaseGroup = new THREE.Group();
     const pedGeo = new THREE.BoxGeometry(140, 20, 80);
     const pedMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.5 });
     const pedMesh = new THREE.Mesh(pedGeo, pedMat);
     pedMesh.position.set(320, 10, 590);
-    pedMesh.castShadow = true;
-    pedMesh.receiveShadow = true;
-    this.baseGroup.add(pedMesh);
+    this.playerBaseGroup.add(pedMesh);
 
-    // 3D Carrot Gemstone Crystal
     const cryGeo = new THREE.OctahedronGeometry(26, 0);
     const cryMat = new THREE.MeshStandardMaterial({
-      color: 0xf97316,
-      emissive: 0xf97316,
+      color: 0x38bdf8,
+      emissive: 0x0284c7,
       emissiveIntensity: 0.8,
       roughness: 0.1,
       metalness: 0.9
     });
-    this.crystalMesh = new THREE.Mesh(cryGeo, cryMat);
-    this.crystalMesh.position.set(320, 40, 590);
-    this.baseGroup.add(this.crystalMesh);
+    this.playerCrystalMesh = new THREE.Mesh(cryGeo, cryMat);
+    this.playerCrystalMesh.position.set(320, 40, 590);
+    this.playerBaseGroup.add(this.playerCrystalMesh);
 
-    const baseLight = new THREE.PointLight(0xf97316, 3.5, 160);
-    baseLight.position.set(320, 45, 590);
-    this.baseGroup.add(baseLight);
+    const pLight = new THREE.PointLight(0x38bdf8, 3.5, 160);
+    pLight.position.set(320, 45, 590);
+    this.playerBaseGroup.add(pLight);
+    this.scene.add(this.playerBaseGroup);
 
-    this.scene.add(this.baseGroup);
+    // 2. Enemy Base HQ Tower (Top)
+    this.enemyBaseGroup = new THREE.Group();
+    const ePedMesh = new THREE.Mesh(pedGeo, pedMat);
+    ePedMesh.position.set(320, 10, 50);
+    this.enemyBaseGroup.add(ePedMesh);
+
+    const eCryMat = new THREE.MeshStandardMaterial({
+      color: 0xef4444,
+      emissive: 0xd97706,
+      emissiveIntensity: 0.8,
+      roughness: 0.1,
+      metalness: 0.9
+    });
+    this.enemyCrystalMesh = new THREE.Mesh(cryGeo, eCryMat);
+    this.enemyCrystalMesh.position.set(320, 40, 50);
+    this.enemyBaseGroup.add(this.enemyCrystalMesh);
+
+    const eLight = new THREE.PointLight(0xef4444, 3.5, 160);
+    eLight.position.set(320, 45, 50);
+    this.enemyBaseGroup.add(eLight);
+    this.scene.add(this.enemyBaseGroup);
   }
 
-  _createEnemyMonsterMesh(type, isRedCarrier) {
+  _createMonsterMesh(type, isFriendly = false) {
     const monsterGroup = new THREE.Group();
 
-    if (type === 'basic') {
-      // 🦇 暗夜魔蝙蝠 (Dark Bat Monster)
+    if (type === 'bat') {
       const bodyMat = new THREE.MeshStandardMaterial({
-        color: isRedCarrier ? 0xef4444 : 0x6b21a8,
-        emissive: isRedCarrier ? 0xef4444 : 0x3b0764,
-        emissiveIntensity: isRedCarrier ? 0.7 : 0.2,
+        color: isFriendly ? 0x38bdf8 : 0x6b21a8,
+        emissive: isFriendly ? 0x0284c7 : 0x3b0764,
+        emissiveIntensity: 0.3,
         roughness: 0.4
       });
 
-      // Torso & Head
       const bodyGeo = new THREE.OctahedronGeometry(12, 1);
       const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
       monsterGroup.add(bodyMesh);
 
-      // Glowing Eyes
-      const eyeGeo = new THREE.SphereGeometry(2.5, 6, 6);
-      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
-
-      const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
-      leftEye.position.set(-4, 4, -10);
-      monsterGroup.add(leftEye);
-
-      const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
-      rightEye.position.set(4, 4, -10);
-      monsterGroup.add(rightEye);
-
-      // Flapping Membrane Wings
       const wingGeo = new THREE.BoxGeometry(22, 2, 14);
-      const wingMat = new THREE.MeshStandardMaterial({ color: isRedCarrier ? 0xd97706 : 0x4c1d95, roughness: 0.5 });
+      const wingMat = new THREE.MeshStandardMaterial({ color: isFriendly ? 0x0284c7 : 0x4c1d95, roughness: 0.5 });
 
       const leftWing = new THREE.Mesh(wingGeo, wingMat);
       leftWing.position.set(-13, 0, 0);
@@ -286,88 +286,61 @@ export class FighterRenderer3D {
       rightWing.position.set(13, 0, 0);
       monsterGroup.add(rightWing);
 
-      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'bat', isRedCarrier };
+      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'bat' };
 
-    } else if (type === 'fast') {
-      // 🦅 疾風鷹獅 (Fast Griffin Monster)
+    } else if (type === 'griffin') {
       const bodyMat = new THREE.MeshStandardMaterial({
-        color: isRedCarrier ? 0xef4444 : 0xd97706,
-        emissive: isRedCarrier ? 0xef4444 : 0xb45309,
-        emissiveIntensity: isRedCarrier ? 0.7 : 0.2,
+        color: isFriendly ? 0x2ec4b6 : 0xd97706,
+        emissive: isFriendly ? 0x2ec4b6 : 0xb45309,
+        emissiveIntensity: 0.3,
         roughness: 0.3
       });
 
-      // Lion Body
       const bodyGeo = new THREE.ConeGeometry(11, 32, 6);
       const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-      bodyMesh.rotation.x = -Math.PI / 2;
+      bodyMesh.rotation.x = isFriendly ? Math.PI / 2 : -Math.PI / 2;
       monsterGroup.add(bodyMesh);
 
-      // Eagle Beak Head
-      const beakGeo = new THREE.ConeGeometry(5, 12, 4);
-      const beakMat = new THREE.MeshStandardMaterial({ color: 0xeab308, roughness: 0.1 });
-      const beakMesh = new THREE.Mesh(beakGeo, beakMat);
-      beakMesh.rotation.x = -Math.PI / 2;
-      beakMesh.position.set(0, 2, -18);
-      monsterGroup.add(beakMesh);
-
-      // Feather Wings
       const wingGeo = new THREE.BoxGeometry(26, 2, 16);
-      const wingMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3 });
+      const wingMat = new THREE.MeshStandardMaterial({ color: isFriendly ? 0x3a86ff : 0xf59e0b, roughness: 0.3 });
 
       const leftWing = new THREE.Mesh(wingGeo, wingMat);
-      leftWing.position.set(-15, 2, -2);
+      leftWing.position.set(-15, 2, 0);
       monsterGroup.add(leftWing);
 
       const rightWing = new THREE.Mesh(wingGeo, wingMat);
-      rightWing.position.set(15, 2, -2);
+      rightWing.position.set(15, 2, 0);
       monsterGroup.add(rightWing);
 
-      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'griffin', isRedCarrier };
+      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'griffin' };
 
     } else {
-      // 🐲 烈焰飛龍 (Heavy Armor Wyvern Fire Dragon)
+      // Dragon
       const bodyMat = new THREE.MeshStandardMaterial({
-        color: isRedCarrier ? 0xef4444 : 0x991b1b,
-        emissive: isRedCarrier ? 0xef4444 : 0x7f1d1d,
-        emissiveIntensity: isRedCarrier ? 0.8 : 0.3,
+        color: isFriendly ? 0x3a86ff : 0x991b1b,
+        emissive: isFriendly ? 0x3a86ff : 0x7f1d1d,
+        emissiveIntensity: 0.4,
         roughness: 0.3,
         metalness: 0.5
       });
 
-      // Dragon Spiked Body
       const bodyGeo = new THREE.CylinderGeometry(8, 13, 34, 6);
       const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-      bodyMesh.rotation.x = -Math.PI / 2;
+      bodyMesh.rotation.x = isFriendly ? Math.PI / 2 : -Math.PI / 2;
       monsterGroup.add(bodyMesh);
 
-      // Dragon Horns
-      const hornGeo = new THREE.ConeGeometry(3, 10, 4);
-      const hornMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
-
-      const leftHorn = new THREE.Mesh(hornGeo, hornMat);
-      leftHorn.rotation.x = -Math.PI / 3;
-      leftHorn.position.set(-5, 7, -12);
-      monsterGroup.add(leftHorn);
-
-      const rightHorn = new THREE.Mesh(hornGeo, hornMat);
-      rightHorn.rotation.x = -Math.PI / 3;
-      rightHorn.position.set(5, 7, -12);
-      monsterGroup.add(rightHorn);
-
-      // Large Dragon Wings
       const wingGeo = new THREE.BoxGeometry(28, 3, 18);
-      const wingMat = new THREE.MeshStandardMaterial({ color: isRedCarrier ? 0xf59e0b : 0xd97706, roughness: 0.4 });
+      const wingMat = new THREE.MeshStandardMaterial({ color: isFriendly ? 0x2ec4b6 : 0xd97706, roughness: 0.4 });
 
       const leftWing = new THREE.Mesh(wingGeo, wingMat);
-      leftWing.position.set(-16, 2, -4);
+      leftWing.position.set(-16, 2, 0);
       monsterGroup.add(leftWing);
 
       const rightWing = new THREE.Mesh(wingGeo, wingMat);
-      rightWing.position.set(16, 2, -4);
+      rightWing.position.set(16, 2, 0);
       monsterGroup.add(rightWing);
 
-      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'dragon', isRedCarrier };
+      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'dragon' };
     }
 
     return monsterGroup;
@@ -395,25 +368,71 @@ export class FighterRenderer3D {
       }
     }
 
-    // 2. Rotate Base HQ Crystal
-    if (this.crystalMesh && !state.base.destroyed) {
-      this.crystalMesh.rotation.y += 0.025;
-      this.crystalMesh.position.y = 40 + Math.sin(Date.now() * 0.003) * 4;
+    // 2. Rotate Base HQ Crystals
+    const now = Date.now();
+    if (this.playerCrystalMesh && !state.playerBase.destroyed) {
+      this.playerCrystalMesh.rotation.y += 0.025;
+      this.playerCrystalMesh.position.y = 40 + Math.sin(now * 0.003) * 4;
+    }
+    if (this.enemyCrystalMesh && !state.enemyBase.destroyed) {
+      this.enemyCrystalMesh.rotation.y -= 0.025;
+      this.enemyCrystalMesh.position.y = 40 + Math.sin(now * 0.003 + 1) * 4;
     }
 
     // 3. DIRTY CHECK TERRAIN
     this._syncTerrainCached(state.map);
 
-    // 4. Sync Monster Enemies
-    this._syncEnemies(state.enemies);
+    // 4. Sync Friendly Summoned Creeps (Marching UP)
+    this._syncCreepsMap(this.playerCreepMeshes, state.playerCreeps, true);
 
-    // 5. POOLED BULLETS
+    // 5. Sync Enemy & Neutral Monsters (Marching DOWN / Jungle)
+    this._syncCreepsMap(this.enemyMeshes, state.enemies, false);
+
+    // 6. POOLED BULLETS
     this._syncBulletsPooled(state.bullets);
 
-    // 6. POOLED POWERUPS
+    // 7. POOLED POWERUPS
     this._syncPowerupsPooled(state.powerups);
 
     this.renderer.render(this.scene, this.camera);
+  }
+
+  _syncCreepsMap(meshMap, list, isFriendly) {
+    const activeIds = new Set(list.map(e => e.id));
+
+    for (const [id, mesh] of meshMap.entries()) {
+      if (!activeIds.has(id)) {
+        this.scene.remove(mesh);
+        meshMap.delete(id);
+      }
+    }
+
+    const now = Date.now();
+
+    list.forEach(e => {
+      let mesh = meshMap.get(e.id);
+      if (!mesh) {
+        mesh = this._createMonsterMesh(e.type, isFriendly);
+        this.scene.add(mesh);
+        meshMap.set(e.id, mesh);
+      }
+
+      mesh.position.set(e.x + e.width / 2, 18, e.y + e.height / 2);
+
+      let targetRotY = isFriendly ? 0 : Math.PI;
+      if (e.direction === 'LEFT') targetRotY = Math.PI / 2;
+      else if (e.direction === 'RIGHT') targetRotY = -Math.PI / 2;
+
+      mesh.rotation.y = targetRotY;
+
+      const data = mesh.userData;
+      if (data.leftWing && data.rightWing) {
+        const flapSpeed = data.monsterType === 'griffin' ? 0.028 : 0.016;
+        const flapAngle = Math.sin(now * flapSpeed) * 0.45;
+        data.leftWing.rotation.z = flapAngle;
+        data.rightWing.rotation.z = -flapAngle;
+      }
+    });
   }
 
   _syncTerrainCached(map) {
@@ -465,58 +484,6 @@ export class FighterRenderer3D {
         }
       }
     }
-  }
-
-  _syncEnemies(enemies) {
-    const activeIds = new Set(enemies.map(e => e.id));
-
-    for (const [id, mesh] of this.enemyMeshes.entries()) {
-      if (!activeIds.has(id)) {
-        this.scene.remove(mesh);
-        this.enemyMeshes.delete(id);
-      }
-    }
-
-    const now = Date.now();
-
-    enemies.forEach(e => {
-      let mesh = this.enemyMeshes.get(e.id);
-      if (!mesh) {
-        mesh = this._createEnemyMonsterMesh(e.type, e.isRedCarrier);
-        this.scene.add(mesh);
-        this.enemyMeshes.set(e.id, mesh);
-      }
-
-      mesh.position.set(e.x + e.width / 2, 18, e.y + e.height / 2);
-
-      let targetRotY = Math.PI;
-      if (e.direction === 'UP') targetRotY = 0;
-      else if (e.direction === 'LEFT') targetRotY = Math.PI / 2;
-      else if (e.direction === 'RIGHT') targetRotY = -Math.PI / 2;
-
-      mesh.rotation.y = targetRotY;
-
-      // Animate Wing Flapping for Monsters
-      const data = mesh.userData;
-      if (data.leftWing && data.rightWing) {
-        const flapSpeed = data.monsterType === 'griffin' ? 0.028 : 0.016;
-        const flapAngle = Math.sin(now * flapSpeed) * 0.45;
-        data.leftWing.rotation.z = flapAngle;
-        data.rightWing.rotation.z = -flapAngle;
-      }
-
-      // Heavy Dragon Color Shift on Damage
-      if (e.type === 'heavy' && data.bodyMat) {
-        if (e.hp === 3) data.bodyMat.color.setHex(0x991b1b);
-        else if (e.hp === 2) data.bodyMat.color.setHex(0xd97706);
-        else if (e.hp === 1) data.bodyMat.color.setHex(0xef4444);
-      }
-
-      // Pulsing Emissive Light for Red Carrier Dragon
-      if (e.isRedCarrier && data.bodyMat) {
-        data.bodyMat.emissiveIntensity = 0.5 + Math.sin(now * 0.01) * 0.5;
-      }
-    });
   }
 
   _syncBulletsPooled(bullets) {

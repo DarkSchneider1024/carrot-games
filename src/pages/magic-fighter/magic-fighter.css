@@ -124,32 +124,36 @@
   color: #ff70a6;
 }
 
-.actions-box {
+/* Summon Shop Box */
+.summon-shop-box {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 117, 68, 0.3);
+  border-radius: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.guide-box {
-  background: rgba(15, 23, 42, 0.6);
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 0.8rem;
-  color: #cbd5e1;
+.summon-btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.summon-btn {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 8px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions-box {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.guide-box h4 {
-  margin: 0;
-  color: #ff7544;
-}
-
-.guide-box p {
-  margin: 0;
-  line-height: 1.3;
+  gap: 10px;
 }
 
 /* Main 3D Canvas Area */
@@ -168,7 +172,7 @@
   width: 100%;
   max-width: 600px;
   aspect-ratio: 1 / 1;
-  background: #0f172a !important; /* Dark 3D Canvas Base */
+  background: #0f172a !important;
   border-radius: 24px;
   border: 2.5px solid rgba(255, 117, 68, 0.5);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 117, 68, 0.2);
@@ -183,6 +187,29 @@
   height: 100% !important;
   object-fit: cover;
   display: block;
+}
+
+/* Quick Summon Bar (Overlay on 3D Stage Bottom Right) */
+.quick-summon-bar {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 100px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 117, 68, 0.4);
+  backdrop-filter: blur(12px);
+  z-index: 20;
+}
+
+.qsummon-btn {
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 100px;
+  color: #f8fafc;
 }
 
 /* Game Over Overlay */
