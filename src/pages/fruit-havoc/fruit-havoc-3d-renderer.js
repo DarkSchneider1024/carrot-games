@@ -1,6 +1,6 @@
 /**
- * Fruit Havoc Three.js 3D Mobile Vertical Stage Renderer
- * 360x360 Square Mobile Stage with Shadows, Beveled Platforms, & 3D Fruit Character Avatars.
+ * Fruit Havoc Three.js 3D Adaptive Responsive Stage Renderer
+ * Supports both 640x480 Desktop View & 360x360 Mobile View automatically.
  */
 
 import * as THREE from 'three';
@@ -19,29 +19,29 @@ export class FruitHavoc3DRenderer {
     this.hoverGridMesh = null;
 
     this.characterTextures = {};
-    this.canvasWidth = 360;
-    this.canvasHeight = 360;
+    this.canvasWidth = 640;
+    this.canvasHeight = 480;
   }
 
-  init(containerCanvas, width = 360, height = 360) {
+  init(containerCanvas, width = 640, height = 480) {
     this.canvasWidth = width;
     this.canvasHeight = height;
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xe0f2fe); // Soft Sky Blue
-    this.scene.fog = new THREE.Fog(0xe0f2fe, 400, 1200);
+    this.scene.fog = new THREE.Fog(0xe0f2fe, 500, 1500);
 
-    // Perspective Camera tuned for 360x360 Square World
+    // Adaptive Perspective Camera tuned for stage aspect-ratio
     this.camera = new THREE.PerspectiveCamera(40, width / height, 1, 2000);
-    this.camera.position.set(180, 220, 500);
-    this.camera.lookAt(180, 140, 0);
+    this.camera.position.set(width / 2, height * 0.62, 580);
+    this.camera.lookAt(width / 2, height * 0.42, 0);
 
     // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     this.scene.add(ambientLight);
 
     const dirLight = new THREE.DirectionalLight(0xfffaed, 0.9);
-    dirLight.position.set(200, 500, 350);
+    dirLight.position.set(width * 0.5, 600, 400);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 1024;
     dirLight.shadow.mapSize.height = 1024;
@@ -73,7 +73,7 @@ export class FruitHavoc3DRenderer {
     this.scene.add(this.trapsGroup);
     this.scene.add(this.gridHelperGroup);
 
-    this._buildGridHelper();
+    this._buildGridHelper(width, height);
     this._createHoverHighlightMesh();
     this._loadCharacterTextures();
 
@@ -98,8 +98,8 @@ export class FruitHavoc3DRenderer {
     });
   }
 
-  _buildGridHelper() {
-    const gridGeo = new THREE.PlaneGeometry(360, 360);
+  _buildGridHelper(w, h) {
+    const gridGeo = new THREE.PlaneGeometry(w, h);
     const gridMat = new THREE.MeshBasicMaterial({
       color: 0x0284c7,
       transparent: true,
@@ -107,12 +107,12 @@ export class FruitHavoc3DRenderer {
       wireframe: true
     });
     const gridMesh = new THREE.Mesh(gridGeo, gridMat);
-    gridMesh.position.set(180, 180, -2);
+    gridMesh.position.set(w / 2, h / 2, -2);
     this.gridHelperGroup.add(gridMesh);
   }
 
   _createHoverHighlightMesh() {
-    const hoverGeo = new THREE.BoxGeometry(42, 42, 8);
+    const hoverGeo = new THREE.BoxGeometry(45, 45, 8);
     const hoverMat = new THREE.MeshLambertMaterial({
       color: 0x38bdf8,
       transparent: true,
@@ -141,7 +141,7 @@ export class FruitHavoc3DRenderer {
       });
 
       const platMesh = new THREE.Mesh(pGeo, pMat);
-      platMesh.position.set(plat.x + pW / 2, 360 - (plat.y + pH / 2), 0);
+      platMesh.position.set(plat.x + pW / 2, this.canvasHeight - (plat.y + pH / 2), 0);
       platMesh.castShadow = true;
       platMesh.receiveShadow = true;
 
@@ -156,15 +156,15 @@ export class FruitHavoc3DRenderer {
     });
 
     // 3D Goal Trophy
-    const trophyGeo = new THREE.CylinderGeometry(12, 16, 28, 16);
+    const trophyGeo = new THREE.CylinderGeometry(14, 18, 30, 16);
     const trophyMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8, roughness: 0.2 });
     const trophyMesh = new THREE.Mesh(trophyGeo, trophyMat);
-    trophyMesh.position.set(290, 360 - 100, 15);
+    trophyMesh.position.set(this.canvasWidth * 0.82, this.canvasHeight - 160, 15);
     trophyMesh.castShadow = true;
     this.platformGroup.add(trophyMesh);
   }
 
-  updateTraps(placedTraps, tileSize = 45) {
+  updateTraps(placedTraps, tileSize = 50) {
     while (this.trapsGroup.children.length > 0) {
       const child = this.trapsGroup.children.pop();
       if (child.geometry) child.geometry.dispose();
@@ -172,9 +172,9 @@ export class FruitHavoc3DRenderer {
 
     placedTraps.forEach(pt => {
       const tx = pt.gridX * tileSize + tileSize / 2;
-      const ty = 360 - (pt.gridY * tileSize + tileSize / 2);
+      const ty = this.canvasHeight - (pt.gridY * tileSize + tileSize / 2);
 
-      const trapGeo = new THREE.BoxGeometry(38, 38, 20);
+      const trapGeo = new THREE.BoxGeometry(40, 40, 20);
       const trapMat = new THREE.MeshStandardMaterial({
         color: pt.trap.id === 9 ? 0xef4444 : (pt.trap.id === 1 ? 0xf97316 : 0x38bdf8),
         roughness: 0.3
@@ -193,7 +193,7 @@ export class FruitHavoc3DRenderer {
       const iconTex = new THREE.CanvasTexture(canvas);
       const spriteMat = new THREE.SpriteMaterial({ map: iconTex, transparent: true });
       const sprite = new THREE.Sprite(spriteMat);
-      sprite.scale.set(34, 34, 1);
+      sprite.scale.set(36, 36, 1);
       sprite.position.set(0, 0, 12);
       trapMesh.add(sprite);
 
@@ -201,13 +201,13 @@ export class FruitHavoc3DRenderer {
     });
   }
 
-  updateHoverGrid(hoverGrid, tileSize = 45) {
+  updateHoverGrid(hoverGrid, tileSize = 50) {
     if (!hoverGrid) {
       this.hoverGridMesh.visible = false;
       return;
     }
     const gx = hoverGrid.gridX * tileSize + tileSize / 2;
-    const gy = 360 - (hoverGrid.gridY * tileSize + tileSize / 2);
+    const gy = this.canvasHeight - (hoverGrid.gridY * tileSize + tileSize / 2);
 
     this.hoverGridMesh.position.set(gx, gy, 12);
     this.hoverGridMesh.visible = true;
@@ -222,7 +222,7 @@ export class FruitHavoc3DRenderer {
       if (!playerMeshGroup) {
         playerMeshGroup = new THREE.Group();
 
-        const bodyGeo = new THREE.SphereGeometry(18, 24, 24);
+        const bodyGeo = new THREE.SphereGeometry(20, 24, 24);
         const bodyMat = new THREE.MeshStandardMaterial({
           color: new THREE.Color(p.char.color || 0xef4444),
           roughness: 0.35
@@ -232,10 +232,10 @@ export class FruitHavoc3DRenderer {
         bodyMesh.name = 'bodyMesh';
         playerMeshGroup.add(bodyMesh);
 
-        const shadowGeo = new THREE.PlaneGeometry(30, 15);
+        const shadowGeo = new THREE.PlaneGeometry(32, 16);
         const shadowMat = new THREE.MeshBasicMaterial({ color: 0x0f172a, transparent: true, opacity: 0.25 });
         const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
-        shadowMesh.position.set(0, -18, -8);
+        shadowMesh.position.set(0, -20, -8);
         playerMeshGroup.add(shadowMesh);
 
         this.scene.add(playerMeshGroup);
@@ -247,8 +247,8 @@ export class FruitHavoc3DRenderer {
       } else {
         playerMeshGroup.visible = true;
         const targetX = p.x;
-        const targetY = 360 - p.y;
-        playerMeshGroup.position.set(targetX, targetY, 18);
+        const targetY = this.canvasHeight - p.y;
+        playerMeshGroup.position.set(targetX, targetY, 20);
 
         if (p.facing === 'left') {
           playerMeshGroup.rotation.y = Math.PI;

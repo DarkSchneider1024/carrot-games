@@ -1,17 +1,18 @@
 /**
- * Fruit Havoc Mobile-First Vertical Layout (手機優先直向版面)
- * Designed for 375px~440px Mobile Vertical Screen, centered on Desktop with elegant margins.
+ * Fruit Havoc Responsive Layout (電腦/手機雙重自適應版面)
+ * Desktop: 1100px Wide Dual-Column Layout with 640x480 HD Stage.
+ * Mobile: Single-Column Layout with 360x360 Square Stage.
  */
 
 .fruit-havoc-page {
   width: 100%;
-  max-width: 440px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 12px;
+  padding: 16px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   box-sizing: border-box;
 }
 
@@ -19,39 +20,56 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
 }
 
 .topbar-title {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .game-name {
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   font-weight: 800;
   color: var(--color-text-primary);
 }
 
 .scoreboard-bar {
-  padding: 8px 12px;
-  border-radius: 12px;
+  padding: 10px 16px;
+  border-radius: 14px;
   background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
+/* Main Layout Grid */
 .fruit-havoc-main {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.fruit-havoc-main.mode-race {
+  grid-template-columns: 1fr;
+}
+
+.fruit-panel-left {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
 }
 
@@ -60,20 +78,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
-/* 360x360 Square Stage Canvas for Mobile Screen */
+/* Stage Canvas Wrapper */
 .canvas-wrapper {
   position: relative;
-  width: 360px;
-  height: 360px;
+  width: 640px;
+  height: 480px;
   max-width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border: 2px solid var(--color-border);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+  border: 3px solid var(--color-border);
   background: #000;
 }
 
@@ -83,25 +100,18 @@
   display: block;
 }
 
-.fruit-panel-left {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-}
-
 .panel-card {
-  padding: 12px;
-  border-radius: 14px;
+  padding: 14px;
+  border-radius: 16px;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .panel-title {
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--color-text-primary);
   margin: 0;
@@ -111,30 +121,32 @@
 .char-selector-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 
 .char-select-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 6px 2px;
-  border-radius: 10px;
+  gap: 4px;
+  padding: 8px 4px;
+  border-radius: 12px;
   border: 1px solid transparent;
   background: rgba(0, 0, 0, 0.03);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .char-select-item.active {
   border-color: #ff7544;
   background: #fff7ed;
-  box-shadow: 0 2px 8px rgba(255, 117, 68, 0.25);
+  box-shadow: 0 4px 12px rgba(255, 117, 68, 0.25);
+  transform: translateY(-2px);
 }
 
 .char-select-img {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid #fed7aa;
@@ -143,7 +155,7 @@
 }
 
 .char-select-name {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--color-text-primary);
 }
@@ -152,8 +164,8 @@
 .trap-selector-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  max-height: 210px;
+  gap: 8px;
+  max-height: 250px;
   overflow-y: auto;
   padding: 2px;
 }
@@ -163,47 +175,49 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 8px 4px;
-  border-radius: 10px;
+  gap: 4px;
+  padding: 10px 4px;
+  border-radius: 12px;
   border: 1px solid var(--color-border);
   background: var(--color-bg-card);
   cursor: pointer;
   touch-action: manipulation;
+  transition: all 0.2s ease;
 }
 
 .trap-select-item.active {
   border-color: #0284c7;
   background: #e0f2fe;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
 
 .trap-icon {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
 }
 
 .trap-name {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--color-text-primary);
   text-align: center;
 }
 
-/* Mobile Mario Touch Control Buttons */
+/* Mobile Touch Controls */
 .mobile-touch-controls-bar {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  padding: 10px;
-  border-radius: 14px;
+  max-width: 640px;
+  padding: 12px;
+  border-radius: 16px;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
 }
 
 .dpad-btn, .jump-btn {
-  padding: 10px 16px;
-  font-size: 1.05rem;
+  padding: 10px 20px;
+  font-size: 1.1rem;
   font-weight: 800;
   border-radius: 12px;
   border: none;
@@ -222,4 +236,31 @@
 .dpad-btn:active, .jump-btn:active {
   transform: scale(0.94);
   opacity: 0.85;
+}
+
+/* 📱 Mobile Responsive Query (<768px) */
+@media (max-width: 767px) {
+  .fruit-havoc-page {
+    max-width: 480px;
+    padding: 10px;
+  }
+
+  .scoreboard-bar {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .fruit-havoc-main {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .canvas-wrapper {
+    width: 100% !important;
+    max-width: 360px;
+    height: 360px !important;
+    aspect-ratio: 1 / 1;
+  }
 }
