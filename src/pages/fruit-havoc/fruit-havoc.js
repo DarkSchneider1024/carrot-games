@@ -1019,7 +1019,38 @@ export async function renderFruitHavoc(container, params = {}) {
   // Trap Selection & Drop Logic
   let draggedTrapId = null;
 
+  // Dynamic Tooltip Controller
+  const tooltipEl = container.querySelector('#trap-tooltip-floating');
+  const tooltipTitle = container.querySelector('#tooltip-title');
+  const tooltipDesc = container.querySelector('#tooltip-desc');
+
+  const showTrapTooltip = (trap, mouseX, mouseY) => {
+    if (!tooltipEl || !trap) return;
+    if (tooltipTitle) tooltipTitle.innerHTML = `${trap.icon} ${trap.name}`;
+    if (tooltipDesc) tooltipDesc.textContent = trap.desc || '擺放在地圖網格中作為對戰陷阱！';
+
+    let left = mouseX + 15;
+    let top = mouseY + 15;
+    if (left + 240 > window.innerWidth) left = mouseX - 245;
+    if (top + 100 > window.innerHeight) top = mouseY - 100;
+
+    tooltipEl.style.left = `${left}px`;
+    tooltipEl.style.top = `${top}px`;
+    tooltipEl.classList.add('show');
+  };
+
+  const hideTrapTooltip = () => {
+    if (tooltipEl) tooltipEl.classList.remove('show');
+  };
+
   container.querySelectorAll('.trap-select-item').forEach(item => {
+    const trapId = parseInt(item.dataset.trapId, 10);
+    const trap = TRAP_ITEMS.find(t => t.id === trapId);
+
+    item.addEventListener('mouseenter', (e) => showTrapTooltip(trap, e.clientX, e.clientY));
+    item.addEventListener('mousemove', (e) => showTrapTooltip(trap, e.clientX, e.clientY));
+    item.addEventListener('mouseleave', () => hideTrapTooltip());
+
     item.addEventListener('click', () => {
       container.querySelectorAll('.trap-select-item').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
@@ -1046,6 +1077,7 @@ export async function renderFruitHavoc(container, params = {}) {
 
     item.addEventListener('dragend', () => {
       hoverGrid = null;
+      hideTrapTooltip();
     });
   });
 

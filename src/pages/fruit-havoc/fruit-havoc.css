@@ -264,3 +264,45 @@
     aspect-ratio: 1 / 1;
   }
 }
+
+/* Floating Trap Tooltip Card */
+.trap-tooltip-floating {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(56, 189, 248, 0.5);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 230px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.trap-tooltip-floating.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.trap-tooltip-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trap-tooltip-desc {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.35;
+  margin: 0;
+}
