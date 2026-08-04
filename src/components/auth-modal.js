@@ -174,11 +174,11 @@ function _renderAuthFormModal() {
         <form class="auth-form" id="form-login" style="display:flex;flex-direction:column;gap:12px;">
           <div>
             <label style="font-size:0.8rem;color:var(--color-text-secondary);display:block;margin-bottom:4px;">電子郵件 Email：</label>
-            <input type="email" class="input" id="login-email" placeholder="example@gmail.com" required style="width:100%;" />
+            <input type="email" class="input" id="login-email" placeholder="example@gmail.com" required autocapitalize="none" autocomplete="email" spellcheck="false" style="width:100%;" />
           </div>
           <div>
             <label style="font-size:0.8rem;color:var(--color-text-secondary);display:block;margin-bottom:4px;">密碼 Password：</label>
-            <input type="password" class="input" id="login-password" placeholder="輸入密碼..." required style="width:100%;" />
+            <input type="password" class="input" id="login-password" placeholder="輸入密碼..." required autocomplete="current-password" style="width:100%;" />
           </div>
           <button type="submit" class="btn btn-primary" style="margin-top:4px;width:100%;">登入帳號</button>
         </form>
@@ -194,11 +194,11 @@ function _renderAuthFormModal() {
           </div>
           <div>
             <label style="font-size:0.8rem;color:var(--color-text-secondary);display:block;margin-bottom:4px;">電子郵件 Email：</label>
-            <input type="email" class="input" id="reg-email" placeholder="example@gmail.com" required style="width:100%;" />
+            <input type="email" class="input" id="reg-email" placeholder="example@gmail.com" required autocapitalize="none" autocomplete="email" spellcheck="false" style="width:100%;" />
           </div>
           <div>
             <label style="font-size:0.8rem;color:var(--color-text-secondary);display:block;margin-bottom:4px;">設定密碼 Password (至少6碼)：</label>
-            <input type="password" class="input" id="reg-password" placeholder="密碼..." minlength="6" required style="width:100%;" />
+            <input type="password" class="input" id="reg-password" placeholder="密碼..." minlength="6" required autocomplete="new-password" style="width:100%;" />
           </div>
           <button type="submit" class="btn btn-primary" style="margin-top:4px;width:100%;">建立新帳號並領取 $1000</button>
         </form>
@@ -247,8 +247,8 @@ function _renderAuthFormModal() {
   // Login Form Submit
   formLogin?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('login-email')?.value;
-    const password = document.getElementById('login-password')?.value;
+    const email = document.getElementById('login-email')?.value?.trim().toLowerCase();
+    const password = document.getElementById('login-password')?.value?.trim();
     if (email && password) {
       const result = await signInWithEmail(email, password);
       if (result.success) {
@@ -261,9 +261,9 @@ function _renderAuthFormModal() {
   // Register Form Submit
   formReg?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('reg-name')?.value;
-    const email = document.getElementById('reg-email')?.value;
-    const password = document.getElementById('reg-password')?.value;
+    const name = document.getElementById('reg-name')?.value?.trim();
+    const email = document.getElementById('reg-email')?.value?.trim().toLowerCase();
+    const password = document.getElementById('reg-password')?.value?.trim();
     if (email && password) {
       const result = await signUpWithEmail(email, password, name);
       if (result.success) {

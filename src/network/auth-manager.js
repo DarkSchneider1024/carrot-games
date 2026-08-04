@@ -282,9 +282,11 @@ export async function signUpWithEmail(email, password, displayName) {
   } catch (err) {
     console.error('Sign up error:', err);
     let msg = '註冊失敗';
-    if (err.code === 'auth/email-already-in-use') msg = '該 Email 已被註冊使用';
-    else if (err.code === 'auth/weak-password') msg = '密碼長度至少需要 6 個字元';
-    else if (err.code === 'auth/invalid-email') msg = '無效的 Email 格式';
+    if (err.code === 'auth/email-already-in-use') msg = '該 Email 已被註冊使用，請直接輸入密碼登入';
+    else if (err.code === 'auth/weak-password') msg = '密碼強度不足，長度至少需要 6 個字元';
+    else if (err.code === 'auth/invalid-email') msg = 'Email 格式無效，請確認未填入首尾空格';
+    else if (err.code === 'auth/invalid-credential') msg = '憑證無效，請檢查 Email 格式與密碼';
+    else if (err.code === 'auth/network-request-failed') msg = '手機網路連線失敗，請檢查網路訊號';
 
     showToast(msg, 'warning');
     return { success: false, reason: msg };
@@ -294,8 +296,16 @@ export async function signUpWithEmail(email, password, displayName) {
 /**
  * Sign in with Email & Password
  */
-export async function signInWithEmail(email, password) {
+export async function signInWithEmail(emailInput, passwordInput) {
   if (!auth) initAuth();
+  const email = (emailInput || '').trim().toLowerCase();
+  const password = (passwordInput || '').trim();
+
+  if (!email || !password) {
+    showToast('請輸入有效的 Email 與密碼', 'warning');
+    return { success: false, reason: 'Email 或密碼空白' };
+  }
+
   try {
     const cred = await signInWithEmailAndPassword(auth, email, password);
     currentUser = cred.user;
@@ -328,15 +338,20 @@ export async function signInWithEmail(email, password) {
     console.error('Sign in error:', err);
     let msg = '登入失敗，請檢查帳號密碼';
     if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-      msg = 'Email 或密碼不正確';
+      msg = 'Email 或密碼不正確，請重新檢查（勿輸入空格）';
+    } else if (err.code === 'auth/invalid-email') {
+      msg = 'Email 格式無效，請重新確認（勿輸入首尾空格）';
+    } else if (err.code === 'auth/network-request-failed') {
+      msg = '手機網路連線失敗，請檢查網路訊號';
     }
+
     showToast(msg, 'warning');
     return { success: false, reason: msg };
   }
 }
 
 /**
- * Sign in with Google Popup
+ * Sign in with Google Popup (Mobile Friendly)
  */
 export async function signInWithGoogle() {
   if (!auth) initAuth();
@@ -387,8 +402,15 @@ export async function signInWithGoogle() {
     return { success: true, user: cred.user };
   } catch (err) {
     console.error('Google Sign in error:', err);
-    showToast('Google 聯動失敗', 'warning');
-    return { success: false, reason: err.message };
+    let msg = 'Google 登入失敗';
+    if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+      msg = '手機瀏覽器阻擋了 Google 登入彈出視窗，請在手機瀏覽器設置中允許彈窗，或使用 Email 帳號密碼登入！';
+    } else if (err.code === 'auth/unauthorized-domain' || err.code === 'auth/invalid-origin') {
+      msg = '目前手機發起的 Domain 未在 Firebase 白名單中，請使用 Email/密碼 登入！';
+    }
+
+    showToast(msg, 'warning');
+    return { success: false, reason: msg };
   }
 }
 
