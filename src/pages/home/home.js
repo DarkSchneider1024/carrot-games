@@ -38,12 +38,23 @@ export async function renderHome(container) {
           </div>
         </div>
         <div class="home-header-actions">
-          <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
-            ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
-            <span class="badge ${initialBadgeClass}" id="display-user-chips" style="margin-left:4px;">
-              ${initialChipsText}
-            </span>
-          </button>
+          <!-- 🔐 Auth CTA: Login/Register or Account Management -->
+          ${isLoggedUser ? `
+            <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
+              ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
+              <span class="badge badge-warning" id="display-user-chips" style="margin-left:4px;">
+                ${initialChipsText}
+              </span>
+            </button>
+          ` : `
+            <button class="btn btn-primary btn-sm" id="btn-auth-login" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;font-weight:700;letter-spacing:0.03em;box-shadow:0 2px 12px rgba(255,117,68,0.35);">
+              ${SVG_ICONS.user} 登入 / 註冊
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="訪客模式">
+              ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
+              <span class="badge badge-info" id="display-user-chips" style="margin-left:4px;">訪客</span>
+            </button>
+          `}
           <button class="btn btn-primary btn-sm" id="btn-game-guide">
             遊戲玩法說明
           </button>
@@ -308,6 +319,7 @@ export async function renderHome(container) {
   const updateHeaderUI = (user, profile) => {
     const displayEl = document.getElementById('display-player-name');
     const chipBadge = document.getElementById('display-user-chips');
+    const authLoginBtn = document.getElementById('btn-auth-login');
     const activeUser = user || getCurrentUser();
     const activeProfile = profile || getUserProfile();
     const isLogged = !!(activeUser && !activeUser.isAnonymous);
@@ -321,20 +333,28 @@ export async function renderHome(container) {
         chipBadge.textContent = `$${chips.toLocaleString()}`;
         chipBadge.className = 'badge badge-warning';
       } else {
-        chipBadge.textContent = '匿名訪客';
+        chipBadge.textContent = '訪客';
         chipBadge.className = 'badge badge-info';
       }
+    }
+    // Hide the Login/Register CTA button after user logs in
+    if (authLoginBtn) {
+      authLoginBtn.style.display = isLogged ? 'none' : '';
     }
   };
 
   initAuth(updateHeaderUI);
   updateHeaderUI(getCurrentUser(), getUserProfile());
 
-  // Open Auth Modal
+  // Open Auth Modal (Player Profile button — always visible)
   document.getElementById('btn-player-profile')?.addEventListener('click', () => {
     showAuthModal();
   });
 
+  // Open Auth Modal (Dedicated Login/Register CTA — only shown when not logged in)
+  document.getElementById('btn-auth-login')?.addEventListener('click', () => {
+    showAuthModal();
+  });
   // Open Game Guide Rulebook Page
   document.getElementById('btn-game-guide')?.addEventListener('click', () => {
     navigate('/guide');
