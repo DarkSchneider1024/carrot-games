@@ -1,6 +1,6 @@
 /**
  * Fruit Havoc Page — 2.5D Storybook Platformer (半3D 繪本冒險派對)
- * Features Player Character Selection System (玩家自由挑選 5 大水果角色), HD Sprite Rendering, & Random AI Video Celebrations.
+ * Features Web Audio API Sound Effects Engine (跳躍/彈飛/陣亡/通關音效), Mode-Based Player Capacity Limits (單機最多2P, 線上最多4P).
  */
 
 import { SVG_ICONS } from '../../components/icons.js';
@@ -13,8 +13,95 @@ import {
   closeFruitPeer
 } from '../../network/fruit-peer-manager.js';
 
+// Web Audio Synth Sound Engine (清脆零延遲遊戲音效)
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new AudioContext();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+const playSound = (type) => {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    if (type === 'jump') { // 🦘 跳躍音效
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(650, now + 0.12);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    } else if (type === 'spring') { // 🍄 蘑菇彈飛音效
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(200, now);
+      osc.frequency.exponentialRampToValueAtTime(950, now + 0.2);
+      gain.gain.setValueAtTime(0.4, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    } else if (type === 'place') { // ✋ 放置陷阱音效
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(380, now + 0.1);
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    } else if (type === 'hit') { // 💥 觸碰/陣亡音效
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(35, now + 0.25);
+      gain.gain.setValueAtTime(0.4, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } else if (type === 'goal') { // 🏆 到達終點音效
+      [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        gain.gain.setValueAtTime(0.3, now + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.2);
+      });
+    }
+  } catch (e) {
+    console.warn('Audio play error:', e);
+  }
+};
+
 export async function renderFruitHavoc(container, params = {}) {
-  const mode = params.mode || 'local'; // 'local' or 'online'
+  const mode = params.mode || 'local'; // 'local' (單機最多2P) or 'online' (線上最多4P)
 
   const FRUIT_CHARACTERS = [
     { id: 'strawberry', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '速度型 (靈活移動)', speed: 5.2, jump: -12.5, color: '#ef4444' },
@@ -59,8 +146,9 @@ export async function renderFruitHavoc(container, params = {}) {
   let maxRounds = 8;
   let currentRound = 1;
   let targetScore = 10;
+  // 人數限制：單機 (local) 最多 2P；線上 (online) 支援最多 4P
   let playerCount = 2; // 2P default
-  let selectedPlayerIdx = 0; // 當前正在編輯/挑選角色的玩家
+  let selectedPlayerIdx = 0;
 
   // Player Objects Array
   let players = [
@@ -76,7 +164,6 @@ export async function renderFruitHavoc(container, params = {}) {
   ];
   let hoverGrid = null;
 
-  // 4 Scenes State: 1 = 'BUILD', 2 = 'RACE', 3 = 'SCORE', 4 = 'VICTORY'
   let currentScene = 1;
   let animFrameId = null;
   let isPeerConnected = false;
@@ -88,7 +175,6 @@ export async function renderFruitHavoc(container, params = {}) {
     p2Left: false, p2Right: false, p2Jump: false
   };
 
-  // 2.5D Platforms (800x480 resolution)
   const PLATFORMS = [
     { x: 50, y: 400, w: 200, h: 50 },   // 起點大台
     { x: 300, y: 320, w: 150, h: 30 },  // 中間跳板
@@ -110,9 +196,11 @@ export async function renderFruitHavoc(container, params = {}) {
         </div>
         <div class="topbar-actions" style="display:flex;gap:8px;">
           <select id="select-player-count" style="padding:4px 8px;border-radius:8px;border:1px solid var(--color-border);background:var(--color-bg-card);font-size:0.85rem;">
-            <option value="2" ${playerCount === 2 ? 'selected' : ''}>2 人對戰</option>
-            <option value="3" ${playerCount === 3 ? 'selected' : ''}>3 人對戰</option>
-            <option value="4" ${playerCount === 4 ? 'selected' : ''}>4 人對戰</option>
+            <option value="2" ${playerCount === 2 ? 'selected' : ''}>2 人對戰 (單機同屏上限)</option>
+            ${mode === 'online' ? `
+              <option value="3" ${playerCount === 3 ? 'selected' : ''}>3 人對戰 (線上連線)</option>
+              <option value="4" ${playerCount === 4 ? 'selected' : ''}>4 人對戰 (線上連線上限)</option>
+            ` : ''}
           </select>
           <button class="btn btn-ghost btn-sm" id="btn-settings" title="遊戲說明">
             📖 規則說明
@@ -130,7 +218,7 @@ export async function renderFruitHavoc(container, params = {}) {
             <div style="display:flex;align-items:center;gap:6px;">
               <input type="text" id="input-room-code" placeholder="輸入4位對戰碼" style="width:120px;padding:5px 10px;border-radius:8px;border:1px solid var(--color-border);font-size:0.85rem;" />
               <button class="btn btn-cyan btn-sm" id="btn-join-room">
-                🔗 加入連線
+                🔗 加入連線 (最多4P)
               </button>
             </div>
           </div>
@@ -144,7 +232,9 @@ export async function renderFruitHavoc(container, params = {}) {
       <div class="scoreboard-bar glass" style="padding:10px 16px;border-radius:14px;background:var(--color-bg-card);display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;align-items:center;gap:12px;">
           <span class="badge badge-info" id="round-counter-tag">第 ${currentRound} / ${maxRounds} 輪</span>
-          <span style="font-size:0.85rem;color:var(--color-text-secondary);font-weight:600;">目標分數：${targetScore} 分</span>
+          <span style="font-size:0.85rem;color:var(--color-text-secondary);font-weight:600;">
+            模式：${mode === 'online' ? '🌐 線上對戰 (最多4P)' : '👥 單機對戰 (最多2P)'}
+          </span>
         </div>
         <div class="player-scores-grid" id="player-scores-grid" style="display:flex;gap:16px;">
           ${players.map(p => `
@@ -169,11 +259,10 @@ export async function renderFruitHavoc(container, params = {}) {
             </p>
           </div>
 
-          <!-- 🎨 玩家自由自訂選擇角色面板 (Player Character Selector) -->
+          <!-- 🎨 玩家自由自訂選擇角色面板 -->
           <div class="panel-card glass">
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <h4 class="panel-title">1. 選擇玩家角色</h4>
-              <!-- 切換編輯哪位玩家 -->
               <div class="player-selector-tabs" id="player-tabs-box" style="display:flex;gap:4px;">
                 ${players.map((p, idx) => `
                   <button class="btn btn-xs ${idx === selectedPlayerIdx ? 'btn-primary' : 'btn-ghost'}" data-pidx="${idx}">
@@ -298,13 +387,19 @@ export async function renderFruitHavoc(container, params = {}) {
   });
   container.querySelector('#btn-settings')?.addEventListener('click', () => navigate('/guide?game=fruitHavoc'));
 
-  // Player Count Selector
+  // Player Count Selector Handler (單機最多2P, 線上最多4P)
   container.querySelector('#select-player-count')?.addEventListener('change', (e) => {
-    playerCount = parseInt(e.target.value, 10);
+    const val = parseInt(e.target.value, 10);
+    if (mode === 'local' && val > 2) {
+      showToast('單機同屏模式最多支援 2P 對戰！若需 3P 或 4P 請使用線上對戰模式', 'warning');
+      e.target.value = '2';
+      return;
+    }
+    playerCount = val;
     _reinitPlayers();
     _updateScoreboardUI();
     _renderPlayerCharacterSelectorUI();
-    showToast(`對戰人數已調整為 ${playerCount} 人！`, 'info');
+    showToast(`對戰人數設定為 ${playerCount} 人！`, 'info');
   });
 
   function _reinitPlayers() {
@@ -354,9 +449,7 @@ export async function renderFruitHavoc(container, params = {}) {
     }
   }
 
-  // ----------------------------------------------------
-  // 🎮 玩家自訂角色切換與介面更新 (Player Character Selector Logic)
-  // ----------------------------------------------------
+  // 🎮 玩家自訂角色切換與介面更新
   function _renderPlayerCharacterSelectorUI() {
     const tabsBox = container.querySelector('#player-tabs-box');
     const gridBox = container.querySelector('#char-selector-grid');
@@ -391,6 +484,7 @@ export async function renderFruitHavoc(container, params = {}) {
           const chosenChar = FRUIT_CHARACTERS.find(c => c.id === charId);
           if (chosenChar) {
             curP.char = chosenChar;
+            playSound('place'); // 播放音效
             _updateScoreboardUI();
             _updateTurnUI();
             _renderPlayerCharacterSelectorUI();
@@ -456,6 +550,7 @@ export async function renderFruitHavoc(container, params = {}) {
       panelLeft.style.display = 'none';
       mainBox.classList.add('mode-race');
       sceneVictory.style.display = 'flex';
+      playSound('goal'); // 播放終點獲勝音效
       _startVictoryVideoPlayer();
     }
   }
@@ -560,6 +655,7 @@ export async function renderFruitHavoc(container, params = {}) {
     if (player && player.isGrounded && !player.isDead && !player.reached) {
       player.vy = player.char.jump;
       player.isGrounded = false;
+      playSound('jump'); // 播放跳躍音效
     }
   };
 
@@ -642,11 +738,14 @@ export async function renderFruitHavoc(container, params = {}) {
           if (pt.trap.id === 9) {
             p.vy = -17;
             p.isGrounded = false;
+            playSound('spring'); // 蘑菇高彈音效
           } else if (pt.trap.id === 1) {
             p.vx = 12;
             p.vy = -6;
+            playSound('hit');
           } else if (pt.trap.id === 2 || pt.trap.id === 8) {
             p.isDead = true;
+            playSound('hit'); // 陣亡音效
             showToast(`💥 ${p.name} 踩中【${pt.trap.name}】陣亡！`, 'warning');
             const killerP = players.find(player => player.id === pt.placedBy);
             if (killerP && killerP.id !== p.id) {
@@ -658,6 +757,7 @@ export async function renderFruitHavoc(container, params = {}) {
 
       if (p.y > 470) {
         p.isDead = true;
+        playSound('hit');
         showToast(`🕳️ ${p.name} 掉入深淵陣亡！`, 'warning');
       }
 
@@ -665,6 +765,7 @@ export async function renderFruitHavoc(container, params = {}) {
         p.reached = true;
         finishOrderCounter++;
         p.finishRank = finishOrderCounter;
+        playSound('goal'); // 抵達終點音效
         showToast(`🚩 ${p.name} 成功到達終點！(第 ${p.finishRank} 名)`, 'success');
       }
     });
@@ -837,6 +938,7 @@ export async function renderFruitHavoc(container, params = {}) {
       selectedTrap = TRAP_ITEMS.find(t => t.id === trapId);
       draggedTrapId = trapId;
 
+      playSound('place'); // 播放音效
       showToast(`已選中道具：${selectedTrap.name}`, 'info');
     });
 
@@ -867,10 +969,12 @@ export async function renderFruitHavoc(container, params = {}) {
 
     if (targetTrap.id === 20) {
       placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
+      playSound('hit');
       showToast(`💥 ${currentP.name} 拆除了位置 (${gridX}, ${gridY}) 的障礙物！`, 'warning');
     } else {
       placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
       placedTraps.push({ id: Date.now(), trap: targetTrap, gridX, gridY, placedBy: currentP.id });
+      playSound('place'); // 播放放置陷阱音效
       showToast(`🎉 ${currentP.name} 放置【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
     }
 
@@ -946,6 +1050,7 @@ export async function renderFruitHavoc(container, params = {}) {
   container.querySelector('#btn-build-finish')?.addEventListener('click', () => {
     resetAllPlayersPos();
     finishOrderCounter = 0;
+    playSound('jump');
     switchScene(2);
   });
 
