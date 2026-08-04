@@ -569,7 +569,12 @@ export async function renderFruitHavoc(container, params = {}) {
     }
   }
 
+  let activeProjectiles = [];
+  let trapTimer = 0;
+
   const resetAllPlayersPos = () => {
+    activeProjectiles = [];
+    trapTimer = 0;
     players.forEach((p, idx) => {
       p.x = (isDesktop ? 80 : 40) + idx * 25;
       p.y = stageHeight - 100;
@@ -644,6 +649,95 @@ export async function renderFruitHavoc(container, params = {}) {
 
   const updatePhysics = () => {
     if (currentScene !== 2) return;
+    trapTimer += 1;
+
+    // 1. 定期發射/生成動態陷阱子彈
+    placedTraps.forEach(pt => {
+      const tx = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
+      const ty = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
+
+      // 🏹 葡萄連弩 (ID 7): 每 80 影格 (約 1.3 秒) 向左發射飛箭
+      if (pt.trap.id === 7 && trapTimer % 80 === 0) {
+        activeProjectiles.push({
+          id: Date.now() + Math.random(),
+          type: 'arrow',
+          icon: '🏹',
+          x: tx - 20,
+          y: ty,
+          vx: -6.5,
+          vy: 0,
+          radius: 12,
+          placedBy: pt.placedBy
+        });
+        playSound('place');
+      }
+
+      // 💣 西瓜大砲 (ID 5): 每 120 影格 (約 2.0 秒) 發射拋物線西瓜砲彈
+      if (pt.trap.id === 5 && trapTimer % 120 === 0) {
+        activeProjectiles.push({
+          id: Date.now() + Math.random(),
+          type: 'cannon',
+          icon: '💣',
+          x: tx - 15,
+          y: ty - 10,
+          vx: -4.8,
+          vy: -6.0,
+          radius: 14,
+          placedBy: pt.placedBy
+        });
+        playSound('place');
+      }
+
+      // ⚡ 雷電檸檬 (ID 10): 每 110 影格 (約 1.8 秒) 發射廣域電場衝擊波
+      if (pt.trap.id === 10 && trapTimer % 110 === 0) {
+        activeProjectiles.push({
+          id: Date.now() + Math.random(),
+          type: 'electric',
+          icon: '⚡',
+          x: tx,
+          y: ty,
+          vx: 0,
+          vy: 0,
+          radius: 10,
+          maxRadius: 55,
+          placedBy: pt.placedBy
+        });
+        playSound('hit');
+      }
+    });
+
+    // 2. 移動並更新 Projectiles
+    activeProjectiles.forEach((proj) => {
+      if (proj.type === 'electric') {
+        proj.radius += 1.8;
+      } else {
+        proj.x += proj.vx;
+        proj.y += proj.vy;
+        if (proj.type === 'cannon') proj.vy += 0.32; // 拋物線重力
+      }
+
+      // 檢測玩家碰撞擊中
+      players.forEach(p => {
+        if (!p.isDead && !p.reached) {
+          const dist = Math.hypot(p.x - proj.x, p.y - proj.y);
+          if (dist < proj.radius + 14) {
+            p.isDead = true;
+            playSound('hit');
+            showToast(`💥 ${p.name} 被擊中陣亡！`, 'warning');
+            const killerP = players.find(player => player.id === proj.placedBy);
+            if (killerP && killerP.id !== p.id) {
+              killerP.score += 1;
+            }
+          }
+        }
+      });
+    });
+
+    // 清除超出邊界或銷毀的 Projectiles
+    activeProjectiles = activeProjectiles.filter(proj => {
+      if (proj.type === 'electric') return proj.radius < proj.maxRadius;
+      return proj.x > -50 && proj.x < stageWidth + 50 && proj.y < stageHeight + 50;
+    });
 
     players.forEach((p, idx) => {
       if (p.isDead || p.reached) return;
@@ -841,6 +935,24 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.strokeRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
       ctx.font = '26px sans-serif';
       ctx.fillText(pt.trap.icon, px, py);
+    });
+
+    // 繪製動態發射出的子彈 (箭矢 🏹, 砲彈 💣, 廣域電場 ⚡)
+    activeProjectiles.forEach(proj => {
+      ctx.save();
+      if (proj.type === 'electric') {
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        ctx.font = '24px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(proj.icon, proj.x, proj.y);
+      }
+      ctx.restore();
     });
 
     if (currentScene === 1 && hoverGrid) {
