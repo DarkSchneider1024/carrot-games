@@ -455,7 +455,20 @@ export class FighterRenderer3D {
     cLight.position.set(0, 110, 0);
     castleGroup.add(cLight);
 
-    castleGroup.userData = { crystalMesh };
+    // 6. 3D Floating Base Health Bar (立體懸浮主塔血條)
+    const hpBgGeo = new THREE.BoxGeometry(110, 10, 4);
+    const hpBgMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+    const hpBgMesh = new THREE.Mesh(hpBgGeo, hpBgMat);
+    hpBgMesh.position.set(0, 140, 0);
+    castleGroup.add(hpBgMesh);
+
+    const hpFillGeo = new THREE.BoxGeometry(106, 7, 4.4);
+    const hpFillMat = new THREE.MeshBasicMaterial({ color: isEnemy ? 0xef4444 : 0x2ec4b6 });
+    const hpFillMesh = new THREE.Mesh(hpFillGeo, hpFillMat);
+    hpFillMesh.position.set(0, 140, 0);
+    castleGroup.add(hpFillMesh);
+
+    castleGroup.userData = { crystalMesh, hpFillMesh, hpFillMat };
     return castleGroup;
   }
 
@@ -873,7 +886,7 @@ export class FighterRenderer3D {
       }
     }
 
-    // 2. Rotate Sky Castle Crystals
+    // 2. Rotate Sky Castle Crystals & Sync 3D Floating Base Health Bars
     const now = Date.now();
     if (this.playerCrystalMesh && !state.playerBase.destroyed) {
       this.playerCrystalMesh.rotation.y += 0.025;
@@ -882,6 +895,28 @@ export class FighterRenderer3D {
     if (this.enemyCrystalMesh && !state.enemyBase.destroyed) {
       this.enemyCrystalMesh.rotation.y -= 0.025;
       this.enemyCrystalMesh.position.y = 52 + Math.sin(now * 0.003 + 1) * 4;
+    }
+
+    // Sync Player Base 3D HP Bar
+    if (this.playerBaseGroup && this.playerBaseGroup.userData.hpFillMesh) {
+      const hp = Math.max(0, state.playerBase.hp);
+      const ratio = Math.min(1, hp / state.playerBase.maxHp);
+      const fillMesh = this.playerBaseGroup.userData.hpFillMesh;
+      fillMesh.scale.x = Math.max(0.001, ratio);
+      fillMesh.position.x = -53 * (1 - ratio);
+
+      if (ratio < 0.3) this.playerBaseGroup.userData.hpFillMat.color.setHex(0xef4444);
+      else if (ratio < 0.6) this.playerBaseGroup.userData.hpFillMat.color.setHex(0xf97316);
+      else this.playerBaseGroup.userData.hpFillMat.color.setHex(0x2ec4b6);
+    }
+
+    // Sync Enemy Base 3D HP Bar
+    if (this.enemyBaseGroup && this.enemyBaseGroup.userData.hpFillMesh) {
+      const hp = Math.max(0, state.enemyBase.hp);
+      const ratio = Math.min(1, hp / state.enemyBase.maxHp);
+      const fillMesh = this.enemyBaseGroup.userData.hpFillMesh;
+      fillMesh.scale.x = Math.max(0.001, ratio);
+      fillMesh.position.x = -53 * (1 - ratio);
     }
 
     // 3. DIRTY CHECK TERRAIN

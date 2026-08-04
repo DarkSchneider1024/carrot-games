@@ -191,11 +191,6 @@ export class MagicFighterGame {
     this.map[4][11] = TILE_BRICK;
     this.map[4][12] = TILE_BRICK;
 
-    this.map[11][3] = TILE_BRICK;
-    this.map[11][4] = TILE_BRICK;
-    this.map[11][11] = TILE_BRICK;
-    this.map[11][12] = TILE_BRICK;
-
     // Forest Stealth Grass
     this.map[5][7] = TILE_FOREST;
     this.map[5][8] = TILE_FOREST;
