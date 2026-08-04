@@ -517,30 +517,129 @@ export class FighterRenderer3D {
       monsterGroup.userData = { bodyMesh, bodyMat: suitMat, leftWing, rightWing, monsterType: 'bat' };
 
     } else if (type === 'griffin') {
-      const bodyMat = new THREE.MeshStandardMaterial({
-        color: isFriendly ? 0x2ec4b6 : 0xd97706,
-        emissive: isFriendly ? 0x2ec4b6 : 0xb45309,
-        emissiveIntensity: 0.3,
+      // 🦅 疾風鷹獅 (Majestic Soaring Griffin Procedural 3D Model based on user image)
+      const eagleHeadMat = new THREE.MeshStandardMaterial({
+        color: 0xf8fafc, // Pure White Bald Eagle Head & Feather Mane
         roughness: 0.3
       });
 
-      const bodyGeo = new THREE.ConeGeometry(11, 32, 6);
-      const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-      bodyMesh.rotation.x = isFriendly ? Math.PI / 2 : -Math.PI / 2;
+      const lionMat = new THREE.MeshStandardMaterial({
+        color: isFriendly ? 0x0284c7 : 0xd97706, // Tawny Golden Lion Body
+        emissive: isFriendly ? 0x0284c7 : 0xb45309,
+        emissiveIntensity: 0.2,
+        roughness: 0.4
+      });
+
+      const beakMat = new THREE.MeshStandardMaterial({
+        color: 0xf59e0b, // Golden Raptor Beak & Talons
+        roughness: 0.1,
+        metalness: 0.5
+      });
+
+      const wingTipMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff, // White Upper Wing Feathers
+        roughness: 0.3,
+        side: THREE.DoubleSide
+      });
+
+      const wingInnerMat = new THREE.MeshStandardMaterial({
+        color: 0x475569, // Charcoal Gray Under Feathers
+        roughness: 0.5,
+        side: THREE.DoubleSide
+      });
+
+      // 1. Eagle Head & Golden Curved Beak (白羽大鵰頭與金黃鉤狀鷹喙)
+      const headMesh = new THREE.Mesh(new THREE.SphereGeometry(9, 14, 14), eagleHeadMat);
+      headMesh.scale.set(1, 1.1, 1.25);
+      headMesh.position.set(0, 16, -10);
+      monsterGroup.add(headMesh);
+
+      // Curved Raptor Beak (鉤狀鷹喙)
+      const beakMesh = new THREE.Mesh(new THREE.ConeGeometry(3.6, 10, 8), beakMat);
+      beakMesh.rotation.x = Math.PI / 2 + 0.3;
+      beakMesh.position.set(0, 14, -18);
+      monsterGroup.add(beakMesh);
+
+      // Eagle Eyes (凶悍鷹眼)
+      [-3.5, 3.5].forEach(xOff => {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 8), new THREE.MeshBasicMaterial({ color: 0x0f172a }));
+        eye.position.set(xOff, 17, -16);
+        monsterGroup.add(eye);
+
+        const eyeRing = new THREE.Mesh(new THREE.TorusGeometry(2.1, 0.4, 6, 12), beakMat);
+        eyeRing.rotation.y = Math.PI / 2;
+        eyeRing.position.set(xOff, 17, -16);
+        monsterGroup.add(eyeRing);
+      });
+
+      // Feathery Crest/Mane behind Head (頭後羽冠)
+      const crestMesh = new THREE.Mesh(new THREE.ConeGeometry(8, 12, 6), eagleHeadMat);
+      crestMesh.rotation.x = -Math.PI / 3;
+      crestMesh.position.set(0, 20, -5);
+      monsterGroup.add(crestMesh);
+
+      // 2. Lion Body Torso & Muscular Hind Legs (雄獅身軀與後腿)
+      const bodyMesh = new THREE.Mesh(new THREE.CylinderGeometry(8, 9, 26, 12), lionMat);
+      bodyMesh.rotation.x = Math.PI / 2;
+      bodyMesh.position.set(0, 10, 2);
       monsterGroup.add(bodyMesh);
 
-      const wingGeo = new THREE.BoxGeometry(26, 2, 16);
-      const wingMat = new THREE.MeshStandardMaterial({ color: isFriendly ? 0x3a86ff : 0xf59e0b, roughness: 0.3 });
+      // Front Eagle Legs & Golden Talons (前肢金黃鷹爪)
+      [-5.5, 5.5].forEach(xOff => {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(2, 1.5, 12, 8), beakMat);
+        leg.rotation.x = 0.3;
+        leg.position.set(xOff, 3, -6);
+        monsterGroup.add(leg);
 
-      const leftWing = new THREE.Mesh(wingGeo, wingMat);
-      leftWing.position.set(-15, 2, 0);
+        // 3 Front Claws (3根爪子)
+        [-1.5, 0, 1.5].forEach(cOff => {
+          const claw = new THREE.Mesh(new THREE.ConeGeometry(0.8, 4, 4), beakMat);
+          claw.rotation.x = Math.PI / 2 + 0.4;
+          claw.position.set(xOff + cOff, -2, -10);
+          monsterGroup.add(claw);
+        });
+      });
+
+      // Rear Lion Paws (後雄獅腳掌)
+      [-6, 6].forEach(xOff => {
+        const rearLeg = new THREE.Mesh(new THREE.SphereGeometry(4.5, 10, 10), lionMat);
+        rearLeg.position.set(xOff, 4, 10);
+        monsterGroup.add(rearLeg);
+      });
+
+      // 3. Curved Lion Tail with Tufted Tip (長獅尾)
+      const tailGeo = new THREE.TorusGeometry(10, 1.8, 8, 16, Math.PI * 0.8);
+      const tailMesh = new THREE.Mesh(tailGeo, lionMat);
+      tailMesh.rotation.x = Math.PI / 2;
+      tailMesh.rotation.z = -Math.PI / 3;
+      tailMesh.position.set(0, 12, 16);
+      monsterGroup.add(tailMesh);
+
+      const tailTuft = new THREE.Mesh(new THREE.ConeGeometry(2.5, 6, 6), new THREE.MeshStandardMaterial({ color: 0x475569 }));
+      tailTuft.position.set(6, 12, 22);
+      monsterGroup.add(tailTuft);
+
+      // 4. Majestic Soaring Feathery Wings (展翅白羽巨翼)
+      const wingShape = new THREE.Shape();
+      wingShape.moveTo(0, 0);
+      wingShape.quadraticCurveTo(22, 26, 42, 16);
+      wingShape.quadraticCurveTo(30, -6, 20, -12);
+      wingShape.quadraticCurveTo(10, -16, 0, 0);
+
+      const wingExtrude = new THREE.ExtrudeGeometry(wingShape, { depth: 2, bevelEnabled: false });
+
+      const leftWing = new THREE.Mesh(wingExtrude, wingTipMat);
+      leftWing.position.set(-6, 14, -2);
+      leftWing.rotation.y = Math.PI / 5;
       monsterGroup.add(leftWing);
 
-      const rightWing = new THREE.Mesh(wingGeo, wingMat);
-      rightWing.position.set(15, 2, 0);
+      const rightWing = new THREE.Mesh(wingExtrude, wingTipMat);
+      rightWing.position.set(6, 14, -2);
+      rightWing.rotation.y = -Math.PI / 5;
+      rightWing.scale.set(-1, 1, 1);
       monsterGroup.add(rightWing);
 
-      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'griffin' };
+      monsterGroup.userData = { bodyMesh, bodyMat: lionMat, leftWing, rightWing, monsterType: 'griffin' };
 
     } else {
       // 🐲 飛龍 (img2threejs Procedural 3D Red Baby Dragon Model based on user image)
