@@ -873,7 +873,7 @@ export async function renderFruitHavoc(container, params = {}) {
   };
 
   const bgFairylandImg = new Image();
-  bgFairylandImg.src = './assets/images/bg_fruit_fairyland.png';
+  bgFairylandImg.src = './assets/images/kenney_sky_bg.png';
   const goalCastleImg = new Image();
   goalCastleImg.src = './assets/images/asset_goal_castle.png';
 

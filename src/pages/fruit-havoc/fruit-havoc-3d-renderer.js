@@ -1,6 +1,6 @@
 /**
- * Fruit Havoc Three.js 3D Fantasy Storybook Stage Renderer
- * High-End Aesthetic Engine with Parallax Fairyland Background, Textured Grass Platforms, & Sparkle Particles.
+ * Fruit Havoc Three.js 3D Stage Renderer — Kenney Jumper Pack Edition
+ * Features Kenney.nl Jumper Pack Inspired Pastel Sky, Plump Wooden Grass Platforms & Q-Bunny Hero.
  */
 
 import * as THREE from 'three';
@@ -88,28 +88,28 @@ export class FruitHavoc3DRenderer {
   _loadTexturesAndBackground(w, h) {
     const loader = new THREE.TextureLoader();
 
-    // 1. Stage Background Image
-    loader.load('./assets/images/bg_fruit_fairyland.png', (tex) => {
+    // 1. Kenney Sky Background Image
+    loader.load('./assets/images/kenney_sky_bg.png', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       this.stageBackgroundTex = tex;
       this.scene.background = tex;
     });
 
-    // 2. Platform Grass Tile Texture
-    loader.load('./assets/images/tile_grass_platform.png', (tex) => {
+    // 2. Kenney Platform Grass Tile Texture
+    loader.load('./assets/images/kenney_platform_grass.png', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       this.grassTileTex = tex;
     });
 
-    // 3. Goal Trophy Cake Asset
+    // 3. Goal Trophy Asset
     loader.load('./assets/images/asset_goal_castle.png', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       this.goalTex = tex;
     });
 
-    // 4. Character Avatars
+    // 4. Kenney Jumper Bunny Character & Avatars
     const chars = [
-      { id: 'strawberry', url: './assets/images/char_strawberry_berry.png' },
+      { id: 'strawberry', url: './assets/images/kenney_jumper_hero.png' },
       { id: 'banana', url: './assets/images/char_banana_usagi.png' },
       { id: 'melon', url: './assets/images/char_melon_hachi.png' },
       { id: 'peach', url: './assets/images/char_peach_kuriman.png' },
@@ -124,7 +124,7 @@ export class FruitHavoc3DRenderer {
   }
 
   _createSparkleParticles(w, h) {
-    const count = 45;
+    const count = 40;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(count * 3);
 
@@ -137,10 +137,10 @@ export class FruitHavoc3DRenderer {
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
     const material = new THREE.PointsMaterial({
-      color: 0xfef08a,
-      size: 6,
+      color: 0xffffff,
+      size: 5,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.6,
       blending: THREE.AdditiveBlending
     });
 
@@ -153,7 +153,7 @@ export class FruitHavoc3DRenderer {
     const gridMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       transparent: true,
-      opacity: 0.06,
+      opacity: 0.05,
       wireframe: true
     });
     const gridMesh = new THREE.Mesh(gridGeo, gridMat);
@@ -186,8 +186,8 @@ export class FruitHavoc3DRenderer {
 
       const pGeo = new THREE.BoxGeometry(pW, pH, pDepth);
       const pMat = new THREE.MeshStandardMaterial({
-        color: 0xd97706,
-        roughness: 0.35,
+        color: 0xffffff,
+        roughness: 0.3,
         map: this.grassTileTex || null
       });
 
@@ -196,7 +196,7 @@ export class FruitHavoc3DRenderer {
       platMesh.castShadow = true;
       platMesh.receiveShadow = true;
 
-      // Top Grass Cover
+      // Top Lush Grass Line
       const grassGeo = new THREE.BoxGeometry(pW + 2, 6, pDepth + 2);
       const grassMat = new THREE.MeshStandardMaterial({ color: 0x4ade80, roughness: 0.5 });
       const grassMesh = new THREE.Mesh(grassGeo, grassMat);
@@ -206,7 +206,7 @@ export class FruitHavoc3DRenderer {
       this.platformGroup.add(platMesh);
     });
 
-    // 3D Goal Trophy Cake Asset
+    // Goal Trophy Asset
     if (this.goalTex) {
       const spriteMat = new THREE.SpriteMaterial({ map: this.goalTex, transparent: true });
       const goalSprite = new THREE.Sprite(spriteMat);
@@ -268,7 +268,6 @@ export class FruitHavoc3DRenderer {
   render(players, currentScene) {
     if (!this.initialized || !this.renderer) return;
 
-    // Animate Particles
     if (this.particlesMesh) {
       const positions = this.particlesMesh.geometry.attributes.position.array;
       for (let i = 1; i < positions.length; i += 3) {
