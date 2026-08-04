@@ -133,9 +133,13 @@
 }
 
 .char-select-img {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #fed7aa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  background: #ffffff;
 }
 
 .char-select-name {
