@@ -38,33 +38,40 @@ export async function renderHome(container) {
           </div>
         </div>
 
-        <!-- 🖥️ 桌面寬度導覽列 (Desktop Nav Menu) -->
-        <div class="home-header-actions desktop-nav-menu">
-          <!-- 🔐 Auth CTA: Login/Register or Account Management -->
-          ${isLoggedUser ? `
-            <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
-              ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
-              <span class="badge badge-warning" id="display-user-chips" style="margin-left:4px;">
-                ${initialChipsText}
-              </span>
+        <!-- 🖥️ 桌面 lativ 極簡風格導覽列 (Lativ Minimalist Style Desktop Nav Menu) -->
+        <div class="home-header-actions desktop-nav-menu lativ-style-nav">
+          <div class="lativ-nav-links">
+            <button class="lativ-nav-link" id="btn-game-guide">
+              遊戲玩法說明
             </button>
-          ` : `
-            <button class="btn btn-primary btn-sm" id="btn-auth-login" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;font-weight:700;letter-spacing:0.03em;box-shadow:0 2px 12px rgba(255,117,68,0.35);">
-              ${SVG_ICONS.user} 登入 / 註冊
+            <span class="lativ-divider">|</span>
+            <button class="lativ-nav-link" id="btn-pwa-guide">
+              ${SVG_ICONS.smartphone} <span>手機安裝指南</span>
             </button>
-            <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="訪客模式">
-              ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
-              <span class="badge badge-info" id="display-user-chips" style="margin-left:4px;">訪客</span>
-            </button>
-          `}
-          <button class="btn btn-primary btn-sm" id="btn-game-guide">
-            遊戲玩法說明
-          </button>
-          <button class="btn btn-secondary btn-sm" id="btn-pwa-guide">
-            ${SVG_ICONS.smartphone} 手機安裝指南
-          </button>
-          <div class="home-storage-badge" id="storage-badge">
-            <span class="badge badge-info">${SVG_ICONS.storage} 存檔準備中...</span>
+            <span class="lativ-divider">|</span>
+            <div class="lativ-nav-link storage-link" id="storage-badge">
+              ${SVG_ICONS.storage} <span>存檔準備中...</span>
+            </div>
+          </div>
+
+          <div class="lativ-auth-box">
+            ${isLoggedUser ? `
+              <button class="lativ-pill-btn" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
+                <span class="pill-icon">${SVG_ICONS.user}</span>
+                <span id="display-player-name" class="pill-name">${initialName}</span>
+                <span class="pill-badge warning" id="display-user-chips">${initialChipsText}</span>
+              </button>
+            ` : `
+              <button class="lativ-pill-btn auth-cta" id="btn-auth-login">
+                <span class="pill-icon">${SVG_ICONS.user}</span>
+                <span>登入 / 註冊</span>
+              </button>
+              <button class="lativ-pill-btn guest" id="btn-player-profile" title="訪客模式">
+                <span class="pill-icon">${SVG_ICONS.user}</span>
+                <span id="display-player-name" class="pill-name">${initialName}</span>
+                <span class="pill-badge info" id="display-user-chips">訪客</span>
+              </button>
+            `}
           </div>
         </div>
 
