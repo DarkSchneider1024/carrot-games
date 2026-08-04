@@ -1,7 +1,8 @@
 /**
  * Three.js WebGL 3D Fighter & MOBA Strategy Renderer
  *
- * Renders Dual Base HQ Towers, Player Fighter Jet, Friendly Summoned Monster Creeps, & Enemy Monsters.
+ * Environment: Bright Blue Sky aerial dogfight world with floating clouds & sunlight.
+ * Base Towers: Floating Castles in the Sky (天空之城 - 懸浮城堡堡壘) with spires, battlements, & floating magic crystals.
  */
 
 import * as THREE from 'three';
@@ -33,6 +34,7 @@ export class FighterRenderer3D {
     this.bulletPool = [];
     this.powerupPool = [];
     this.terrainGroup = null;
+    this.cloudsGroup = null;
     this.playerBaseGroup = null;
     this.enemyBaseGroup = null;
     this.playerCrystalMesh = null;
@@ -44,12 +46,14 @@ export class FighterRenderer3D {
 
   init(container, width = 640, height = 640) {
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0f172a); // Deep Cyber Slate
-    this.scene.fog = new THREE.FogExp2(0x0f172a, 0.0007);
+
+    // Bright Azure Blue Sky World
+    this.scene.background = new THREE.Color(0x7dd3fc); // Vibrant Sky Blue
+    this.scene.fog = new THREE.FogExp2(0xbae6fd, 0.0006); // Soft Horizon Fog
 
     // Perspective Camera
-    this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2200);
-    this.camera.position.set(320, 700, 660);
+    this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 2500);
+    this.camera.position.set(320, 720, 660);
     this.camera.lookAt(320, 0, 320);
 
     // WebGL Renderer
@@ -70,49 +74,51 @@ export class FighterRenderer3D {
     this.steelMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.1, metalness: 0.95 });
 
     this.iceGeo = new THREE.BoxGeometry(tileSize - 2, 4, tileSize - 2);
-    this.iceMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65, roughness: 0.05 });
+    this.iceMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.7, roughness: 0.05 });
 
     this.waterGeo = new THREE.BoxGeometry(tileSize - 2, 6, tileSize - 2);
-    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.75, roughness: 0.1 });
+    this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, transparent: true, opacity: 0.8, roughness: 0.1 });
 
     this.treeGeo = new THREE.ConeGeometry(16, 32, 6);
-    this.treeMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, transparent: true, opacity: 0.85 });
+    this.treeMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, transparent: true, opacity: 0.9 });
 
     this.bulletGeo = new THREE.SphereGeometry(6, 8, 8);
     this.bulletPlayerMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
-    this.bulletPlayerPiercingMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    this.bulletPlayerPiercingMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
     this.bulletEnemyMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
 
     this.powerupGeo = new THREE.OctahedronGeometry(14, 0);
 
-    // High Brightness Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+    // Bright Sky Sunlight Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
     this.scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 2.2);
-    dirLight.position.set(320, 650, 450);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-    this.scene.add(dirLight);
+    const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.5);
+    sunLight.position.set(320, 750, 450);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 1024;
+    sunLight.shadow.mapSize.height = 1024;
+    this.scene.add(sunLight);
 
-    const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.6);
-    fillLight.position.set(0, 400, 0);
-    this.scene.add(fillLight);
+    const hemiLight = new THREE.HemisphereLight(0xbae6fd, 0x0284c7, 1.2);
+    this.scene.add(hemiLight);
 
-    // Arena Floor
+    // Aerial Sky Platform Floor
     const floorGeo = new THREE.PlaneGeometry(640, 640);
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.8 });
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.5, metalness: 0.2 });
     const floorMesh = new THREE.Mesh(floorGeo, floorMat);
     floorMesh.rotation.x = -Math.PI / 2;
     floorMesh.position.set(320, -1, 320);
     floorMesh.receiveShadow = true;
     this.scene.add(floorMesh);
 
-    // Ground Grid Lines
-    const gridHelper = new THREE.GridHelper(640, 16, 0xf97316, 0x334155);
+    // Bright White Grid Helper
+    const gridHelper = new THREE.GridHelper(640, 16, 0xffffff, 0x0284c7);
     gridHelper.position.set(320, 0, 320);
     this.scene.add(gridHelper);
+
+    // Build Floating Clouds around aerial sky realm
+    this._createSkyClouds();
 
     this.terrainGroup = new THREE.Group();
     this.scene.add(this.terrainGroup);
@@ -120,10 +126,38 @@ export class FighterRenderer3D {
     // Build 3D Detailed Player Jet
     this._createPlayerJet3D();
 
-    // Build Dual Base HQ Towers
-    this._createDualBases3D();
+    // Build Floating Sky Castles in the Sky (天空之城主塔)
+    this._createSkyCastles3D();
 
     this.initialized = true;
+  }
+
+  _createSkyClouds() {
+    this.cloudsGroup = new THREE.Group();
+    const cloudMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.9,
+      transparent: true,
+      opacity: 0.85
+    });
+
+    const cloudPositions = [
+      { x: -100, y: -40, z: 100, s: 90 },
+      { x: 740, y: -40, z: 200, s: 110 },
+      { x: -150, y: -30, z: 500, s: 120 },
+      { x: 780, y: -30, z: 550, s: 100 },
+      { x: 320, y: -60, z: -150, s: 150 },
+      { x: 320, y: -60, z: 780, s: 150 }
+    ];
+
+    cloudPositions.forEach(cp => {
+      const cloudGeo = new THREE.SphereGeometry(cp.s, 8, 8);
+      const mesh = new THREE.Mesh(cloudGeo, cloudMat);
+      mesh.position.set(cp.x, cp.y, cp.z);
+      this.cloudsGroup.add(mesh);
+    });
+
+    this.scene.add(this.cloudsGroup);
   }
 
   _createPlayerJet3D() {
@@ -211,53 +245,99 @@ export class FighterRenderer3D {
     this.scene.add(this.playerGroup);
   }
 
-  _createDualBases3D() {
-    // 1. Player Base HQ Tower (Bottom)
-    this.playerBaseGroup = new THREE.Group();
-    const pedGeo = new THREE.BoxGeometry(140, 20, 80);
-    const pedMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.5 });
-    const pedMesh = new THREE.Mesh(pedGeo, pedMat);
-    pedMesh.position.set(320, 10, 590);
-    this.playerBaseGroup.add(pedMesh);
+  /**
+   * Build Floating Sky Castles in the Sky (天空之城 - 主塔)
+   */
+  _createSkyCastles3D() {
+    // 1. Player Sky Castle (Bottom, Cyan/White Laputa)
+    const pCastle = this._createFloatingCastleMesh(false);
+    pCastle.position.set(320, 0, 590);
+    this.playerBaseGroup = pCastle;
+    this.playerCrystalMesh = pCastle.userData.crystalMesh;
+    this.scene.add(pCastle);
 
-    const cryGeo = new THREE.OctahedronGeometry(26, 0);
+    // 2. Enemy Sky Castle (Top, Obsidian/Crimson Dark Laputa)
+    const eCastle = this._createFloatingCastleMesh(true);
+    eCastle.position.set(320, 0, 50);
+    this.enemyBaseGroup = eCastle;
+    this.enemyCrystalMesh = eCastle.userData.crystalMesh;
+    this.scene.add(eCastle);
+  }
+
+  _createFloatingCastleMesh(isEnemy = false) {
+    const castleGroup = new THREE.Group();
+
+    // Floating Rock Island Foundation (天空之城懸浮島基石)
+    const islandGeo = new THREE.CylinderGeometry(70, 20, 30, 8);
+    const islandMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0x1e293b : 0x475569,
+      roughness: 0.8
+    });
+    const islandMesh = new THREE.Mesh(islandGeo, islandMat);
+    islandMesh.position.set(0, -10, 0);
+    islandMesh.castShadow = true;
+    islandMesh.receiveShadow = true;
+    castleGroup.add(islandMesh);
+
+    // Castle Main Citadel Keep (主城堡中心)
+    const keepGeo = new THREE.BoxGeometry(90, 24, 60);
+    const keepMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0x334155 : 0xf8fafc,
+      roughness: 0.3
+    });
+    const keepMesh = new THREE.Mesh(keepGeo, keepMat);
+    keepMesh.position.set(0, 12, 0);
+    keepMesh.castShadow = true;
+    keepMesh.receiveShadow = true;
+    castleGroup.add(keepMesh);
+
+    // 4 Corner Gothic Spire Towers (四角哥德式高塔)
+    const spireGeo = new THREE.CylinderGeometry(10, 12, 36, 8);
+    const roofGeo = new THREE.ConeGeometry(12, 20, 8);
+    const roofMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0xb91c1c : 0x0284c7,
+      roughness: 0.2
+    });
+
+    const towerOffsets = [
+      { x: -40, z: -25 },
+      { x: 40, z: -25 },
+      { x: -40, z: 25 },
+      { x: 40, z: 25 }
+    ];
+
+    towerOffsets.forEach(pos => {
+      const spire = new THREE.Mesh(spireGeo, keepMat);
+      spire.position.set(pos.x, 18, pos.z);
+      spire.castShadow = true;
+      castleGroup.add(spire);
+
+      const roof = new THREE.Mesh(roofGeo, roofMat);
+      roof.position.set(pos.x, 44, pos.z);
+      roof.castShadow = true;
+      castleGroup.add(roof);
+    });
+
+    // Central Royal Castle Dome & Floating Power Crystal (天空巨型魔法水晶)
+    const cryGeo = new THREE.OctahedronGeometry(22, 0);
     const cryMat = new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.8,
+      color: isEnemy ? 0xef4444 : 0x38bdf8,
+      emissive: isEnemy ? 0xef4444 : 0x0284c7,
+      emissiveIntensity: 0.9,
       roughness: 0.1,
       metalness: 0.9
     });
-    this.playerCrystalMesh = new THREE.Mesh(cryGeo, cryMat);
-    this.playerCrystalMesh.position.set(320, 40, 590);
-    this.playerBaseGroup.add(this.playerCrystalMesh);
+    const crystalMesh = new THREE.Mesh(cryGeo, cryMat);
+    crystalMesh.position.set(0, 52, 0);
+    crystalMesh.castShadow = true;
+    castleGroup.add(crystalMesh);
 
-    const pLight = new THREE.PointLight(0x38bdf8, 3.5, 160);
-    pLight.position.set(320, 45, 590);
-    this.playerBaseGroup.add(pLight);
-    this.scene.add(this.playerBaseGroup);
+    const cLight = new THREE.PointLight(isEnemy ? 0xef4444 : 0x38bdf8, 4.0, 180);
+    cLight.position.set(0, 55, 0);
+    castleGroup.add(cLight);
 
-    // 2. Enemy Base HQ Tower (Top)
-    this.enemyBaseGroup = new THREE.Group();
-    const ePedMesh = new THREE.Mesh(pedGeo, pedMat);
-    ePedMesh.position.set(320, 10, 50);
-    this.enemyBaseGroup.add(ePedMesh);
-
-    const eCryMat = new THREE.MeshStandardMaterial({
-      color: 0xef4444,
-      emissive: 0xd97706,
-      emissiveIntensity: 0.8,
-      roughness: 0.1,
-      metalness: 0.9
-    });
-    this.enemyCrystalMesh = new THREE.Mesh(cryGeo, eCryMat);
-    this.enemyCrystalMesh.position.set(320, 40, 50);
-    this.enemyBaseGroup.add(this.enemyCrystalMesh);
-
-    const eLight = new THREE.PointLight(0xef4444, 3.5, 160);
-    eLight.position.set(320, 45, 50);
-    this.enemyBaseGroup.add(eLight);
-    this.scene.add(this.enemyBaseGroup);
+    castleGroup.userData = { crystalMesh };
+    return castleGroup;
   }
 
   _createMonsterMesh(type, isFriendly = false) {
@@ -368,15 +448,15 @@ export class FighterRenderer3D {
       }
     }
 
-    // 2. Rotate Base HQ Crystals
+    // 2. Rotate Sky Castle Crystals
     const now = Date.now();
     if (this.playerCrystalMesh && !state.playerBase.destroyed) {
       this.playerCrystalMesh.rotation.y += 0.025;
-      this.playerCrystalMesh.position.y = 40 + Math.sin(now * 0.003) * 4;
+      this.playerCrystalMesh.position.y = 52 + Math.sin(now * 0.003) * 4;
     }
     if (this.enemyCrystalMesh && !state.enemyBase.destroyed) {
       this.enemyCrystalMesh.rotation.y -= 0.025;
-      this.enemyCrystalMesh.position.y = 40 + Math.sin(now * 0.003 + 1) * 4;
+      this.enemyCrystalMesh.position.y = 52 + Math.sin(now * 0.003 + 1) * 4;
     }
 
     // 3. DIRTY CHECK TERRAIN
