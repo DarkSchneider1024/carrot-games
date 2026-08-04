@@ -833,6 +833,19 @@ export class FighterRenderer3D {
       monsterGroup.userData = { bodyMesh: headMesh, bodyMat: redMat, leftWing, rightWing, monsterType: 'dragon' };
     }
 
+    // 🔵 Team Color Ring & Light Indicator (友軍天藍光環 vs 敵軍深紅光環)
+    const ringColor = isFriendly ? 0x38bdf8 : 0xef4444;
+    const teamRingGeo = new THREE.TorusGeometry(18, 1.8, 8, 16);
+    const teamRingMat = new THREE.MeshBasicMaterial({ color: ringColor });
+    const teamRing = new THREE.Mesh(teamRingGeo, teamRingMat);
+    teamRing.rotation.x = Math.PI / 2;
+    teamRing.position.set(0, 0.5, 0);
+    monsterGroup.add(teamRing);
+
+    const teamLight = new THREE.PointLight(ringColor, 2.5, 45);
+    teamLight.position.set(0, 8, 0);
+    monsterGroup.add(teamLight);
+
     return monsterGroup;
   }
 

@@ -86,30 +86,8 @@ export async function renderMagicFighter(container, params = {}) {
               </div>
             </div>
 
-            <!-- Monster Summoning & Shop Actions -->
-            <div class="summon-shop-box">
-              <h4 style="margin:0 0 6px 0;font-size:0.85rem;color:#ff7544;">魔法怪兵招募與強化</h4>
-              <div class="summon-btn-grid">
-                <button class="btn btn-secondary btn-sm summon-btn" id="btn-summon-bat">
-                  🧛 吸血鬼 ($50)
-                </button>
-                <button class="btn btn-secondary btn-sm summon-btn" id="btn-summon-griffin">
-                  🦅 鷹獅 ($100)
-                </button>
-                <button class="btn btn-secondary btn-sm summon-btn" id="btn-summon-dragon">
-                  🐲 烈焰龍 ($200)
-                </button>
-                <button class="btn btn-cyan btn-sm summon-btn" id="btn-upgrade-star">
-                  ⭐️ 升級火力 ($150)
-                </button>
-                <button class="btn btn-primary btn-sm summon-btn" id="btn-fortify-base" style="grid-column: span 2;">
-                  🏰 加固主塔鋼牆 ($150)
-                </button>
-              </div>
-            </div>
-
             <!-- Game Actions Bar -->
-            <div class="actions-box">
+            <div class="actions-box" style="margin-top:12px;">
               <button class="btn btn-primary btn-block" id="btn-restart-game">
                 ${SVG_ICONS.refresh} 重新開始遊戲
               </button>
@@ -137,19 +115,22 @@ export async function renderMagicFighter(container, params = {}) {
             </div>
           </div>
 
-          <!-- Quick Summon Action Bar Overlay on 3D Stage (Bottom Right) -->
+          <!-- Quick Summon Action Bar Overlay on 3D Stage (Bottom Center) -->
           <div class="quick-summon-bar glass">
             <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-bat" title="召喚吸血鬼伯爵 ($50)">
-              🧛 $50
+              🧛 吸血鬼 ($50)
             </button>
-            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-griffin" title="召喚鷹獅 ($100)">
-              🦅 $100
+            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-griffin" title="召喚疾風鷹獅 ($100)">
+              🦅 鷹獅 ($100)
             </button>
             <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-dragon" title="召喚烈焰飛龍 ($200)">
-              🐲 $200
+              🐲 烈焰龍 ($200)
             </button>
             <button class="btn btn-xs btn-cyan qsummon-btn" id="qbtn-star" title="升級戰機火力 ($150)">
-              ⭐️ $150
+              ⭐️ 升級火力 ($150)
+            </button>
+            <button class="btn btn-xs btn-primary qsummon-btn" id="qbtn-fortify-base" title="修復主塔並加固鋼牆 ($150)">
+              🏰 加固主塔 ($150)
             </button>
           </div>
 
@@ -266,22 +247,10 @@ export async function renderMagicFighter(container, params = {}) {
     }
   };
 
-  container.querySelector('#btn-summon-bat')?.addEventListener('click', () => handleSummon('bat', '吸血鬼伯爵', 50));
   container.querySelector('#qbtn-bat')?.addEventListener('click', () => handleSummon('bat', '吸血鬼伯爵', 50));
-
-  container.querySelector('#btn-summon-griffin')?.addEventListener('click', () => handleSummon('griffin', '疾風鷹獅', 100));
   container.querySelector('#qbtn-griffin')?.addEventListener('click', () => handleSummon('griffin', '疾風鷹獅', 100));
-
-  container.querySelector('#btn-summon-dragon')?.addEventListener('click', () => handleSummon('dragon', '烈焰飛龍', 200));
   container.querySelector('#qbtn-dragon')?.addEventListener('click', () => handleSummon('dragon', '烈焰飛龍', 200));
 
-  container.querySelector('#btn-upgrade-star')?.addEventListener('click', () => {
-    if (game.upgradePlayerFighter()) {
-      showToast('戰機火力成功升級！(-$150 Mana)', 'success');
-    } else {
-      showToast('Mana 不足或已達最高火力等級！', 'warning');
-    }
-  });
   container.querySelector('#qbtn-star')?.addEventListener('click', () => {
     if (game.upgradePlayerFighter()) {
       showToast('戰機火力成功升級！(-$150 Mana)', 'success');
@@ -290,7 +259,7 @@ export async function renderMagicFighter(container, params = {}) {
     }
   });
 
-  container.querySelector('#btn-fortify-base')?.addEventListener('click', () => {
+  container.querySelector('#qbtn-fortify-base')?.addEventListener('click', () => {
     if (game.fortifyPlayerBase()) {
       showToast('主塔血量修復並建構鋼牆護盾 15 秒！(-$150 Mana)', 'success');
     } else {
