@@ -1,6 +1,6 @@
 /**
- * Fruit Havoc Page — 2D Party Trap Platformer (水果傷害 派對對戰)
- * Features Drag & Drop Placement System, PeerJS WebRTC DataChannel Sync (60 FPS UDP Movement & Trap Sync).
+ * Fruit Havoc Page — 2D Party Trap Platformer (水果傷害 派對平台對戰)
+ * Features Mario-style Manual Platformer Controls (鍵盤/手機親自控制跳躍跑跳), Drag & Drop Traps, & PeerJS DataChannel Sync.
  */
 
 import { SVG_ICONS } from '../../components/icons.js';
@@ -17,11 +17,11 @@ export async function renderFruitHavoc(container, params = {}) {
   const mode = params.mode || 'local'; // 'local' or 'online'
 
   const FRUIT_CHARACTERS = [
-    { id: 'strawberry', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '速度型 (淚流衝刺)', speed: 7.5, jump: 6.5 },
-    { id: 'banana', name: '香蕉烏薩奇', icon: '🍌', img: './assets/images/char_banana_usagi.png', trait: '高跳型 (烏拉旋風跳)', speed: 6.0, jump: 9.5 },
-    { id: 'melon', name: '哈密瓜小八', icon: '🍈', img: './assets/images/char_melon_hachi.png', trait: '智慧型 (陷阱擬態)', speed: 6.5, jump: 7.0 },
-    { id: 'peach', name: '水桃栗饅頭', icon: '🍑', img: './assets/images/char_peach_kuriman.png', trait: '重裝型 (哈哼霸體)', speed: 5.5, jump: 6.0 },
-    { id: 'grape', name: '飛天葡萄飛鼠', icon: '🍇', img: './assets/images/char_grape_momonga.png', trait: '滑翔型 (葡萄空降)', speed: 8.0, jump: 7.5 }
+    { id: 'strawberry', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '速度型 (靈活移動)', speed: 4.8, jump: -11.5 },
+    { id: 'banana', name: '香蕉烏薩奇', icon: '🍌', img: './assets/images/char_banana_usagi.png', trait: '高跳型 (超強二段跳)', speed: 4.2, jump: -13.5 },
+    { id: 'melon', name: '哈密瓜小八', icon: '🍈', img: './assets/images/char_melon_hachi.png', trait: '均衡型 (穩健控球)', speed: 4.4, jump: -12.0 },
+    { id: 'peach', name: '水桃栗饅頭', icon: '🍑', img: './assets/images/char_peach_kuriman.png', trait: '重裝型 (抗推霸體)', speed: 3.8, jump: -11.0 },
+    { id: 'grape', name: '飛天葡萄飛鼠', icon: '🍇', img: './assets/images/char_grape_momonga.png', trait: '滑翔型 (空中滯空)', speed: 5.2, jump: -12.5 }
   ];
 
   const TRAP_ITEMS = [
@@ -33,7 +33,7 @@ export async function renderFruitHavoc(container, params = {}) {
     { id: 6, name: '龍捲風漩渦', icon: '🌪️', desc: '高空向上強勁風場吹升' },
     { id: 7, name: '葡萄十字弩', icon: '🏹', desc: '感應式連環葡萄箭矢' },
     { id: 8, name: '仙人掌刺球', icon: '🌵', desc: '滾動刺球觸碰即陣亡' },
-    { id: 9, name: '超高跳跳菇', icon: '🍄', desc: '向上 3 倍高高彈跳' },
+    { id: 9, name: '超高跳跳菇', icon: '🍄', desc: '踩中向上猛烈彈飛跳躍' },
     { id: 10, name: '雷電檸檬', icon: '⚡', desc: '釋放 360 度麻痺電流' },
     { id: 11, name: '奇異果傳送門', icon: '🌀', desc: '入口與出口瞬間轉移' },
     { id: 12, name: '冰棒極速檔板', icon: '🧊', desc: '光滑冰面牆阻擋或滑行' },
@@ -50,19 +50,47 @@ export async function renderFruitHavoc(container, params = {}) {
   let selectedChar = FRUIT_CHARACTERS[0];
   let selectedTrap = TRAP_ITEMS[0];
   let placedTraps = [
-    { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9 },
-    { id: 2, trap: TRAP_ITEMS[1], gridX: 9, gridY: 7 }
+    { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 9 }, // 彈簧手套
+    { id: 2, trap: TRAP_ITEMS[8], gridX: 8, gridY: 10 }  // 跳跳菇
   ];
   let hoverGrid = null;
 
-  // Realtime Movement State & Interpolation
+  // Game Phases: 'PLACEMENT' -> 'RACE' -> 'SCORED'
+  let gamePhase = 'PLACEMENT';
   let isPeerConnected = false;
-  let isRacing = false;
   let animFrameId = null;
 
-  const localPlayer = { x: 80, y: 380, vx: 0, vy: 0 };
-  const remotePlayer = { x: 80, y: 380, vx: 0, vy: 0, icon: '🍌' };
-  const remoteTarget = { x: 80, y: 380, vx: 0, vy: 0 };
+  // 2D Physics Player State (Mario-style Platformer Controls)
+  const localPlayer = {
+    x: 80,
+    y: 360,
+    vx: 0,
+    vy: 0,
+    width: 32,
+    height: 32,
+    isGrounded: false,
+    canDoubleJump: true,
+    isDead: false,
+    score: 0
+  };
+
+  const remotePlayer = {
+    x: 80,
+    y: 360,
+    icon: '🍌',
+    score: 0
+  };
+  const remoteTarget = { x: 80, y: 360, vx: 0, vy: 0 };
+
+  // Key Input States (鍵盤操控)
+  const keys = { left: false, right: false, jump: false, down: false };
+
+  // Platform Boxes Definitions
+  const PLATFORMS = [
+    { x: 40, y: 400, w: 160, h: 40 },  // 起點踏板
+    { x: 240, y: 320, w: 120, h: 20 }, // 中間高台 1
+    { x: 440, y: 200, w: 160, h: 40 }  // 終點高台
+  ];
 
   container.innerHTML = `
     <div class="fruit-havoc-page animate-fade-in">
@@ -74,7 +102,7 @@ export async function renderFruitHavoc(container, params = {}) {
           </button>
           <div class="topbar-title">
             <span class="game-name">🍓 水果傷害 (FRUIT HAVOC)</span>
-            <span class="badge badge-warning">${mode === 'online' ? '🌐 WebRTC DataChannel 即時連線' : '👥 單機同屏 (玩家輪流擺放競速)'}</span>
+            <span class="badge badge-warning">${mode === 'online' ? '🌐 WebRTC 即時對戰' : '👥 單機同屏 (玩家輪流擺放競速)'}</span>
           </div>
         </div>
         <div class="topbar-actions">
@@ -86,15 +114,15 @@ export async function renderFruitHavoc(container, params = {}) {
 
       ${mode === 'online' ? `
         <!-- WebRTC PeerJS Room Control Bar -->
-        <div class="peer-room-bar glass" style="padding:12px 16px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--color-bg-card);">
+        <div class="peer-room-bar glass" style="padding:10px 16px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--color-bg-card);">
           <div style="display:flex;align-items:center;gap:10px;">
             <button class="btn btn-primary btn-sm" id="btn-create-room" style="background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;">
-              🏠 創建連線房間
+              🏠 創建房間
             </button>
             <div style="display:flex;align-items:center;gap:6px;">
-              <input type="text" id="input-room-code" placeholder="輸入4位數代碼" style="width:130px;padding:5px 10px;border-radius:8px;border:1px solid var(--color-border);font-size:0.85rem;" />
+              <input type="text" id="input-room-code" placeholder="輸入4位對戰碼" style="width:120px;padding:5px 10px;border-radius:8px;border:1px solid var(--color-border);font-size:0.85rem;" />
               <button class="btn btn-cyan btn-sm" id="btn-join-room">
-                🔗 加入對戰
+                🔗 加入連線
               </button>
             </div>
           </div>
@@ -107,7 +135,7 @@ export async function renderFruitHavoc(container, params = {}) {
       <!-- Main Workspace -->
       <div class="fruit-havoc-main">
         <!-- Left Panel: Character & Drag Trap Selection -->
-        <aside class="fruit-panel-left">
+        <aside class="fruit-panel-left" id="panel-left-sidebar">
           <!-- Character Selector -->
           <div class="panel-card glass">
             <h4 class="panel-title">1. 選擇水果角色</h4>
@@ -122,15 +150,15 @@ export async function renderFruitHavoc(container, params = {}) {
             <div class="char-details-box" id="char-details-box">
               <strong id="cdetail-name">${selectedChar.name}</strong>
               <p id="cdetail-trait" style="font-size:0.8rem;color:#ea580c;margin:2px 0 6px 0;">${selectedChar.trait}</p>
-              <div class="stat-bar"><span style="width:${selectedChar.speed * 10}%;"></span></div>
+              <div class="stat-bar"><span style="width:${selectedChar.speed * 15}%;"></span></div>
             </div>
           </div>
 
           <!-- Draggable Trap Selector (20 Traps) -->
           <div class="panel-card glass">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <h4 class="panel-title">2. 拖拉道具至右側地圖 (20種)</h4>
-              <span class="badge badge-warning" style="font-size:0.7rem;">按住拖拽放置 ✋</span>
+              <h4 class="panel-title">2. 擺放/炸毀陷阱 (20種)</h4>
+              <span class="badge badge-warning" style="font-size:0.7rem;">拖拉放置 ✋</span>
             </div>
             <div class="trap-selector-grid">
               ${TRAP_ITEMS.map(t => `
@@ -147,18 +175,29 @@ export async function renderFruitHavoc(container, params = {}) {
           </div>
         </aside>
 
-        <!-- Right Panel: Stage Canvas & Drop Zone -->
+        <!-- Right Panel: Stage Canvas & Race Controls -->
         <main class="fruit-stage-area glass">
           <div class="stage-header">
-            <span class="badge badge-info" id="stage-round-badge">第 1 / 5 輪次：擺放階段</span>
-            <span class="stage-tip" id="stage-tip">🖐️ 請將左側道具【拖拉放至】右側地圖網格！</span>
+            <span class="badge badge-info" id="stage-phase-badge">階段：擺放陷阱階段</span>
+            <span class="stage-tip" id="stage-tip">🖐️ 請拖拉道具放置地圖！完成後點擊按鈕開啟瑪利歐競速！</span>
           </div>
 
           <div class="canvas-wrapper" id="canvas-drop-zone">
             <canvas id="fruit-canvas" width="640" height="480"></canvas>
+
+            <!-- Race Mode On-Screen Touch Controls (瑪利歐式手機觸控按鍵) -->
+            <div class="mobile-touch-controls" id="mobile-touch-controls" style="display:none;">
+              <div class="dpad-group">
+                <button class="dpad-btn" id="tbtn-left">⬅️</button>
+                <button class="dpad-btn" id="tbtn-right">➡️</button>
+              </div>
+              <button class="jump-btn" id="tbtn-jump">🦘 跳躍 (JUMP)</button>
+            </div>
+
+            <!-- Overlay Action Button -->
             <div class="canvas-overlay-ui" id="canvas-overlay-ui">
-              <button class="btn btn-primary btn-lg" id="btn-start-round" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;box-shadow:0 4px 16px rgba(255,117,68,0.4);">
-                🚀 擺放完成！開始出發競速
+              <button class="btn btn-primary btn-lg" id="btn-phase-toggle" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;box-shadow:0 4px 16px rgba(255,117,68,0.4);">
+                🚀 擺放完成！開始瑪利歐競速對戰
               </button>
             </div>
           </div>
@@ -167,15 +206,16 @@ export async function renderFruitHavoc(container, params = {}) {
     </div>
   `;
 
-  // Attach Navigation Handlers
+  // Attach Navigation & PeerJS Listeners
   container.querySelector('#btn-back')?.addEventListener('click', () => {
     closeFruitPeer();
     if (animFrameId) cancelAnimationFrame(animFrameId);
+    _removeKeyListeners();
     navigate('/');
   });
   container.querySelector('#btn-settings')?.addEventListener('click', () => navigate('/guide?game=fruitHavoc'));
 
-  // PeerJS WebRTC Connection Logic (Online Mode)
+  // PeerJS WebRTC Setup
   const statusEl = container.querySelector('#peer-status-bar');
 
   if (mode === 'online') {
@@ -184,7 +224,7 @@ export async function renderFruitHavoc(container, params = {}) {
         if (status === 'connected') {
           statusEl.innerHTML = `<span style="color:#16a34a;">${msg}</span>`;
           isPeerConnected = true;
-          showToast('🟢 P2P WebRTC 連線成功！60 FPS UDP 位置同步已就緒', 'success');
+          showToast('🟢 P2P 連線成功！即時移動與擺放數據傳送已就緒', 'success');
         } else if (status === 'waiting' || status === 'connecting') {
           statusEl.innerHTML = `<span style="color:#d97706;">${msg}</span>`;
         } else {
@@ -196,20 +236,15 @@ export async function renderFruitHavoc(container, params = {}) {
 
     const handleDataReceive = (packet) => {
       if (packet.type === 'TRAP_PLACE') {
-        // 同步放置陷阱
         const targetTrap = TRAP_ITEMS.find(t => t.id === packet.trapId);
         if (targetTrap) {
           placedTraps = placedTraps.filter(pt => !(pt.gridX === packet.gridX && pt.gridY === packet.gridY));
           placedTraps.push({ id: Date.now(), trap: targetTrap, gridX: packet.gridX, gridY: packet.gridY });
-          showToast(`🌐 對手拖放放置了【${targetTrap.icon} ${targetTrap.name}】(${packet.gridX}, ${packet.gridY})`, 'info');
-          drawStage();
+          showToast(`🌐 對手擺放了【${targetTrap.icon} ${targetTrap.name}】(${packet.gridX}, ${packet.gridY})`, 'info');
         }
       } else if (packet.type === 'MOVE') {
-        // 60 FPS 位置 packet -> 更新遠端目標點（供 Lerp 外推插值）
         remoteTarget.x = packet.x;
         remoteTarget.y = packet.y;
-        remoteTarget.vx = packet.vx;
-        remoteTarget.vy = packet.vy;
       }
     };
 
@@ -232,39 +267,180 @@ export async function renderFruitHavoc(container, params = {}) {
     });
   }
 
-  // Character Selector Handlers
-  container.querySelectorAll('.char-select-item').forEach(item => {
-    item.addEventListener('click', () => {
-      container.querySelectorAll('.char-select-item').forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-
-      const charId = item.dataset.charId;
-      selectedChar = FRUIT_CHARACTERS.find(c => c.id === charId);
-
-      const nameEl = container.querySelector('#cdetail-name');
-      const traitEl = container.querySelector('#cdetail-trait');
-      if (nameEl) nameEl.textContent = selectedChar.name;
-      if (traitEl) traitEl.textContent = selectedChar.trait;
-
-      showToast(`已選擇角色：${selectedChar.name}`, 'info');
-      drawStage();
-    });
-  });
-
-  // Canvas & Trap Placement & 60 FPS Interpolation Loop
+  // ----------------------------------------------------
+  // Mario 2D Physics Platformer Engine (瑪利歐式物理跳躍與操控)
+  // ----------------------------------------------------
   const canvas = container.querySelector('#fruit-canvas');
   const dropZone = container.querySelector('#canvas-drop-zone');
   const ctx = canvas ? canvas.getContext('2d') : null;
   const TILE_SIZE = 40;
 
+  const resetPlayerPos = () => {
+    localPlayer.x = 80;
+    localPlayer.y = 360;
+    localPlayer.vx = 0;
+    localPlayer.vy = 0;
+    localPlayer.isGrounded = true;
+    localPlayer.canDoubleJump = true;
+    localPlayer.isDead = false;
+  };
+
+  // Keyboard Events Listeners
+  const onKeyDown = (e) => {
+    if (gamePhase !== 'RACE') return;
+    if (['ArrowLeft', 'KeyA'].includes(e.code)) keys.left = true;
+    if (['ArrowRight', 'KeyD'].includes(e.code)) keys.right = true;
+    if (['ArrowUp', 'KeyW', 'Space'].includes(e.code)) {
+      if (!keys.jump) _handleJump();
+      keys.jump = true;
+    }
+  };
+
+  const onKeyUp = (e) => {
+    if (['ArrowLeft', 'KeyA'].includes(e.code)) keys.left = false;
+    if (['ArrowRight', 'KeyD'].includes(e.code)) keys.right = false;
+    if (['ArrowUp', 'KeyW', 'Space'].includes(e.code)) keys.jump = false;
+  };
+
+  const _handleJump = () => {
+    if (localPlayer.isGrounded) {
+      localPlayer.vy = selectedChar.jump;
+      localPlayer.isGrounded = false;
+      localPlayer.canDoubleJump = true;
+    } else if (localPlayer.canDoubleJump) {
+      localPlayer.vy = selectedChar.jump * 0.88;
+      localPlayer.canDoubleJump = false;
+    }
+  };
+
+  window.addEventListener('keydown', onKeyDown);
+  window.addEventListener('keyup', onKeyUp);
+
+  const _removeKeyListeners = () => {
+    window.removeEventListener('keydown', onKeyDown);
+    window.removeEventListener('keyup', onKeyUp);
+  };
+
+  // Mobile Touch Controls
+  const bindTouchButton = (btnId, keyName) => {
+    const btn = container.querySelector(btnId);
+    if (!btn) return;
+    const start = (e) => {
+      e.preventDefault();
+      if (keyName === 'jump') {
+        if (!keys.jump) _handleJump();
+      }
+      keys[keyName] = true;
+    };
+    const end = (e) => {
+      e.preventDefault();
+      keys[keyName] = false;
+    };
+    btn.addEventListener('touchstart', start);
+    btn.addEventListener('touchend', end);
+    btn.addEventListener('mousedown', start);
+    btn.addEventListener('mouseup', end);
+  };
+
+  bindTouchButton('#tbtn-left', 'left');
+  bindTouchButton('#tbtn-right', 'right');
+  bindTouchButton('#tbtn-jump', 'jump');
+
+  // Physics Loop (瑪利歐重力與加速度更新)
+  const updatePhysics = () => {
+    if (gamePhase !== 'RACE' || localPlayer.isDead) return;
+
+    // Horizontal Movement
+    if (keys.left) {
+      localPlayer.vx = -selectedChar.speed;
+    } else if (keys.right) {
+      localPlayer.vx = selectedChar.speed;
+    } else {
+      localPlayer.vx *= 0.82; // Friction
+    }
+
+    // Apply Gravity
+    localPlayer.vy += 0.55;
+
+    // Apply Position
+    localPlayer.x += localPlayer.vx;
+    localPlayer.y += localPlayer.vy;
+
+    // Canvas Boundaries
+    if (localPlayer.x < 20) localPlayer.x = 20;
+    if (localPlayer.x > 620) localPlayer.x = 620;
+
+    // Platform Collisions
+    localPlayer.isGrounded = false;
+    PLATFORMS.forEach(plat => {
+      if (
+        localPlayer.x + 16 > plat.x &&
+        localPlayer.x - 16 < plat.x + plat.w &&
+        localPlayer.y + 16 >= plat.y &&
+        localPlayer.y + 16 <= plat.y + plat.h + 10 &&
+        localPlayer.vy >= 0
+      ) {
+        localPlayer.y = plat.y - 16;
+        localPlayer.vy = 0;
+        localPlayer.isGrounded = true;
+        localPlayer.canDoubleJump = true;
+      }
+    });
+
+    // Check Traps Collision (踩中蘑菇彈飛 / 電鋸陣亡)
+    placedTraps.forEach(pt => {
+      const tx = pt.gridX * TILE_SIZE + 20;
+      const ty = pt.gridY * TILE_SIZE + 20;
+      const dist = Math.hypot(localPlayer.x - tx, localPlayer.y - ty);
+
+      if (dist < 28) {
+        if (pt.trap.id === 9) { // 蘑菇超高彈飛
+          localPlayer.vy = -16;
+          localPlayer.isGrounded = false;
+          showToast('🍄 踩中跳跳菇！向上猛烈彈飛！', 'info');
+        } else if (pt.trap.id === 1) { // 拳擊手套打飛
+          localPlayer.vx = 10;
+          localPlayer.vy = -6;
+        } else if (pt.trap.id === 2 || pt.trap.id === 8) { // 電鋸與刺球 -> 陣亡復位
+          showToast('💥 觸碰電鋸障礙！陣亡重置位置', 'warning');
+          resetPlayerPos();
+        }
+      }
+    });
+
+    // Pitfall Death
+    if (localPlayer.y > 470) {
+      showToast('🕳️ 掉入深淵地坑！重置回起點', 'warning');
+      resetPlayerPos();
+    }
+
+    // Check Goal Flag Victory Condition (抵達終點旗 🏆)
+    if (localPlayer.x >= 520 && localPlayer.y <= 210) {
+      gamePhase = 'SCORED';
+      showToast(`🏆 恭喜 ${selectedChar.name} 順利穿越所有陷阱成功抵達終點獲勝！`, 'success');
+
+      const phaseBtn = container.querySelector('#btn-phase-toggle');
+      if (phaseBtn) {
+        phaseBtn.style.display = 'block';
+        phaseBtn.textContent = '🎉 勝出！點擊開啟下一輪擺放';
+      }
+    }
+
+    // Send 60 FPS P2P Movement Vector
+    if (mode === 'online' && isPeerConnected) {
+      sendMovementState(localPlayer.x, localPlayer.y, localPlayer.vx, localPlayer.vy, 'run');
+    }
+  };
+
+  // Main Render Loop
   const drawStage = () => {
     if (!ctx) return;
 
-    // 1. Smooth Interpolation for Remote Player (遠端對手位置線性插值)
+    // Remote Lerp Interpolation
     remotePlayer.x += (remoteTarget.x - remotePlayer.x) * 0.3;
     remotePlayer.y += (remoteTarget.y - remotePlayer.y) * 0.3;
 
-    // 2. Clear Background & Draw Grid
+    // Background Grid
     ctx.fillStyle = '#f0f9ff';
     ctx.fillRect(0, 0, 640, 480);
 
@@ -283,18 +459,22 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.stroke();
     }
 
-    // 3. Platforms & Goal
-    ctx.fillStyle = '#fdba74';
-    ctx.fillRect(40, 400, 160, 40); // Start
-    ctx.fillRect(440, 200, 160, 40); // Goal
+    // Platforms
+    PLATFORMS.forEach(plat => {
+      ctx.fillStyle = '#fdba74';
+      ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
+      ctx.strokeStyle = '#ea580c';
+      ctx.strokeRect(plat.x, plat.y, plat.w, plat.h);
+    });
 
+    // Goal Flag 🏆
     ctx.font = '28px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('🏆', 540, 180);
     ctx.fillText('🎂', 480, 180);
 
-    // 4. Draw All Placed Traps
+    // Draw All Placed Traps
     placedTraps.forEach(pt => {
       const px = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
       const py = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
@@ -308,8 +488,8 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.fillText(pt.trap.icon, px, py);
     });
 
-    // 5. Draw Drag Hover Ghost Box
-    if (hoverGrid) {
+    // Draw Hover Ghost
+    if (gamePhase === 'PLACEMENT' && hoverGrid) {
       const gx = hoverGrid.gridX * TILE_SIZE;
       const gy = hoverGrid.gridY * TILE_SIZE;
 
@@ -323,11 +503,11 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.fillText(selectedTrap.icon, gx + TILE_SIZE / 2, gy + TILE_SIZE / 2);
     }
 
-    // 6. Draw Local Player
-    ctx.font = '30px sans-serif';
+    // Draw Local Player Character (鍵盤操控之瑪利歐角色)
+    ctx.font = '32px sans-serif';
     ctx.fillText(selectedChar.icon, localPlayer.x, localPlayer.y);
 
-    // 7. Draw Remote Player (Online Mode Only)
+    // Draw Remote Player (Online Mode Only)
     if (mode === 'online' && isPeerConnected) {
       ctx.font = '30px sans-serif';
       ctx.fillText(remotePlayer.icon, remotePlayer.x, remotePlayer.y);
@@ -337,29 +517,31 @@ export async function renderFruitHavoc(container, params = {}) {
     }
   };
 
-  // Continuous Animation Loop for Smooth 60 FPS Rendering
   const gameLoop = () => {
+    updatePhysics();
     drawStage();
-
-    if (isRacing) {
-      // Simulate simple Movement Run
-      if (localPlayer.x < 480) {
-        localPlayer.x += selectedChar.speed * 0.6;
-        if (localPlayer.x > 180 && localPlayer.y > 220) {
-          localPlayer.y -= 1.8; // jump curve
-        }
-      }
-
-      // Broadcast 60 FPS Movement Packet via WebRTC DataChannel
-      if (mode === 'online' && isPeerConnected) {
-        sendMovementState(localPlayer.x, localPlayer.y, localPlayer.vx, localPlayer.vy, 'run');
-      }
-    }
-
     animFrameId = requestAnimationFrame(gameLoop);
   };
 
   animFrameId = requestAnimationFrame(gameLoop);
+
+  // Character Selector Event Handlers
+  container.querySelectorAll('.char-select-item').forEach(item => {
+    item.addEventListener('click', () => {
+      container.querySelectorAll('.char-select-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+
+      const charId = item.dataset.charId;
+      selectedChar = FRUIT_CHARACTERS.find(c => c.id === charId);
+
+      const nameEl = container.querySelector('#cdetail-name');
+      const traitEl = container.querySelector('#cdetail-trait');
+      if (nameEl) nameEl.textContent = selectedChar.name;
+      if (traitEl) traitEl.textContent = selectedChar.trait;
+
+      showToast(`已選擇角色：${selectedChar.name}`, 'info');
+    });
+  });
 
   // Drag & Drop Traps Event Handlers
   let draggedTrapId = null;
@@ -373,10 +555,11 @@ export async function renderFruitHavoc(container, params = {}) {
       selectedTrap = TRAP_ITEMS.find(t => t.id === trapId);
       draggedTrapId = trapId;
 
-      showToast(`已選中：${selectedTrap.name}`, 'info');
+      showToast(`已選中道具：${selectedTrap.name}`, 'info');
     });
 
     item.addEventListener('dragstart', (e) => {
+      if (gamePhase !== 'PLACEMENT') return;
       const trapId = parseInt(item.dataset.trapId, 10);
       draggedTrapId = trapId;
       selectedTrap = TRAP_ITEMS.find(t => t.id === trapId);
@@ -395,11 +578,11 @@ export async function renderFruitHavoc(container, params = {}) {
     });
   });
 
-  // Drop Zone Handlers
+  // Drop Zone Event Handlers
   if (dropZone && canvas) {
     dropZone.addEventListener('dragover', (e) => {
+      if (gamePhase !== 'PLACEMENT') return;
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'copy';
 
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -420,6 +603,7 @@ export async function renderFruitHavoc(container, params = {}) {
     });
 
     dropZone.addEventListener('drop', (e) => {
+      if (gamePhase !== 'PLACEMENT') return;
       e.preventDefault();
       hoverGrid = null;
 
@@ -438,9 +622,8 @@ export async function renderFruitHavoc(container, params = {}) {
         placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
         placedTraps.push({ id: Date.now(), trap: targetTrap, gridX, gridY });
 
-        showToast(`🎉 成功拖放【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
+        showToast(`🎉 成功拖放放置【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
 
-        // Broadcast Trap Placement via WebRTC DataChannel
         if (mode === 'online' && isPeerConnected) {
           sendTrapPlacement(gridX, gridY, targetTrap.id);
         }
@@ -448,16 +631,32 @@ export async function renderFruitHavoc(container, params = {}) {
     });
   }
 
-  // Start Round Button
-  container.querySelector('#btn-start-round')?.addEventListener('click', () => {
-    isRacing = true;
-    localPlayer.x = 80;
-    localPlayer.y = 380;
-    showToast(`🍓 ${selectedChar.name} 踩下油門！出發穿越陷阱陣！`, 'success');
-  });
+  // Phase Toggle Button Handler (切換「擺放」與「瑪利歐親自操控競速」階段)
+  const phaseBtn = container.querySelector('#btn-phase-toggle');
+  const phaseBadge = container.querySelector('#stage-phase-badge');
+  const tipEl = container.querySelector('#stage-tip');
+  const touchControls = container.querySelector('#mobile-touch-controls');
+
+  if (phaseBtn) {
+    phaseBtn.addEventListener('click', () => {
+      if (gamePhase === 'PLACEMENT' || gamePhase === 'SCORED') {
+        // 開啟瑪利歐親自操控競速階段
+        gamePhase = 'RACE';
+        resetPlayerPos();
+
+        phaseBtn.style.display = 'none'; // 隱藏按鈕防干擾
+        if (phaseBadge) phaseBadge.textContent = '階段：瑪利歐式競速操作中！';
+        if (tipEl) tipEl.textContent = '🎮 請使用鍵盤【A D / ← →】左右移動、【W / Space / ↑】跳躍越過陷阱！';
+        if (touchControls) touchControls.style.display = 'flex';
+
+        showToast(`🎮 競速開始！使用鍵盤 A/D/Space 或畫面上按鈕親自操控 ${selectedChar.name}！`, 'success');
+      }
+    });
+  }
 
   return () => {
     closeFruitPeer();
     if (animFrameId) cancelAnimationFrame(animFrameId);
+    _removeKeyListeners();
   };
 }
