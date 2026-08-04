@@ -322,73 +322,135 @@ export class FighterRenderer3D {
   _createFloatingCastleMesh(isEnemy = false) {
     const castleGroup = new THREE.Group();
 
-    // Floating Rock Island Foundation (天空之城懸浮島基石)
-    const islandGeo = new THREE.CylinderGeometry(70, 20, 30, 8);
-    const islandMat = new THREE.MeshStandardMaterial({
-      color: isEnemy ? 0x1e293b : 0x475569,
+    const mossStoneMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0x334155 : 0x78350f, // Golden Mossy Ancient Fortress Stone
       roughness: 0.8
     });
-    const islandMesh = new THREE.Mesh(islandGeo, islandMat);
-    islandMesh.position.set(0, -10, 0);
-    islandMesh.castShadow = true;
-    islandMesh.receiveShadow = true;
-    castleGroup.add(islandMesh);
 
-    // Castle Main Citadel Keep (主城堡中心)
-    const keepGeo = new THREE.BoxGeometry(90, 24, 60);
-    const keepMat = new THREE.MeshStandardMaterial({
-      color: isEnemy ? 0x334155 : 0xf8fafc,
-      roughness: 0.3
-    });
-    const keepMesh = new THREE.Mesh(keepGeo, keepMat);
-    keepMesh.position.set(0, 12, 0);
-    keepMesh.castShadow = true;
-    keepMesh.receiveShadow = true;
-    castleGroup.add(keepMesh);
-
-    // 4 Corner Gothic Spire Towers (四角哥德式高塔)
-    const spireGeo = new THREE.CylinderGeometry(10, 12, 36, 8);
-    const roofGeo = new THREE.ConeGeometry(12, 20, 8);
-    const roofMat = new THREE.MeshStandardMaterial({
-      color: isEnemy ? 0xb91c1c : 0x0284c7,
+    const whiteCityMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0x64748b : 0xf8fafc, // White Ancient City Buildings
       roughness: 0.2
     });
 
-    const towerOffsets = [
-      { x: -40, z: -25 },
-      { x: 40, z: -25 },
-      { x: -40, z: 25 },
-      { x: 40, z: 25 }
-    ];
-
-    towerOffsets.forEach(pos => {
-      const spire = new THREE.Mesh(spireGeo, keepMat);
-      spire.position.set(pos.x, 18, pos.z);
-      spire.castShadow = true;
-      castleGroup.add(spire);
-
-      const roof = new THREE.Mesh(roofGeo, roofMat);
-      roof.position.set(pos.x, 44, pos.z);
-      roof.castShadow = true;
-      castleGroup.add(roof);
+    const treeFoliageMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0x831843 : 0x15803d, // Lush Giant Sacred Tree Crown
+      roughness: 0.6
     });
 
-    // Central Royal Castle Dome & Floating Power Crystal (天空巨型魔法水晶)
-    const cryGeo = new THREE.OctahedronGeometry(22, 0);
+    const rockBaseMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0x1e293b : 0x3f3f46, // Inverted Hemisphere Island Base
+      roughness: 0.9
+    });
+
+    const goldDomeMat = new THREE.MeshStandardMaterial({
+      color: isEnemy ? 0x991b1b : 0xf59e0b, // Golden Roof Domes
+      roughness: 0.2,
+      metalness: 0.6
+    });
+
+    // 1. Inverted Hemisphere Floating Rock Base Foundation (倒半球懸浮基石)
+    const baseGeo = new THREE.SphereGeometry(80, 16, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+    const baseMesh = new THREE.Mesh(baseGeo, rockBaseMat);
+    baseMesh.rotation.x = Math.PI;
+    baseMesh.position.set(0, -14, 0);
+    baseMesh.castShadow = true;
+    castleGroup.add(baseMesh);
+
+    // Hanging Sacred Tree Roots (懸掛樹根鬚)
+    [-30, -10, 15, 35].forEach((xOff, idx) => {
+      const rootGeo = new THREE.CylinderGeometry(1.5, 0.5, 36, 6);
+      const rootMesh = new THREE.Mesh(rootGeo, rockBaseMat);
+      rootMesh.position.set(xOff, -55 - (idx % 2) * 10, (idx % 3) * 12 - 10);
+      castleGroup.add(rootMesh);
+    });
+
+    // 2. Multi-Tiered Concentric Terraced Fortress Walls (三層苔蘚巨石環形堡壘城牆)
+    // Tier 3 (Lower Base Ring Wall)
+    const tier3Geo = new THREE.CylinderGeometry(84, 90, 20, 20);
+    const tier3Mesh = new THREE.Mesh(tier3Geo, mossStoneMat);
+    tier3Mesh.position.set(0, -4, 0);
+    castleGroup.add(tier3Mesh);
+
+    // Tier 2 (Middle Citadel Wall)
+    const tier2Geo = new THREE.CylinderGeometry(68, 76, 18, 18);
+    const tier2Mesh = new THREE.Mesh(tier2Geo, mossStoneMat);
+    tier2Mesh.position.set(0, 12, 0);
+    castleGroup.add(tier2Mesh);
+
+    // Tier 1 (Upper Keep Wall)
+    const tier1Geo = new THREE.CylinderGeometry(52, 60, 16, 16);
+    const tier1Mesh = new THREE.Mesh(tier1Geo, mossStoneMat);
+    tier1Mesh.position.set(0, 26, 0);
+    castleGroup.add(tier1Mesh);
+
+    // Buttress Pillars & Watchtowers Around Fortress Rings (環形堡壘瞭望塔點綴)
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      const rx = Math.cos(angle) * 72;
+      const rz = Math.sin(angle) * 72;
+
+      const towerGeo = new THREE.CylinderGeometry(5, 6, 24, 8);
+      const towerMesh = new THREE.Mesh(towerGeo, mossStoneMat);
+      towerMesh.position.set(rx, 10, rz);
+      castleGroup.add(towerMesh);
+    }
+
+    // 3. White Ancient City Towers & Spires (神木下方的白色古城聚落與圓頂塔樓群)
+    const cityOffsets = [
+      { x: 0, z: 0, h: 28, r: 14 },
+      { x: -22, z: -15, h: 22, r: 10 },
+      { x: 22, z: -15, h: 22, r: 10 },
+      { x: -18, z: 18, h: 20, r: 9 },
+      { x: 18, z: 18, h: 20, r: 9 }
+    ];
+
+    cityOffsets.forEach(pos => {
+      const cityBuilding = new THREE.Mesh(new THREE.CylinderGeometry(pos.r, pos.r + 2, pos.h, 12), whiteCityMat);
+      cityBuilding.position.set(pos.x, 36 + pos.h / 2, pos.z);
+      castleGroup.add(cityBuilding);
+
+      const domeRoof = new THREE.Mesh(new THREE.SphereGeometry(pos.r + 0.5, 12, 12, 0, Math.PI * 2, 0, Math.PI / 2), goldDomeMat);
+      domeRoof.position.set(pos.x, 36 + pos.h, pos.z);
+      castleGroup.add(domeRoof);
+    });
+
+    // 4. Giant Sacred Tree Canopy Top (頂部巨大綠色神木古樹樹冠)
+    const mainTreeCrown = new THREE.Mesh(new THREE.SphereGeometry(44, 16, 16), treeFoliageMat);
+    mainTreeCrown.scale.set(1, 0.65, 1);
+    mainTreeCrown.position.set(0, 68, 0);
+    castleGroup.add(mainTreeCrown);
+
+    // Fluffy Outer Foliage Spheres (蓬鬆樹冠葉球點綴)
+    const foliageOffsets = [
+      { x: -24, y: 64, z: -12, r: 18 },
+      { x: 24, y: 64, z: -12, r: 18 },
+      { x: -20, y: 66, z: 16, r: 16 },
+      { x: 20, y: 66, z: 16, r: 16 },
+      { x: 0, y: 76, z: 0, r: 22 }
+    ];
+
+    foliageOffsets.forEach(f => {
+      const leafMesh = new THREE.Mesh(new THREE.SphereGeometry(f.r, 12, 12), treeFoliageMat);
+      leafMesh.position.set(f.x, f.y, f.z);
+      castleGroup.add(leafMesh);
+    });
+
+    // 5. Floating Levitation Power Crystal (頂端魔法懸浮水晶)
+    const cryGeo = new THREE.OctahedronGeometry(20, 0);
     const cryMat = new THREE.MeshStandardMaterial({
       color: isEnemy ? 0xef4444 : 0x38bdf8,
       emissive: isEnemy ? 0xef4444 : 0x0284c7,
-      emissiveIntensity: 0.9,
+      emissiveIntensity: 0.95,
       roughness: 0.1,
       metalness: 0.9
     });
     const crystalMesh = new THREE.Mesh(cryGeo, cryMat);
-    crystalMesh.position.set(0, 52, 0);
+    crystalMesh.position.set(0, 108, 0);
     crystalMesh.castShadow = true;
     castleGroup.add(crystalMesh);
 
-    const cLight = new THREE.PointLight(isEnemy ? 0xef4444 : 0x38bdf8, 4.0, 180);
-    cLight.position.set(0, 55, 0);
+    const cLight = new THREE.PointLight(isEnemy ? 0xef4444 : 0x38bdf8, 4.5, 220);
+    cLight.position.set(0, 110, 0);
     castleGroup.add(cLight);
 
     castleGroup.userData = { crystalMesh };
