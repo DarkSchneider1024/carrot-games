@@ -195,6 +195,9 @@ export async function renderFruitHavoc(container, params = {}) {
           </div>
         </div>
         <div class="topbar-actions" style="display:flex;gap:8px;">
+          <button class="btn btn-sm btn-rotate-screen" id="btn-rotate-screen" title="手機螢幕旋轉/滿版橫屏">
+            🔄 旋轉橫螢幕
+          </button>
           <select id="select-player-count" style="padding:4px 8px;border-radius:8px;border:1px solid var(--color-border);background:var(--color-bg-card);font-size:0.85rem;">
             <option value="2" ${playerCount === 2 ? 'selected' : ''}>2 人對戰 (單機同屏上限)</option>
             ${mode === 'online' ? `
@@ -386,6 +389,35 @@ export async function renderFruitHavoc(container, params = {}) {
     navigate('/');
   });
   container.querySelector('#btn-settings')?.addEventListener('click', () => navigate('/guide?game=fruitHavoc'));
+
+  // 🔄 手機旋轉螢幕與滿版橫屏鎖定機制 (Screen Rotation Engine)
+  let isForceLandscape = false;
+  container.querySelector('#btn-rotate-screen')?.addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) {
+        if (document.exitFullscreen) await document.exitFullscreen();
+      } else {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+      }
+      if (screen.orientation && screen.orientation.lock) {
+        await screen.orientation.lock('landscape');
+        showToast('🔄 已成功鎖定為橫螢幕最佳視野！', 'success');
+        return;
+      }
+    } catch (e) {
+      console.log('Screen orientation lock fallback:', e);
+    }
+
+    // CSS 90度 強制橫螢幕旋轉 Fallback
+    const pageEl = container.querySelector('.fruit-havoc-page');
+    if (pageEl) {
+      isForceLandscape = !isForceLandscape;
+      pageEl.classList.toggle('force-landscape', isForceLandscape);
+      showToast(isForceLandscape ? '🔄 已開啟滿版橫螢幕視野！' : '🔄 已恢復預設螢幕視角', 'info');
+    }
+  });
 
   // Player Count Selector Handler (單機最多2P, 線上最多4P)
   container.querySelector('#select-player-count')?.addEventListener('change', (e) => {
