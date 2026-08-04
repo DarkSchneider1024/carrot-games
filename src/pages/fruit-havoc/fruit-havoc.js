@@ -390,12 +390,17 @@ export async function renderFruitHavoc(container, params = {}) {
   });
   container.querySelector('#btn-settings')?.addEventListener('click', () => navigate('/guide?game=fruitHavoc'));
 
-  // 🔄 手機旋轉螢幕與滿版橫屏鎖定機制 (Screen Rotation Engine)
-  let isForceLandscape = false;
+  // 🔄 滿版全螢幕與橫螢幕視野切換機制 (100% 穩定避開白屏 Bug)
+  let isFullscreenMode = false;
   container.querySelector('#btn-rotate-screen')?.addEventListener('click', async () => {
+    const pageEl = container.querySelector('.fruit-havoc-page');
+
     try {
       if (document.fullscreenElement) {
         if (document.exitFullscreen) await document.exitFullscreen();
+        if (pageEl) pageEl.classList.remove('mode-fullscreen');
+        showToast('🔄 已退出全螢幕視角', 'info');
+        return;
       } else {
         if (document.documentElement.requestFullscreen) {
           await document.documentElement.requestFullscreen();
@@ -403,19 +408,16 @@ export async function renderFruitHavoc(container, params = {}) {
       }
       if (screen.orientation && screen.orientation.lock) {
         await screen.orientation.lock('landscape');
-        showToast('🔄 已成功鎖定為橫螢幕最佳視野！', 'success');
-        return;
       }
     } catch (e) {
       console.log('Screen orientation lock fallback:', e);
     }
 
-    // CSS 90度 強制橫螢幕旋轉 Fallback
-    const pageEl = container.querySelector('.fruit-havoc-page');
+    // 安全 Fallback：開啟劇院滿版視野 .mode-fullscreen
     if (pageEl) {
-      isForceLandscape = !isForceLandscape;
-      pageEl.classList.toggle('force-landscape', isForceLandscape);
-      showToast(isForceLandscape ? '🔄 已開啟滿版橫螢幕視野！' : '🔄 已恢復預設螢幕視角', 'info');
+      isFullscreenMode = !isFullscreenMode;
+      pageEl.classList.toggle('mode-fullscreen', isFullscreenMode);
+      showToast(isFullscreenMode ? '📱 滿版視角已開啟！請將手機橫拿即可獲得 100% 橫屏體驗' : '🔄 已恢復預設螢幕視角', 'success');
     }
   });
 
