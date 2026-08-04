@@ -1,6 +1,6 @@
 /**
  * Magic Fighter 3D Battle Styling
- * Unified Layout Component matching Xiangqi, Tetris, & Poker.
+ * Dark Theme Glassmorphism & High-contrast WebGL 3D Canvas
  */
 
 .magic-fighter-page {
@@ -9,8 +9,8 @@
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-dark, #0f172a);
-  color: var(--color-text-primary, #f8fafc);
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  color: #f8fafc;
   overflow: hidden;
   touch-action: manipulation;
   user-select: none;
@@ -28,7 +28,7 @@
   overflow: hidden;
 }
 
-/* Side Panel Controls */
+/* Side Panel Controls (Dark Glassmorphism) */
 .magic-panel-left {
   width: 320px;
   display: flex;
@@ -38,23 +38,29 @@
 }
 
 .panel-card {
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 117, 68, 0.35);
+  border-radius: 20px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  border-radius: 20px;
+  color: #f8fafc;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 .panel-subtitle {
   font-family: var(--font-family-display, sans-serif);
   font-size: 1.2rem;
-  color: var(--color-accent-primary, #ff7544);
+  color: #ff7544;
   margin: 0;
 }
 
 .panel-desc {
   font-size: 0.85rem;
-  color: var(--color-text-muted, #94a3b8);
+  color: #94a3b8;
   line-height: 1.4;
   margin: 0;
 }
@@ -64,10 +70,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(15, 23, 42, 0.7);
   padding: 12px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hud-item {
@@ -78,7 +84,7 @@
 
 .hud-label {
   font-size: 0.7rem;
-  color: #64748b;
+  color: #94a3b8;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -97,7 +103,7 @@
 }
 
 .guide-box {
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(15, 23, 42, 0.6);
   border-radius: 12px;
   padding: 12px;
   font-size: 0.8rem;
@@ -105,11 +111,12 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .guide-box h4 {
   margin: 0;
-  color: var(--color-accent-primary, #ff7544);
+  color: #ff7544;
 }
 
 .guide-box p {
@@ -133,9 +140,10 @@
   width: 100%;
   max-width: 600px;
   aspect-ratio: 1 / 1;
+  background: #1e293b !important; /* Dark 3D Background */
   border-radius: 24px;
-  border: 2px solid rgba(255, 117, 68, 0.45);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  border: 2.5px solid rgba(255, 117, 68, 0.5);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 117, 68, 0.2);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -146,9 +154,10 @@
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
+  display: block;
 }
 
-/* Game Over Overlay matching Xiangqi/Tetris/Poker */
+/* Game Over Overlay */
 .game-over-overlay {
   position: absolute;
   inset: 0;
@@ -162,7 +171,8 @@
 }
 
 .game-over-content {
-  border: 2px solid var(--color-accent-primary, #ff7544);
+  background: rgba(30, 41, 59, 0.95);
+  border: 2px solid #ff7544;
   border-radius: 24px;
   padding: 32px 24px;
   text-align: center;
@@ -173,11 +183,12 @@
   max-width: 320px;
   width: 100%;
   box-shadow: 0 20px 50px rgba(255, 117, 68, 0.3);
+  color: #f8fafc;
 }
 
 .game-over-content h2 {
   margin: 0;
-  color: var(--color-accent-primary, #ff7544);
+  color: #ff7544;
   font-size: 1.5rem;
 }
 

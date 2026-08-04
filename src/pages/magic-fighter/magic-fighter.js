@@ -54,7 +54,7 @@ export async function renderMagicFighter(container, params = {}) {
       <div class="magic-fighter-main">
         <!-- Sidebar Controls & Setup Panel -->
         <aside class="magic-panel-left ${activeTab === 'setup' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-setup">
-          <div class="panel-card glass">
+          <div class="panel-card">
             <h3 class="panel-subtitle">3D 水晶戰場動態</h3>
             <p class="panel-desc">Three.js WebGL 3D 魔法空戰對決！保護 3D 蘿蔔水晶基地，破壞磚牆，擊退敵軍！</p>
 
@@ -107,7 +107,7 @@ export async function renderMagicFighter(container, params = {}) {
 
         <!-- Main Game 3D Stage Area -->
         <main class="magic-stage-container ${activeTab === 'game' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-game">
-          <div class="canvas-wrapper-3d glass" id="three-container">
+          <div class="canvas-wrapper-3d" id="three-container">
             <!-- Unified Game Over Modal Overlay Component -->
             <div class="game-over-overlay" id="game-over-modal" style="display:none;">
               <div class="game-over-content glass animate-scale-up">
@@ -173,11 +173,21 @@ export async function renderMagicFighter(container, params = {}) {
   game = new MagicFighterGame();
   renderer3D = new FighterRenderer3D();
 
-  const cWidth = threeContainer.clientWidth || 640;
-  const cHeight = threeContainer.clientHeight || 640;
+  const cWidth = threeContainer.clientWidth || 600;
+  const cHeight = threeContainer.clientHeight || 600;
 
   renderer3D.init(threeContainer, cWidth, cHeight);
   game.init(null);
+
+  // ResizeObserver for dynamic responsiveness
+  const resizeObserver = new ResizeObserver(() => {
+    if (renderer3D && threeContainer) {
+      const w = threeContainer.clientWidth || 600;
+      const h = threeContainer.clientHeight || 600;
+      renderer3D.setSize(w, h);
+    }
+  });
+  resizeObserver.observe(threeContainer);
 
   // Initialize 360° Virtual Joystick
   const joystickZone = container.querySelector('#joystick-zone');
@@ -301,6 +311,7 @@ export async function renderMagicFighter(container, params = {}) {
   container.querySelector('#btn-modal-restart')?.addEventListener('click', restartGame);
 
   return () => {
+    resizeObserver.disconnect();
     window.removeEventListener('keydown', handleKeyDown);
     window.removeEventListener('keyup', handleKeyUp);
     if (keyInterval) clearInterval(keyInterval);
