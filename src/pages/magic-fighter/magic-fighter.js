@@ -91,7 +91,7 @@ export async function renderMagicFighter(container, params = {}) {
               <h4 style="margin:0 0 6px 0;font-size:0.85rem;color:#ff7544;">魔法怪兵招募與強化</h4>
               <div class="summon-btn-grid">
                 <button class="btn btn-secondary btn-sm summon-btn" id="btn-summon-bat">
-                  🦇 蝙蝠魔 ($50)
+                  🧛 吸血鬼 ($50)
                 </button>
                 <button class="btn btn-secondary btn-sm summon-btn" id="btn-summon-griffin">
                   🦅 鷹獅 ($100)
@@ -139,8 +139,8 @@ export async function renderMagicFighter(container, params = {}) {
 
           <!-- Quick Summon Action Bar Overlay on 3D Stage (Bottom Right) -->
           <div class="quick-summon-bar glass">
-            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-bat" title="召喚蝙蝠魔 ($50)">
-              🦇 $50
+            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-bat" title="召喚吸血鬼伯爵 ($50)">
+              🧛 $50
             </button>
             <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-griffin" title="召喚鷹獅 ($100)">
               🦅 $100
@@ -266,8 +266,8 @@ export async function renderMagicFighter(container, params = {}) {
     }
   };
 
-  container.querySelector('#btn-summon-bat')?.addEventListener('click', () => handleSummon('bat', '蝙蝠魔', 50));
-  container.querySelector('#qbtn-bat')?.addEventListener('click', () => handleSummon('bat', '蝙蝠魔', 50));
+  container.querySelector('#btn-summon-bat')?.addEventListener('click', () => handleSummon('bat', '吸血鬼伯爵', 50));
+  container.querySelector('#qbtn-bat')?.addEventListener('click', () => handleSummon('bat', '吸血鬼伯爵', 50));
 
   container.querySelector('#btn-summon-griffin')?.addEventListener('click', () => handleSummon('griffin', '疾風鷹獅', 100));
   container.querySelector('#qbtn-griffin')?.addEventListener('click', () => handleSummon('griffin', '疾風鷹獅', 100));

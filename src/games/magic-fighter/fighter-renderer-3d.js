@@ -399,29 +399,122 @@ export class FighterRenderer3D {
     const monsterGroup = new THREE.Group();
 
     if (type === 'bat') {
-      const bodyMat = new THREE.MeshStandardMaterial({
-        color: isFriendly ? 0x38bdf8 : 0x6b21a8,
-        emissive: isFriendly ? 0x0284c7 : 0x3b0764,
-        emissiveIntensity: 0.3,
+      // 🧛 吸血鬼伯爵 (Vampire Count Procedural 3D Model based on user image)
+      const skinMat = new THREE.MeshStandardMaterial({
+        color: isFriendly ? 0x94a3b8 : 0x64748b, // Vampire Gray Skin Tone
         roughness: 0.4
       });
 
-      const bodyGeo = new THREE.OctahedronGeometry(12, 1);
-      const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+      const suitMat = new THREE.MeshStandardMaterial({
+        color: 0x0f172a, // Formal Black Tuxedo
+        roughness: 0.3
+      });
+
+      const vestMat = new THREE.MeshStandardMaterial({
+        color: 0x991b1b, // Deep Red Vest
+        roughness: 0.3
+      });
+
+      const capeMat = new THREE.MeshStandardMaterial({
+        color: isFriendly ? 0x0284c7 : 0xd97706, // Flowing Red/Blue Vampire Cape
+        roughness: 0.3,
+        side: THREE.DoubleSide
+      });
+
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 }); // Fierce Golden Yellow Eyes
+      const pupilMat = new THREE.MeshBasicMaterial({ color: 0x090d16 });
+      const fangMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1 });
+
+      // 1. Tuxedo Body Torso & Red Vest
+      const bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(14, 16, 10), suitMat);
+      bodyMesh.position.set(0, 8, 0);
       monsterGroup.add(bodyMesh);
 
-      const wingGeo = new THREE.BoxGeometry(22, 2, 14);
-      const wingMat = new THREE.MeshStandardMaterial({ color: isFriendly ? 0x0284c7 : 0x4c1d95, roughness: 0.5 });
+      const vestMesh = new THREE.Mesh(new THREE.BoxGeometry(7, 12, 10.4), vestMat);
+      vestMesh.position.set(0, 8, 0);
+      monsterGroup.add(vestMesh);
 
-      const leftWing = new THREE.Mesh(wingGeo, wingMat);
-      leftWing.position.set(-13, 0, 0);
+      const collarMesh = new THREE.Mesh(new THREE.BoxGeometry(6, 6, 10.6), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+      collarMesh.position.set(0, 12, 0);
+      monsterGroup.add(collarMesh);
+
+      // Red Bow Tie (紅領結)
+      const bowMesh = new THREE.Mesh(new THREE.BoxGeometry(4, 2.5, 11), new THREE.MeshStandardMaterial({ color: 0xef4444 }));
+      bowMesh.position.set(0, 11.5, 0);
+      monsterGroup.add(bowMesh);
+
+      // 2. Chibi Vampire Head & Hair (Q版大頭與黑髮)
+      const headMesh = new THREE.Mesh(new THREE.SphereGeometry(10, 16, 16), skinMat);
+      headMesh.scale.set(1, 0.9, 1);
+      headMesh.position.set(0, 22, -1);
+      monsterGroup.add(headMesh);
+
+      const hairMesh = new THREE.Mesh(new THREE.ConeGeometry(10.5, 8, 8), suitMat);
+      hairMesh.rotation.x = -0.2;
+      hairMesh.position.set(0, 26, 0);
+      monsterGroup.add(hairMesh);
+
+      // Pointed Vampire Ears (尖耳朵)
+      [-9.5, 9.5].forEach(xOff => {
+        const earMesh = new THREE.Mesh(new THREE.ConeGeometry(2.5, 8, 6), skinMat);
+        earMesh.rotation.z = xOff > 0 ? -0.8 : 0.8;
+        earMesh.position.set(xOff, 24, 0);
+        monsterGroup.add(earMesh);
+      });
+
+      // 3. Fierce Golden Eyes & Sharp Fangs (金黃斜眼與白獠牙)
+      [-3.8, 3.8].forEach(xOff => {
+        const eye = new THREE.Mesh(new THREE.BoxGeometry(4.5, 5.5, 1.2), eyeMat);
+        eye.rotation.z = xOff > 0 ? -0.25 : 0.25;
+        eye.position.set(xOff, 23.5, -9);
+        monsterGroup.add(eye);
+
+        const pupil = new THREE.Mesh(new THREE.BoxGeometry(1.4, 4.5, 1.4), pupilMat);
+        pupil.position.set(xOff, 23.5, -9.5);
+        monsterGroup.add(pupil);
+      });
+
+      // Mouth & Fangs
+      const mouthMesh = new THREE.Mesh(new THREE.BoxGeometry(7, 3, 1), vestMat);
+      mouthMesh.position.set(0, 18.5, -9.2);
+      monsterGroup.add(mouthMesh);
+
+      [-2, 2].forEach(xOff => {
+        const fang = new THREE.Mesh(new THREE.ConeGeometry(0.9, 3, 4), fangMat);
+        fang.rotation.x = Math.PI;
+        fang.position.set(xOff, 17.5, -9.4);
+        monsterGroup.add(fang);
+      });
+
+      // 4. High Vampire Cape Collar & Flapping Cape Wings (高領斗篷)
+      const highCollar = new THREE.Mesh(new THREE.BoxGeometry(18, 14, 2.5), capeMat);
+      highCollar.rotation.x = -0.15;
+      highCollar.position.set(0, 20, 5.5);
+      monsterGroup.add(highCollar);
+
+      const wingGeo = new THREE.BoxGeometry(20, 2, 16);
+      const leftWing = new THREE.Mesh(wingGeo, capeMat);
+      leftWing.position.set(-14, 10, 3);
       monsterGroup.add(leftWing);
 
-      const rightWing = new THREE.Mesh(wingGeo, wingMat);
-      rightWing.position.set(13, 0, 0);
+      const rightWing = new THREE.Mesh(wingGeo, capeMat);
+      rightWing.position.set(14, 10, 3);
       monsterGroup.add(rightWing);
 
-      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'bat' };
+      // 5. Right Hand Holding Red Wine Glass (紅酒高腳杯)
+      const glassStem = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 6, 8), fangMat);
+      glassStem.position.set(10, 14, -6);
+      monsterGroup.add(glassStem);
+
+      const glassBowl = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 0.6, 4, 8), fangMat);
+      glassBowl.position.set(10, 17, -6);
+      monsterGroup.add(glassBowl);
+
+      const redWine = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 0.5, 3, 8), vestMat);
+      redWine.position.set(10, 17.2, -6);
+      monsterGroup.add(redWine);
+
+      monsterGroup.userData = { bodyMesh, bodyMat: suitMat, leftWing, rightWing, monsterType: 'bat' };
 
     } else if (type === 'griffin') {
       const bodyMat = new THREE.MeshStandardMaterial({
