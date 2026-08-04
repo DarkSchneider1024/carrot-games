@@ -634,7 +634,23 @@ export class MagicFighterGame {
         this._lastAiSummon = now;
         this.enemiesRemaining--;
 
-        const spawnX = [60, 320, 580][Math.floor(Math.random() * 3)];
+        // 🚫 Find a safe, empty spawn tile in row 0 or row 1 (not on top of any obstacle)
+        const candidateCols = [];
+        for (let col = 0; col < MAP_GRID_SIZE; col++) {
+          if (this.map[0][col] === TILE_EMPTY && this.map[1][col] === TILE_EMPTY) {
+            // Also ensure no existing enemy is already at this position
+            const tileX = col * this.tileSize + this.tileSize / 2;
+            const alreadyOccupied = this.enemyCreeps.some(e => Math.abs(e.x - tileX) < this.tileSize);
+            if (!alreadyOccupied) candidateCols.push(col);
+          }
+        }
+
+        // Fallback to column 7 (center) if all candidate slots are occupied
+        const spawnCol = candidateCols.length > 0
+          ? candidateCols[Math.floor(Math.random() * candidateCols.length)]
+          : 7;
+        const spawnX = spawnCol * this.tileSize + this.tileSize / 2 - 17;
+
         const rand = Math.random();
         let type = 'bat';
         let hp = 2;
@@ -654,7 +670,7 @@ export class MagicFighterGame {
           id: 'e_' + Date.now() + '_' + Math.random(),
           type,
           x: spawnX,
-          y: 40,
+          y: 20,
           width: 34,
           height: 34,
           hp,

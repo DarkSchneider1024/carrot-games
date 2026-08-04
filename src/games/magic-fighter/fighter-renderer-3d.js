@@ -67,8 +67,22 @@ export class FighterRenderer3D {
 
     // Static Shared Geometries & Materials
     const tileSize = 40;
-    this.brickGeo = new THREE.BoxGeometry(tileSize - 2, 28, tileSize - 2);
-    this.brickMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.4 });
+    // 🏰 Medieval Stone Wall Materials (中世紀石灰岩城牆)
+    this.stoneWallMat = new THREE.MeshStandardMaterial({
+      color: 0xc2a97a, // Warm Limestone Sandy Brown
+      roughness: 0.9,
+      metalness: 0.0
+    });
+    this.stoneDarkMat = new THREE.MeshStandardMaterial({
+      color: 0x8b7355, // Deep Shadow Stone
+      roughness: 0.95,
+      metalness: 0.0
+    });
+    this.stoneCapMat = new THREE.MeshStandardMaterial({
+      color: 0xd4b896, // Lighter Capstone
+      roughness: 0.8,
+      metalness: 0.0
+    });
 
     this.steelGeo = new THREE.BoxGeometry(tileSize - 2, 34, tileSize - 2);
     this.steelMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.1, metalness: 0.95 });
@@ -1072,11 +1086,46 @@ export class FighterRenderer3D {
         const z = r * tileSize + tileSize / 2;
 
         if (tile === TILE_BRICK) {
-          const mesh = new THREE.Mesh(this.brickGeo, this.brickMat);
-          mesh.position.set(x, 14, z);
-          mesh.castShadow = true;
-          mesh.receiveShadow = true;
-          this.terrainGroup.add(mesh);
+          // 🏰 Medieval Stone Battlement Wall with Merlons (中世紀城垛石牆)
+          const wallGroup = new THREE.Group();
+
+          // Main Stone Wall Body (主體石牆)
+          const wallBodyGeo = new THREE.BoxGeometry(tileSize - 2, 32, tileSize - 2);
+          const wallBody = new THREE.Mesh(wallBodyGeo, this.stoneWallMat);
+          wallBody.position.y = 8;
+          wallBody.castShadow = true;
+          wallBody.receiveShadow = true;
+          wallGroup.add(wallBody);
+
+          // Horizontal Stone Course Lines (水平石縫分層)
+          [0, 9, 18].forEach(yOff => {
+            const courseGeo = new THREE.BoxGeometry(tileSize - 1, 1.5, tileSize - 1);
+            const course = new THREE.Mesh(courseGeo, this.stoneDarkMat);
+            course.position.y = yOff;
+            wallGroup.add(course);
+          });
+
+          // Battlements / Merlons on top (城垛口)
+          const merW = (tileSize - 4) / 3;
+          [-1, 0, 1].forEach((mi, idx) => {
+            if (idx % 2 === 0) return; // skip gap
+            const merGeo = new THREE.BoxGeometry(merW - 1, 10, tileSize - 4);
+            const merMesh = new THREE.Mesh(merGeo, this.stoneCapMat);
+            merMesh.position.set(mi * merW, 30, 0);
+            merMesh.castShadow = true;
+            wallGroup.add(merMesh);
+          });
+
+          // Corner Stone Blocks at base (角落基石)
+          [[-tileSize / 2 + 4, 2], [tileSize / 2 - 4, 2]].forEach(([xOff, yOff]) => {
+            const cornerGeo = new THREE.BoxGeometry(6, 6, tileSize - 2);
+            const cornerMesh = new THREE.Mesh(cornerGeo, this.stoneDarkMat);
+            cornerMesh.position.set(xOff, yOff, 0);
+            wallGroup.add(cornerMesh);
+          });
+
+          wallGroup.position.set(x, 0, z);
+          this.terrainGroup.add(wallGroup);
         } else if (tile === TILE_STEEL) {
           const mesh = new THREE.Mesh(this.steelGeo, this.steelMat);
           mesh.position.set(x, 17, z);
