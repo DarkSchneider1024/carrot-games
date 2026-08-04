@@ -1,6 +1,6 @@
 /**
- * Fruit Havoc Three.js 3D Adaptive Responsive Stage Renderer
- * Supports both 640x480 Desktop View & 360x360 Mobile View automatically.
+ * Fruit Havoc Three.js 3D Fantasy Storybook Stage Renderer
+ * High-End Aesthetic Engine with Parallax Fairyland Background, Textured Grass Platforms, & Sparkle Particles.
  */
 
 import * as THREE from 'three';
@@ -17,8 +17,13 @@ export class FruitHavoc3DRenderer {
     this.trapsGroup = null;
     this.gridHelperGroup = null;
     this.hoverGridMesh = null;
+    this.particlesMesh = null;
 
     this.characterTextures = {};
+    this.stageBackgroundTex = null;
+    this.grassTileTex = null;
+    this.goalTex = null;
+
     this.canvasWidth = 640;
     this.canvasHeight = 480;
   }
@@ -28,26 +33,24 @@ export class FruitHavoc3DRenderer {
     this.canvasHeight = height;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xe0f2fe); // Soft Sky Blue
-    this.scene.fog = new THREE.Fog(0xe0f2fe, 500, 1500);
 
-    // Adaptive Perspective Camera tuned for stage aspect-ratio
+    // Adaptive Camera
     this.camera = new THREE.PerspectiveCamera(40, width / height, 1, 2000);
-    this.camera.position.set(width / 2, height * 0.62, 580);
+    this.camera.position.set(width / 2, height * 0.58, 560);
     this.camera.lookAt(width / 2, height * 0.42, 0);
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
     this.scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xfffaed, 0.9);
+    const dirLight = new THREE.DirectionalLight(0xfff7ed, 0.9);
     dirLight.position.set(width * 0.5, 600, 400);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 1024;
     dirLight.shadow.mapSize.height = 1024;
     this.scene.add(dirLight);
 
-    // WebGL Renderer Try-Catch Safeguard
+    // WebGL Renderer Safeguard
     try {
       this.renderer = new THREE.WebGLRenderer({
         canvas: containerCanvas,
@@ -60,7 +63,7 @@ export class FruitHavoc3DRenderer {
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     } catch (e) {
-      console.warn('WebGL Context creation failed, falling back to 2.5D Canvas:', e);
+      console.warn('WebGL Context creation failed:', e);
       this.initialized = false;
       return false;
     }
@@ -73,16 +76,38 @@ export class FruitHavoc3DRenderer {
     this.scene.add(this.trapsGroup);
     this.scene.add(this.gridHelperGroup);
 
+    this._loadTexturesAndBackground(width, height);
     this._buildGridHelper(width, height);
     this._createHoverHighlightMesh();
-    this._loadCharacterTextures();
+    this._createSparkleParticles(width, height);
 
     this.initialized = true;
     return true;
   }
 
-  _loadCharacterTextures() {
+  _loadTexturesAndBackground(w, h) {
     const loader = new THREE.TextureLoader();
+
+    // 1. Stage Background Image
+    loader.load('./assets/images/bg_fruit_fairyland.png', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      this.stageBackgroundTex = tex;
+      this.scene.background = tex;
+    });
+
+    // 2. Platform Grass Tile Texture
+    loader.load('./assets/images/tile_grass_platform.png', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      this.grassTileTex = tex;
+    });
+
+    // 3. Goal Trophy Cake Asset
+    loader.load('./assets/images/asset_goal_castle.png', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      this.goalTex = tex;
+    });
+
+    // 4. Character Avatars
     const chars = [
       { id: 'strawberry', url: './assets/images/char_strawberry_berry.png' },
       { id: 'banana', url: './assets/images/char_banana_usagi.png' },
@@ -98,12 +123,37 @@ export class FruitHavoc3DRenderer {
     });
   }
 
+  _createSparkleParticles(w, h) {
+    const count = 45;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(count * 3);
+
+    for (let i = 0; i < count * 3; i += 3) {
+      positions[i] = (Math.random() - 0.1) * w;
+      positions[i + 1] = Math.random() * h;
+      positions[i + 2] = (Math.random() - 0.5) * 200;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+      color: 0xfef08a,
+      size: 6,
+      transparent: true,
+      opacity: 0.7,
+      blending: THREE.AdditiveBlending
+    });
+
+    this.particlesMesh = new THREE.Points(geometry, material);
+    this.scene.add(this.particlesMesh);
+  }
+
   _buildGridHelper(w, h) {
     const gridGeo = new THREE.PlaneGeometry(w, h);
     const gridMat = new THREE.MeshBasicMaterial({
-      color: 0x0284c7,
+      color: 0x38bdf8,
       transparent: true,
-      opacity: 0.08,
+      opacity: 0.06,
       wireframe: true
     });
     const gridMesh = new THREE.Mesh(gridGeo, gridMat);
@@ -116,7 +166,7 @@ export class FruitHavoc3DRenderer {
     const hoverMat = new THREE.MeshLambertMaterial({
       color: 0x38bdf8,
       transparent: true,
-      opacity: 0.55
+      opacity: 0.6
     });
     this.hoverGridMesh = new THREE.Mesh(hoverGeo, hoverMat);
     this.hoverGridMesh.visible = false;
@@ -136,8 +186,9 @@ export class FruitHavoc3DRenderer {
 
       const pGeo = new THREE.BoxGeometry(pW, pH, pDepth);
       const pMat = new THREE.MeshStandardMaterial({
-        color: 0xf59e0b,
-        roughness: 0.4
+        color: 0xd97706,
+        roughness: 0.35,
+        map: this.grassTileTex || null
       });
 
       const platMesh = new THREE.Mesh(pGeo, pMat);
@@ -147,7 +198,7 @@ export class FruitHavoc3DRenderer {
 
       // Top Grass Cover
       const grassGeo = new THREE.BoxGeometry(pW + 2, 6, pDepth + 2);
-      const grassMat = new THREE.MeshStandardMaterial({ color: 0x4ade80, roughness: 0.6 });
+      const grassMat = new THREE.MeshStandardMaterial({ color: 0x4ade80, roughness: 0.5 });
       const grassMesh = new THREE.Mesh(grassGeo, grassMat);
       grassMesh.position.set(0, pH / 2 + 3, 0);
       platMesh.add(grassMesh);
@@ -155,13 +206,14 @@ export class FruitHavoc3DRenderer {
       this.platformGroup.add(platMesh);
     });
 
-    // 3D Goal Trophy
-    const trophyGeo = new THREE.CylinderGeometry(14, 18, 30, 16);
-    const trophyMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8, roughness: 0.2 });
-    const trophyMesh = new THREE.Mesh(trophyGeo, trophyMat);
-    trophyMesh.position.set(this.canvasWidth * 0.82, this.canvasHeight - 160, 15);
-    trophyMesh.castShadow = true;
-    this.platformGroup.add(trophyMesh);
+    // 3D Goal Trophy Cake Asset
+    if (this.goalTex) {
+      const spriteMat = new THREE.SpriteMaterial({ map: this.goalTex, transparent: true });
+      const goalSprite = new THREE.Sprite(spriteMat);
+      goalSprite.scale.set(64, 64, 1);
+      goalSprite.position.set(this.canvasWidth * 0.82, this.canvasHeight - 145, 18);
+      this.platformGroup.add(goalSprite);
+    }
   }
 
   updateTraps(placedTraps, tileSize = 50) {
@@ -176,7 +228,7 @@ export class FruitHavoc3DRenderer {
 
       const trapGeo = new THREE.BoxGeometry(40, 40, 20);
       const trapMat = new THREE.MeshStandardMaterial({
-        color: pt.trap.id === 9 ? 0xef4444 : (pt.trap.id === 1 ? 0xf97316 : 0x38bdf8),
+        color: pt.trap.id === 9 ? 0xef4444 : (pt.trap.id === 1 ? 0xf97316 : 0x0284c7),
         roughness: 0.3
       });
       const trapMesh = new THREE.Mesh(trapGeo, trapMat);
@@ -215,6 +267,16 @@ export class FruitHavoc3DRenderer {
 
   render(players, currentScene) {
     if (!this.initialized || !this.renderer) return;
+
+    // Animate Particles
+    if (this.particlesMesh) {
+      const positions = this.particlesMesh.geometry.attributes.position.array;
+      for (let i = 1; i < positions.length; i += 3) {
+        positions[i] += 0.3;
+        if (positions[i] > this.canvasHeight) positions[i] = 0;
+      }
+      this.particlesMesh.geometry.attributes.position.needsUpdate = true;
+    }
 
     players.forEach(p => {
       let playerMeshGroup = this.playerMeshes.get(p.id);

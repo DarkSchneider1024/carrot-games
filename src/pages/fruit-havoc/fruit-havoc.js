@@ -778,13 +778,23 @@ export async function renderFruitHavoc(container, params = {}) {
     draw2DStage();
   };
 
+  const bgFairylandImg = new Image();
+  bgFairylandImg.src = './assets/images/bg_fruit_fairyland.png';
+  const goalCastleImg = new Image();
+  goalCastleImg.src = './assets/images/asset_goal_castle.png';
+
   const draw2DStage = () => {
     if (!ctx) return;
-    const bgGrad = ctx.createLinearGradient(0, 0, 0, stageHeight);
-    bgGrad.addColorStop(0, '#e0f2fe');
-    bgGrad.addColorStop(1, '#bae6fd');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, stageWidth, stageHeight);
+
+    if (bgFairylandImg.complete && bgFairylandImg.naturalWidth !== 0) {
+      ctx.drawImage(bgFairylandImg, 0, 0, stageWidth, stageHeight);
+    } else {
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, stageHeight);
+      bgGrad.addColorStop(0, '#e0f2fe');
+      bgGrad.addColorStop(1, '#bae6fd');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, stageWidth, stageHeight);
+    }
 
     ctx.strokeStyle = 'rgba(2, 132, 199, 0.12)';
     ctx.lineWidth = 1;
@@ -812,10 +822,14 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.fillRect(plat.x, plat.y - 3, plat.w, 5);
     });
 
-    ctx.font = '32px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🏆', stageWidth * 0.82, PLATFORMS[PLATFORMS.length - 1].y - 20);
+    if (goalCastleImg.complete && goalCastleImg.naturalWidth !== 0) {
+      ctx.drawImage(goalCastleImg, stageWidth * 0.76, PLATFORMS[PLATFORMS.length - 1].y - 50, 60, 60);
+    } else {
+      ctx.font = '32px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🏆', stageWidth * 0.82, PLATFORMS[PLATFORMS.length - 1].y - 20);
+    }
 
     placedTraps.forEach(pt => {
       const px = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
