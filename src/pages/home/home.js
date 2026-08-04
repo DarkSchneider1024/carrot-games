@@ -80,6 +80,7 @@ export async function renderHome(container) {
           <button class="filter-pill" data-filter="board">棋牌對戰</button>
           <button class="filter-pill" data-filter="puzzle">益智街機</button>
           <button class="filter-pill" data-filter="card">撲克娛樂</button>
+          <button class="filter-pill" data-filter="action">3D動作空戰</button>
         </div>
       </div>
 
@@ -171,11 +172,11 @@ export async function renderHome(container) {
         </div>
 
         <!-- Magic Fighter Card -->
-        <div class="game-card animate-fade-in-up stagger-5" id="card-magic-fighter" data-category="puzzle">
+        <div class="game-card animate-fade-in-up stagger-5" id="card-magic-fighter" data-category="action">
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_magic_fighter.png" alt="魔法對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">益智街機</span>
+            <span class="badge badge-category">3D動作空戰</span>
             <span class="badge badge-warning game-card-status">全新上市</span>
           </div>
           <div class="game-card-content">
