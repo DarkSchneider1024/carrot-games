@@ -1,6 +1,6 @@
 /**
- * Magic Fighter 3D Battle Page (全 3D 魔法 MOBA 塔防對戰主頁面)
- * Features Dual HQ Towers, Mana Resource Economy, Monster Creep Summoning, & 3D WebGL Engine.
+ * Magic Fighter 3D Battle Page (全 3D 魔法紅白機波次關卡對戰主頁面)
+ * Features Player Base HQ defense, NES Battle City Wave Progression, Mana Economy, & Wall Destruction.
  */
 
 import { MagicFighterGame } from '../../games/magic-fighter/game-controller.js';
@@ -30,7 +30,7 @@ export async function renderMagicFighter(container, params = {}) {
           </button>
           <div class="topbar-title">
             <span class="game-name">魔法對戰 3D (MAGIC FIGHTER)</span>
-            <span class="badge badge-warning">${mode === 'ai' ? 'AI 雙塔 MOBA 對決' : '線上 P2P 連線對抗'}</span>
+            <span class="badge badge-warning">${mode === 'ai' ? '紅白機波次關卡制度' : '線上 P2P 雙塔對抗'}</span>
           </div>
         </div>
         <div class="topbar-actions">
@@ -55,22 +55,26 @@ export async function renderMagicFighter(container, params = {}) {
         <!-- Sidebar Controls & Setup Panel -->
         <aside class="magic-panel-left ${activeTab === 'setup' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-setup">
           <div class="panel-card">
-            <h3 class="panel-subtitle">3D MOBA 塔防戰報</h3>
-            <p class="panel-desc">獲取魔法 Mana 資源！摧毀頂部敵方魔龍主塔獲勝，保護底部我方藍晶主塔！中間中立野怪區可刷 Mana！</p>
+            <h3 class="panel-subtitle">3D 經典波次戰務</h3>
+            <p class="panel-desc">比照 NES 紅白機坦克大戰！擊退 5 大波次敵方怪物軍團，可開火摧毀磚牆保護底部天空城堡主塔！</p>
 
             <!-- Stats & Chips HUD Box -->
             <div class="hud-box">
-              <div class="hud-item" style="grid-column: span 2;">
+              <div class="hud-item">
+                <span class="hud-label">當前關卡波次</span>
+                <span class="hud-value" id="hud-wave" style="color:#ff7544;">1 / 5</span>
+              </div>
+              <div class="hud-item">
+                <span class="hud-label">剩餘敵軍軍團</span>
+                <span class="hud-value" id="hud-enemies" style="color:#06b6d4;">16</span>
+              </div>
+              <div class="hud-item">
                 <span class="hud-label">魔法資源 MANA</span>
-                <span class="hud-value" id="hud-mana" style="color:#2ec4b6;font-size:1.3rem;">120 / 999 (+5/s)</span>
+                <span class="hud-value" id="hud-mana" style="color:#2ec4b6;">120 / 999</span>
               </div>
               <div class="hud-item">
-                <span class="hud-label">我方藍晶主塔</span>
+                <span class="hud-label">我方城堡主塔</span>
                 <span class="hud-value" id="hud-player-base" style="color:#38bdf8;">500 / 500</span>
-              </div>
-              <div class="hud-item">
-                <span class="hud-label">敵方魔龍主塔</span>
-                <span class="hud-value" id="hud-enemy-base" style="color:#ef4444;">500 / 500</span>
               </div>
               <div class="hud-item">
                 <span class="hud-label">得分 SCORE</span>
@@ -107,7 +111,7 @@ export async function renderMagicFighter(container, params = {}) {
             <!-- Game Actions Bar -->
             <div class="actions-box">
               <button class="btn btn-primary btn-block" id="btn-restart-game">
-                ${SVG_ICONS.refresh} 重新開始 MOBA 對決
+                ${SVG_ICONS.refresh} 重新開始遊戲
               </button>
               <a href="#/" class="btn btn-secondary btn-block" style="text-align:center;">
                 ${SVG_ICONS.home} 返回遊戲大廳
@@ -211,17 +215,19 @@ export async function renderMagicFighter(container, params = {}) {
 
     const hudMana = container.querySelector('#hud-mana');
     const hudPBase = container.querySelector('#hud-player-base');
-    const hudEBase = container.querySelector('#hud-enemy-base');
+    const hudWave = container.querySelector('#hud-wave');
+    const hudEnemies = container.querySelector('#hud-enemies');
     const hudScore = container.querySelector('#hud-score');
     const hudPower = container.querySelector('#hud-power');
 
-    if (hudMana) hudMana.textContent = `${Math.floor(state.playerMana)} / 999 (+5/s)`;
+    if (hudMana) hudMana.textContent = `${Math.floor(state.playerMana)} / 999`;
     if (hudPBase) hudPBase.textContent = `${Math.max(0, state.playerBase.hp)} / 500`;
-    if (hudEBase) hudEBase.textContent = `${Math.max(0, state.enemyBase.hp)} / 500`;
+    if (hudWave) hudWave.textContent = `${state.wave} / ${state.maxWaves}`;
+    if (hudEnemies) hudEnemies.textContent = Math.max(0, state.enemiesRemaining);
     if (hudScore) hudScore.textContent = state.score;
     if (hudPower) {
       const pLvl = state.player.starLevel || 0;
-      const labels = ['LV.1 標準', 'LV.2 雙發', 'LV.3 雙發', 'LV.4 貫穿'];
+      const labels = ['LV.1 標準', 'LV.2 雙發', 'LV.3 雙發', 'LV.4 貫穿鋼牆'];
       hudPower.textContent = labels[pLvl] || 'LV.1';
     }
   };
@@ -240,7 +246,7 @@ export async function renderMagicFighter(container, params = {}) {
     }
     await updateUserStats('magicFighter', { isWin: victory, netProfit: reward });
 
-    if (titleEl) titleEl.textContent = victory ? '摧毀敵方魔龍主塔！勝仗！' : '藍晶主塔被摧毀！敗陣！';
+    if (titleEl) titleEl.textContent = victory ? '全通 5 大關卡！勝利！' : '藍晶主塔被摧毀！敗陣！';
     if (descEl) descEl.textContent = reason;
     if (rewardEl) rewardEl.textContent = `獲得帳號籌碼本金：+$${reward.toLocaleString()}`;
 
@@ -248,7 +254,7 @@ export async function renderMagicFighter(container, params = {}) {
   };
 
   // Start Game Engine
-  game.init(null);
+  game.init(mode);
   renderer3D.render(game.getState());
 
   // Bind Summoning & Shop Buttons
@@ -373,7 +379,7 @@ export async function renderMagicFighter(container, params = {}) {
   const restartGame = () => {
     const modal = container.querySelector('#game-over-modal');
     if (modal) modal.style.display = 'none';
-    game.newGame();
+    game.newGame(1);
   };
 
   container.querySelector('#btn-restart-game')?.addEventListener('click', restartGame);
