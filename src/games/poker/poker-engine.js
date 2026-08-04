@@ -176,22 +176,26 @@ export class TexasHoldemEngine {
     this.startNewHand();
   }
 
-  setStakes(smallBlind, bigBlind, defaultBuyIn = 1000) {
-    this.smallBlind = smallBlind;
-    this.bigBlind = bigBlind;
-    if (this.players && this.players.length > 0) {
-      this.players.forEach(p => {
-        p.chips = defaultBuyIn;
-        p.bet = 0;
-        p.folded = false;
-        p.isAllIn = false;
-      });
-      this.log(`📢 盲注層級切換為：小盲 $${smallBlind} / 大盲 $${bigBlind} (攜帶籌碼 $${defaultBuyIn})`, 'system');
-      this.startNewHand();
+  setStakes(smallBlind, bigBlind, label = '') {
+    if (this.gameOver) {
+      this.smallBlind = smallBlind;
+      this.bigBlind = bigBlind;
+      this.nextStakes = null;
+      this.log(`📢 盲注層級切換為：小盲 $${smallBlind} / 大盲 $${bigBlind} (維持目前玩家累積籌碼)`, 'system');
+    } else {
+      this.nextStakes = { smallBlind, bigBlind, label };
+      this.log(`📢 已預約下局切換盲注層級：小盲 $${smallBlind} / 大盲 $${bigBlind}`, 'system');
     }
   }
 
   startNewHand() {
+    if (this.nextStakes) {
+      this.smallBlind = this.nextStakes.smallBlind;
+      this.bigBlind = this.nextStakes.bigBlind;
+      this.log(`📢 盲注層級已切換為：小盲 $${this.smallBlind} / 大盲 $${this.bigBlind}`, 'system');
+      this.nextStakes = null;
+    }
+
     this.deck = shuffleDeck(createDeck());
     this.communityCards = [];
     this.pot = 0;
@@ -201,6 +205,10 @@ export class TexasHoldemEngine {
     this.winnerMsg = '';
 
     this.players.forEach(p => {
+      // AI Rebuy if bankrupt
+      if (p.chips <= 0 && p.isAI) {
+        p.chips = Math.max(1000, this.bigBlind * 50);
+      }
       p.cards = [this.deck.pop(), this.deck.pop()];
       p.bet = 0;
       p.folded = p.chips <= 0;

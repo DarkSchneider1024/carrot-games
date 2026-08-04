@@ -287,18 +287,17 @@ export async function renderPoker(container, params) {
 
       const sb = parseInt(btn.dataset.sb, 10);
       const bb = parseInt(btn.dataset.bb, 10);
-      const buyin = parseInt(btn.dataset.buyin, 10);
       const label = btn.dataset.label;
 
-      engine.setStakes(sb, bb, buyin);
-      const winnerBanner = document.getElementById('winner-banner');
-      const nextBtn = document.getElementById('pbtn-next');
-      if (winnerBanner) winnerBanner.style.display = 'none';
-      if (nextBtn) nextBtn.style.display = 'none';
+      const wasGameOver = engine.gameOver;
+      engine.setStakes(sb, bb, label);
 
+      if (wasGameOver) {
+        showToast(`已切換盲注層級為【${label}】小盲 $${sb} / 大盲 $${bb}（籌碼金額延續）`, 'success');
+      } else {
+        showToast(`已預約於本局結束後切換至【${label}】小盲 $${sb} / 大盲 $${bb}（當前對局與籌碼不受影響）`, 'info');
+      }
       _updatePokerUI(engine);
-      showToast(`已切換至【${label}】小盲 $${sb} / 大盲 $${bb}（籌碼 $${buyin}）`, 'success');
-      _checkAITurn(engine);
     });
   });
 
