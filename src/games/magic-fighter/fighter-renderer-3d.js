@@ -662,6 +662,22 @@ export class FighterRenderer3D {
       mesh.rotation.y = targetRotY;
 
       const data = mesh.userData;
+
+      // 💥 3D Hit Flash & Hit Recoil Visual Feedback
+      if (e.hitTime && e.hitTime > now) {
+        mesh.scale.set(1.22, 1.22, 1.22);
+        if (data.bodyMat) {
+          data.bodyMat.emissive.setHex(0xffffff);
+          data.bodyMat.emissiveIntensity = 0.9;
+        }
+      } else {
+        mesh.scale.set(1.0, 1.0, 1.0);
+        if (data.bodyMat) {
+          data.bodyMat.emissive.setHex(isFriendly ? 0x0284c7 : 0x3b0764);
+          data.bodyMat.emissiveIntensity = 0.25;
+        }
+      }
+
       if (data.leftWing && data.rightWing) {
         const flapSpeed = data.monsterType === 'griffin' ? 0.028 : 0.016;
         const flapAngle = Math.sin(now * flapSpeed) * 0.45;

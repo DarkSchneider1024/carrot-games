@@ -9,8 +9,14 @@
  *   - 🦇 Dark Bat ($50 Mana) — Scout creep marching UP
  *   - 🦅 Griffin ($100 Mana) — Swift assault creep marching UP
  *   - 🐲 Fire Wyvern Dragon ($200 Mana) — Heavy 10-HP Tank dragon marching UP
- *   - ⭐️ Upgrade Firepower ($150 Mana) — Level up Fighter bullets (Level 4 destroys Steel!)
+ *   - ⭐️ Upgrade Firepower ($150 Mana) — Level up Fighter bullets
  */
+import {
+  playLaserSound,
+  playHitImpactSound,
+  playWallBreakSound,
+  playMonsterKillSound
+} from '../../utils/sound-effects.js';
 
 export const MAP_GRID_SIZE = 16; // 16x16 Grid
 export const TILE_EMPTY = 0;
@@ -314,6 +320,8 @@ export class MagicFighterGame {
     if (now - this.player.lastFireTime < this.player.fireRate) return;
     this.player.lastFireTime = now;
 
+    playLaserSound(); // Trigger Punchy Laser Sound Effect
+
     const p = this.player;
     const isArmorPiercing = p.starLevel >= 3;
 
@@ -489,6 +497,7 @@ export class MagicFighterGame {
       if (this.mode === 'pvp' && this._rectOverlap(c, this.enemyBase)) {
         this.enemyBase.hp = Math.max(0, this.enemyBase.hp - 15);
         this.playerCreeps.splice(i, 1);
+        playHitImpactSound();
         continue;
       }
 
@@ -526,6 +535,7 @@ export class MagicFighterGame {
       if (this._rectOverlap(c, this.playerBase)) {
         this.playerBase.hp = Math.max(0, this.playerBase.hp - 15);
         this.enemyCreeps.splice(i, 1);
+        playHitImpactSound();
         continue;
       }
 
@@ -642,6 +652,7 @@ export class MagicFighterGame {
       }
       if (hitWall) {
         this.bullets.splice(i, 1);
+        playWallBreakSound(); // Trigger Brick Wall Explosion Sound
         continue;
       }
 
@@ -649,10 +660,12 @@ export class MagicFighterGame {
       if (b.isPlayer && this.mode === 'pvp' && this._rectOverlap(b, this.enemyBase)) {
         this.enemyBase.hp = Math.max(0, this.enemyBase.hp - 10);
         this.bullets.splice(i, 1);
+        playHitImpactSound();
         continue;
       } else if (!b.isPlayer && this._rectOverlap(b, this.playerBase)) {
         this.playerBase.hp = Math.max(0, this.playerBase.hp - 10);
         this.bullets.splice(i, 1);
+        playHitImpactSound();
         continue;
       }
 
@@ -660,6 +673,7 @@ export class MagicFighterGame {
       if (!b.isPlayer && this._rectOverlap(b, this.player)) {
         if (!this.player.hasShield) {
           this.player.hp -= 1;
+          playHitImpactSound();
           if (this.player.hp <= 0) {
             this.player.x = 160;
             this.player.y = 560;
@@ -672,33 +686,57 @@ export class MagicFighterGame {
         continue;
       }
 
-      // Check Player Bullet vs Enemy Creeps
+      // Check Player Bullet vs Enemy Creeps (With Physical Knockback & Flash)
       if (b.isPlayer) {
         for (let j = this.enemyCreeps.length - 1; j >= 0; j--) {
           const e = this.enemyCreeps[j];
           if (this._rectOverlap(b, e)) {
             e.hp -= (b.isArmorPiercing ? 2 : 1);
+
+            // 💥 Hit Knockback Displacement Physics (後退退後感)
+            const kx = b.vx > 0 ? 16 : (b.vx < 0 ? -16 : 0);
+            const ky = b.vy > 0 ? 16 : (b.vy < 0 ? -16 : 0);
+            e.x = Math.max(0, Math.min(this.width - e.width, e.x + kx));
+            e.y = Math.max(0, Math.min(this.height - e.height, e.y + ky));
+
+            // Set Hit Flash Timestamp
+            e.hitTime = Date.now() + 140;
+
             this.bullets.splice(i, 1);
 
             if (e.hp <= 0) {
               this.enemyCreeps.splice(j, 1);
               this.score += 100;
               this.playerMana = Math.min(this.maxMana, this.playerMana + 25);
+              playMonsterKillSound(); // Trigger Monster Death Explosion Sound
+            } else {
+              playHitImpactSound(); // Trigger Hit Impact Sound
             }
             break;
           }
         }
 
-        // Check Player Bullet vs Neutral Creeps
+        // Check Player Bullet vs Neutral Creeps (With Physical Knockback)
         for (let j = this.neutralCreeps.length - 1; j >= 0; j--) {
           const n = this.neutralCreeps[j];
           if (this._rectOverlap(b, n)) {
             n.hp -= 1;
+
+            // 💥 Hit Knockback Displacement
+            const kx = b.vx > 0 ? 16 : (b.vx < 0 ? -16 : 0);
+            const ky = b.vy > 0 ? 16 : (b.vy < 0 ? -16 : 0);
+            n.x = Math.max(0, Math.min(this.width - n.width, n.x + kx));
+            n.y = Math.max(0, Math.min(this.height - n.height, n.y + ky));
+            n.hitTime = Date.now() + 140;
+
             this.bullets.splice(i, 1);
             if (n.hp <= 0) {
               this.neutralCreeps.splice(j, 1);
               this.score += 150;
               this.playerMana = Math.min(this.maxMana, this.playerMana + 45);
+              playMonsterKillSound();
+            } else {
+              playHitImpactSound();
             }
             break;
           }
