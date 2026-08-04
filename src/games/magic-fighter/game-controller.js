@@ -656,13 +656,15 @@ export class MagicFighterGame {
         continue;
       }
 
-      // Check Bullet vs Base HQs
+      // Check Bullet vs Base HQs (Friendly Fire Enabled: Player bullets also damage Player HQ!)
       if (b.isPlayer && this.mode === 'pvp' && this._rectOverlap(b, this.enemyBase)) {
         this.enemyBase.hp = Math.max(0, this.enemyBase.hp - 10);
         this.bullets.splice(i, 1);
         playHitImpactSound();
         continue;
-      } else if (!b.isPlayer && this._rectOverlap(b, this.playerBase)) {
+      }
+      
+      if (this._rectOverlap(b, this.playerBase)) {
         this.playerBase.hp = Math.max(0, this.playerBase.hp - 10);
         this.bullets.splice(i, 1);
         playHitImpactSound();
