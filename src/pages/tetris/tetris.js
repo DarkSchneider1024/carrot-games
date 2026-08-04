@@ -42,10 +42,10 @@ export async function renderTetris(container, params) {
       <!-- Mobile Navigation Tabs -->
       <div class="game-mobile-tabs">
         <button class="mobile-tab-btn" id="mtab-tetris-setup">
-          ⚙️ 模式與設定
+          模式與設定
         </button>
         <button class="mobile-tab-btn active" id="mtab-tetris-game">
-          🎮 方塊對戰區
+          方塊對戰區
         </button>
       </div>
 
@@ -73,10 +73,10 @@ export async function renderTetris(container, params) {
           <!-- Controller Mode Bar -->
           <div class="ctrl-mode-bar">
             <button class="btn btn-sm ctrl-mode-btn active" id="btn-mode-joystick">
-              🕹️ 單手搖桿 (JOYSTICK)
+              單手搖桿 (JOYSTICK)
             </button>
             <button class="btn btn-sm ctrl-mode-btn" id="btn-mode-dpad">
-              📱 虛擬按鍵 (D-PAD)
+              虛擬按鍵 (D-PAD)
             </button>
           </div>
 
@@ -94,7 +94,7 @@ export async function renderTetris(container, params) {
             <!-- Right: Action Buttons -->
             <div class="joystick-actions">
               <button class="btn btn-primary jaction-btn-harddrop" id="jbtn-harddrop">
-                ⚡ 硬降 (DROP)
+                硬降 (DROP)
               </button>
               <div class="jaction-row">
                 <button class="btn btn-cyan jaction-btn" id="jbtn-rot">↻ 旋轉</button>
@@ -117,7 +117,7 @@ export async function renderTetris(container, params) {
             </div>
             <div class="touch-row">
               <button class="btn btn-primary touch-btn touch-btn-harddrop" id="tbtn-harddrop">
-                ⚡ 硬降 (HARD DROP)
+                硬降 (HARD DROP)
               </button>
             </div>
           </div>

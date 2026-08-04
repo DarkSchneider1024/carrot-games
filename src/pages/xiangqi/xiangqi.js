@@ -40,10 +40,10 @@ export async function renderXiangqi(container, params) {
       <!-- Mobile Navigation Tabs -->
       <div class="game-mobile-tabs">
         <button class="mobile-tab-btn" id="mtab-setup">
-          ⚙️ 房間與設定
+          房間與設定
         </button>
         <button class="mobile-tab-btn active" id="mtab-game">
-          🎮 象棋對戰區
+          象棋對戰區
         </button>
       </div>
 

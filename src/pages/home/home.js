@@ -39,7 +39,7 @@ export async function renderHome(container) {
         </div>
         <div class="home-header-actions">
           <button class="btn btn-secondary btn-sm" id="btn-player-profile" title="點擊開啟帳號與戰績管理">
-            👤 <span id="display-player-name">${initialName}</span>
+            ${SVG_ICONS.user} <span id="display-player-name">${initialName}</span>
             <span class="badge ${initialBadgeClass}" id="display-user-chips" style="margin-left:4px;">
               ${initialChipsText}
             </span>
@@ -69,14 +69,14 @@ export async function renderHome(container) {
       <!-- Category Filter Section -->
       <div class="home-filter-section animate-fade-in-up">
         <div class="home-filter-title">
-          <span>🎮 遊戲庫分類</span>
+          <span>遊戲庫分類</span>
           <span class="home-filter-count" id="filter-count">共 4 款遊戲</span>
         </div>
         <div class="home-filter-pills" id="home-filter-pills">
-          <button class="filter-pill active" data-filter="all">🌟 全部遊戲</button>
-          <button class="filter-pill" data-filter="board">♟️ 棋牌對戰</button>
-          <button class="filter-pill" data-filter="puzzle">🧩 益智街機</button>
-          <button class="filter-pill" data-filter="card">🃏 撲克娛樂</button>
+          <button class="filter-pill active" data-filter="all">全部遊戲</button>
+          <button class="filter-pill" data-filter="board">棋牌對戰</button>
+          <button class="filter-pill" data-filter="puzzle">益智街機</button>
+          <button class="filter-pill" data-filter="card">撲克娛樂</button>
         </div>
       </div>
 
@@ -87,7 +87,7 @@ export async function renderHome(container) {
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_xiangqi.png" alt="中國象棋" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">♟️ 棋牌對戰</span>
+            <span class="badge badge-category">棋牌對戰</span>
             <span class="badge badge-success game-card-status">經典推廣</span>
           </div>
           <div class="game-card-content">
@@ -116,7 +116,7 @@ export async function renderHome(container) {
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_gomoku.png" alt="俄羅斯方塊對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">🧩 益智街機</span>
+            <span class="badge badge-category">益智街機</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
           </div>
           <div class="game-card-content">
@@ -145,7 +145,7 @@ export async function renderHome(container) {
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_poker.png" alt="德州撲克" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">🃏 撲克娛樂</span>
+            <span class="badge badge-category">撲克娛樂</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
           </div>
           <div class="game-card-content">
@@ -172,7 +172,7 @@ export async function renderHome(container) {
           <div class="game-card-banner">
             <img src="/carrot-games/assets/images/icon_magic_fighter.png" alt="魔法對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">🧩 益智街機</span>
+            <span class="badge badge-category">益智街機</span>
             <span class="badge badge-warning game-card-status">全新上市</span>
           </div>
           <div class="game-card-content">
@@ -201,7 +201,7 @@ export async function renderHome(container) {
         <div class="lobby-left">
           <div class="lobby-header">
             <h3 class="lobby-title">
-              🔥 全球線上房間大廳 <span class="badge badge-success" style="font-size:11px;">即時連線</span>
+              全球線上房間大廳 <span class="badge badge-success" style="font-size:11px;">即時連線</span>
             </h3>
             <span class="lobby-subtitle">點擊房間可直接加入對戰</span>
           </div>
@@ -214,7 +214,7 @@ export async function renderHome(container) {
 
         <div class="lobby-right">
           <div class="chat-header">
-            <h4 class="chat-title">💬 大廳玩家頻道</h4>
+            <h4 class="chat-title">大廳玩家頻道</h4>
           </div>
           <div class="chat-messages" id="chat-messages">
             <div class="empty-chat">歡迎來到 Carrot Games 聊天頻道！</div>
@@ -242,7 +242,7 @@ export async function renderHome(container) {
     if (rooms.length === 0) {
       listEl.innerHTML = `
         <div class="empty-rooms">
-          <span>🥕 目前尚無開放中的房間</span>
+          <span>目前尚無開放中的房間</span>
           <p style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">點擊上方「連線開房」立刻建立第一個公開房間吧！</p>
         </div>
       `;

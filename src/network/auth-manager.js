@@ -235,7 +235,7 @@ export async function signUpWithEmail(email, password, displayName) {
     }
 
     _notifyAuthListeners();
-    showToast(`🎉 註冊成功！已為您開立帳號並發放本金 $${DEFAULT_STARTING_CHIPS}`, 'success');
+    showToast(`註冊成功！已為您開立帳號並發放本金 $${DEFAULT_STARTING_CHIPS}`, 'success');
     return { success: true, user };
   } catch (err) {
     console.error('Sign up error:', err);
@@ -353,7 +353,7 @@ export async function updateUserChips(newChipsAmount) {
   }
 
   if (isBankrupt) {
-    showToast(`💰 破產救援發放！系統已自動撥款 $${DEFAULT_STARTING_CHIPS} 救濟本金給您！`, 'success');
+    showToast(`破產救援發放！系統已自動撥款 $${DEFAULT_STARTING_CHIPS} 救濟本金給您！`, 'success');
   }
 
   _notifyAuthListeners();

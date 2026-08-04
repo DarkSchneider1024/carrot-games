@@ -58,10 +58,10 @@ export async function renderPoker(container, params) {
       <!-- Mobile Navigation Tabs -->
       <div class="game-mobile-tabs">
         <button class="mobile-tab-btn" id="mtab-poker-setup">
-          ⚙️ 盲注與戰報
+          盲注與戰報
         </button>
         <button class="mobile-tab-btn active" id="mtab-poker-game">
-          🃏 撲克檯面
+          撲克檯面
         </button>
       </div>
 
@@ -147,19 +147,19 @@ export async function renderPoker(container, params) {
 
         <!-- Stakes Selector Bar -->
         <div class="stakes-bar glass">
-          <span class="stakes-title">💰 盲注層級 (STAKES):</span>
+          <span class="stakes-title">盲注層級 (STAKES):</span>
           <div class="stakes-options">
             <button class="btn btn-ghost btn-xs stakes-btn" data-sb="5" data-bb="10" data-buyin="500" data-label="新手場">
-              🐣 新手 $5/$10
+              新手 $5/$10
             </button>
             <button class="btn btn-primary btn-xs stakes-btn active" data-sb="10" data-bb="20" data-buyin="1000" data-label="標準場">
-              ⚖️ 標準 $10/$20
+              標準 $10/$20
             </button>
             <button class="btn btn-ghost btn-xs stakes-btn" data-sb="50" data-bb="100" data-buyin="5000" data-label="高額場">
-              🚀 高額 $50/$100
+              高額 $50/$100
             </button>
             <button class="btn btn-ghost btn-xs stakes-btn" data-sb="100" data-bb="200" data-buyin="10000" data-label="豪客場">
-              🔥 豪客 $100/$200
+              豪客 $100/$200
             </button>
           </div>
         </div>
@@ -180,7 +180,7 @@ export async function renderPoker(container, params) {
         <!-- Live Game Battle Action Log / Chat Box -->
         <div class="poker-log-box glass">
           <div class="log-header">
-            <span>📜 對戰即時動態 (GAME LOG)</span>
+            <span>對戰即時動態 (GAME LOG)</span>
           </div>
           <div class="log-content" id="poker-log-content"></div>
         </div>

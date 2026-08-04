@@ -40,14 +40,14 @@ function registerPWA() {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (refreshing) return;
     refreshing = true;
-    showToast('⚡ 已更新至最新版本！正在重新載入...', 'success');
+    showToast('已更新至最新版本！正在重新載入...', 'success');
     setTimeout(() => window.location.reload(), 800);
   });
 
   window.addEventListener('load', async () => {
     try {
       const reg = await navigator.serviceWorker.register('/carrot-games/sw.js');
-      console.log('⚡ [PWA] ServiceWorker registered with scope:', reg.scope);
+      console.log('[PWA] ServiceWorker registered with scope:', reg.scope);
 
       window.addEventListener('focus', () => reg.update());
       setInterval(() => reg.update(), 10 * 60 * 1000);
@@ -58,7 +58,7 @@ function registerPWA() {
 
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('⚡ [PWA] New update available! Activating immediately.');
+            console.log('[PWA] New update available! Activating immediately.');
             newWorker.postMessage({ type: 'SKIP_WAITING' });
           }
         });
@@ -68,7 +68,7 @@ function registerPWA() {
         reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
     } catch (err) {
-      console.warn('⚠️ [PWA] ServiceWorker registration failed:', err);
+      console.warn('[PWA] ServiceWorker registration failed:', err);
     }
   });
 }

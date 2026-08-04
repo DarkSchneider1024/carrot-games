@@ -91,16 +91,16 @@ export class MagicFighterGame {
     this.wave = wave;
     this.score = 0;
 
-    // Reset Player
-    this.player.x = (MAP_GRID_SIZE / 2 - 2) * this.tileSize;
-    this.player.y = (MAP_GRID_SIZE - 2) * this.tileSize;
+    // Reset Player Spawn Position (col 4, row 14 -> x: 160, y: 560)
+    this.player.x = 4 * this.tileSize;
+    this.player.y = 14 * this.tileSize;
     this.player.hp = 3;
     this.player.vx = 0;
     this.player.vy = 0;
     this.player.speed = 6.0;
     this.player.direction = 'UP';
     this.player.hasShield = true;
-    this.player.shieldTime = Date.now() + 3000;
+    this.player.shieldTime = Date.now() + 3500;
     this.player.dualShot = false;
 
     // Reset Base
@@ -125,16 +125,17 @@ export class MagicFighterGame {
   _generateMap() {
     this.map = Array(MAP_GRID_SIZE).fill(0).map(() => Array(MAP_GRID_SIZE).fill(TILE_EMPTY));
 
-    // Base Fortress Protection Walls (Around Base at row 14-15, col 6-9)
-    for (let r = 14; r < 16; r++) {
-      for (let c = 6; c < 10; c++) {
-        if (r === 14 && (c >= 6 && c <= 9)) this.map[r][c] = TILE_BRICK;
-        if (r === 15 && (c === 6 || c === 9)) this.map[r][c] = TILE_BRICK;
-      }
+    // Base Fortress Protection Walls (Around Base at row 13-15, col 6-9)
+    for (let c = 6; c <= 9; c++) {
+      this.map[13][c] = TILE_BRICK;
     }
+    this.map[14][6] = TILE_BRICK;
+    this.map[15][6] = TILE_BRICK;
+    this.map[14][9] = TILE_BRICK;
+    this.map[15][9] = TILE_BRICK;
 
     // Random Brick & Steel & Forest Blocks
-    for (let r = 2; r < 13; r += 2) {
+    for (let r = 2; r < 12; r += 2) {
       for (let c = 1; c < 15; c += 2) {
         const rand = Math.random();
         if (rand < 0.55) {
@@ -145,6 +146,13 @@ export class MagicFighterGame {
         } else if (rand < 0.90) {
           this.map[r][c] = TILE_FOREST;
         }
+      }
+    }
+
+    // GUARANTEE: Force clear Player Spawn Zone & Runway (col 3..5, row 12..15)
+    for (let r = 12; r <= 15; r++) {
+      for (let c = 3; c <= 5; c++) {
+        this.map[r][c] = TILE_EMPTY;
       }
     }
   }

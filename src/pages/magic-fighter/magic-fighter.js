@@ -24,10 +24,10 @@ export async function renderMagicFighter(container, params = {}) {
       <!-- Top Mobile Navigation Switcher -->
       <div class="game-mobile-tabs" id="mobile-tab-bar">
         <button class="mobile-tab-btn" id="btn-tab-setup">
-          ⚙️ 模式與設定
+          模式與設定
         </button>
         <button class="mobile-tab-btn active" id="btn-tab-game">
-          🎮 3D 魔法對戰區
+          3D 魔法對戰區
         </button>
       </div>
 
@@ -35,11 +35,11 @@ export async function renderMagicFighter(container, params = {}) {
         <!-- Sidebar Controls & Setup -->
         <aside class="magic-side-panel ${activeTab === 'setup' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-setup">
           <div class="panel-card">
-            <h2 class="panel-title">✈️ 魔法對戰 3D (MAGIC FIGHTER)</h2>
+            <h2 class="panel-title">魔法對戰 3D (MAGIC FIGHTER)</h2>
             <p class="panel-desc">Three.js WebGL 3D 魔法空戰對決！保護 3D 蘿蔔水晶基地，破壞磚牆，擊退敵軍！</p>
 
             <div class="mode-badge-box">
-              <span class="badge badge-warning">${mode === 'ai' ? '🤖 AI 波次關卡對決' : '🌐 線上 P2P 連線對抗'}</span>
+              <span class="badge badge-warning">${mode === 'ai' ? 'AI 波次關卡對決' : '線上 P2P 連線對抗'}</span>
             </div>
 
             <!-- Stats & Chips HUD -->
@@ -54,29 +54,29 @@ export async function renderMagicFighter(container, params = {}) {
               </div>
               <div class="hud-item">
                 <span class="hud-label">戰機 HP</span>
-                <span class="hud-value" id="hud-hp">❤️❤️❤️</span>
+                <span class="hud-value" id="hud-hp">3</span>
               </div>
               <div class="hud-item">
                 <span class="hud-label">蘿蔔水晶基地</span>
-                <span class="hud-value" id="hud-base-status">🛡️ 完好</span>
+                <span class="hud-value" id="hud-base-status">完好</span>
               </div>
             </div>
 
             <!-- Game Actions -->
             <div class="actions-box">
               <button class="btn btn-primary btn-block" id="btn-restart-game">
-                🔄 重新開始 3D 遊戲
+                重新開始 3D 遊戲
               </button>
               <a href="#/" class="btn btn-secondary btn-block" style="text-align:center;">
-                🏠 返回遊戲大廳
+                返回遊戲大廳
               </a>
             </div>
 
             <!-- Instructions -->
             <div class="guide-box">
-              <h4>🎮 3D 控制說明</h4>
-              <p>💻 **電腦**：方向鍵 / WASD 自由飛行，【空白鍵 Space】發射魔法子彈。</p>
-              <p>📱 **手機**：左半螢幕按住觸控按滑滑動 **360° 模擬搖桿** 進行飛行，右側點擊 **【開火】**。</p>
+              <h4>3D 控制說明</h4>
+              <p>**電腦**：方向鍵 / WASD 自由飛行，【空白鍵 Space】發射魔法子彈。</p>
+              <p>**手機**：左半螢幕按住觸控按滑滑動 **360° 模擬搖桿** 進行飛行，右側點擊 **【開火】**。</p>
             </div>
           </div>
         </aside>
@@ -87,10 +87,10 @@ export async function renderMagicFighter(container, params = {}) {
             <!-- Game Over Overlay -->
             <div class="game-over-overlay" id="game-over-modal" style="display:none;">
               <div class="game-over-card animate-scale-up">
-                <h2 id="go-title">🎮 3D 戰局結束</h2>
+                <h2 id="go-title">3D 戰局結束</h2>
                 <p id="go-desc">蘿蔔基地已失守！</p>
                 <div class="go-reward" id="go-reward-chips">+ $0 籌碼</div>
-                <button class="btn btn-primary" id="btn-modal-restart">🔄 再玩一局</button>
+                <button class="btn btn-primary" id="btn-modal-restart">再玩一局</button>
               </div>
             </div>
           </div>
@@ -98,10 +98,9 @@ export async function renderMagicFighter(container, params = {}) {
           <!-- Mobile Virtual Controls -->
           <div class="mobile-3d-controller-bar">
             <div class="joystick-touch-zone" id="joystick-zone">
-              <span class="joystick-hint">👈 左側觸控區域：360° 模擬搖桿</span>
+              <span class="joystick-hint">左側觸控區域：360° 模擬搖桿</span>
             </div>
             <button class="mobile-fire-btn-3d" id="btn-mobile-fire">
-              🔥
               <span>開火</span>
             </button>
           </div>
@@ -229,8 +228,8 @@ export async function renderMagicFighter(container, params = {}) {
 
     if (hudScore) hudScore.textContent = state.score;
     if (hudWave) hudWave.textContent = `${state.wave} / ${state.maxWaves}`;
-    if (hudHp) hudHp.textContent = '❤️'.repeat(Math.max(0, state.player.hp));
-    if (hudBase) hudBase.textContent = state.base.destroyed ? '💥 毀壞' : '🛡️ 完好';
+    if (hudHp) hudHp.textContent = `${Math.max(0, state.player.hp)} / 3`;
+    if (hudBase) hudBase.textContent = state.base.destroyed ? '毀壞' : '完好';
   };
 
   // Game Over Callback
@@ -247,9 +246,9 @@ export async function renderMagicFighter(container, params = {}) {
     }
     await updateUserStats('magicFighter', { isWin: victory, netProfit: reward });
 
-    if (titleEl) titleEl.textContent = victory ? '🎉 3D 空戰全勝！' : '💥 3D 戰局結束';
+    if (titleEl) titleEl.textContent = victory ? '3D 空戰全勝！' : '3D 戰局結束';
     if (descEl) descEl.textContent = reason;
-    if (rewardEl) rewardEl.textContent = `🎁 獲得帳號籌碼本金：+$${reward.toLocaleString()}`;
+    if (rewardEl) rewardEl.textContent = `獲得帳號籌碼本金：+$${reward.toLocaleString()}`;
 
     if (modal) modal.style.display = 'flex';
   };

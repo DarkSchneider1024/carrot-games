@@ -109,7 +109,6 @@ async function renderRoute() {
       // 404
       app.innerHTML = `
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;background-color:var(--color-bg-primary);color:var(--color-text-primary);">
-          <h1 style="font-size:4rem;">🥕</h1>
           <h2>找不到頁面</h2>
           <p style="color:var(--color-text-secondary)">這裡什麼都沒有...</p>
           <a href="#/" class="btn btn-primary" style="margin-top:1rem;">回到首頁</a>
@@ -117,14 +116,13 @@ async function renderRoute() {
       `;
     }
   } catch (err) {
-    console.error('⚠️ [Router] Render route error:', err);
+    console.error('[Router] Render route error:', err);
     app.style.opacity = '1';
     app.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:1rem;background-color:#0f172a;color:#f8fafc;padding:20px;text-align:center;">
-        <h1 style="font-size:3.5rem;">🥕</h1>
         <h2>頁面載入異常</h2>
         <p style="color:#94a3b8;max-width:400px;">系統遇到不預期的錯誤：${err.message || err}</p>
-        <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top:1rem;padding:10px 24px;">⚡ 重新載入頁面</button>
+        <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top:1rem;padding:10px 24px;">重新載入頁面</button>
       </div>
     `;
   } finally {

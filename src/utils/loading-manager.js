@@ -19,7 +19,7 @@ export function updateLoadingProgress(percent, statusMessage) {
 }
 
 export function hideLoadingScreen() {
-  updateLoadingProgress(100, '✨ 載入完成！正在進入 Carrot Games...');
+  updateLoadingProgress(100, '載入完成！正在進入 Carrot Games...');
 
   setTimeout(() => {
     const screen = document.getElementById('initial-loading-screen');

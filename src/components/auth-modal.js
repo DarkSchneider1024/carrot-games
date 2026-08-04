@@ -42,7 +42,7 @@ function _renderProfileModal(user, profile) {
   const providerName = user.providerData?.[0]?.providerId === 'google.com' ? 'Google 聯動帳號' : '電子郵件帳號';
 
   showModal({
-    title: '👤 玩家帳號與戰績管理',
+    title: '玩家帳號與戰績管理',
     content: `
       <div class="profile-modal-container" style="display:flex;flex-direction:column;gap:16px;">
         <!-- User Info Card -->
@@ -62,11 +62,11 @@ function _renderProfileModal(user, profile) {
         <!-- Chips & Money Balance -->
         <div class="profile-chips-card glass" style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-radius:16px;background:rgba(255, 117, 68, 0.08);border:1px solid rgba(255, 117, 68, 0.2);">
           <div>
-            <span style="font-size:0.8rem;color:var(--color-text-secondary);display:block;">💰 帳號籌碼本金</span>
+            <span style="font-size:0.8rem;color:var(--color-text-secondary);display:block;">帳號籌碼本金</span>
             <strong style="font-size:1.6rem;color:var(--color-accent-primary);font-family:var(--font-family-mono);">$${(profile.chips || 0).toLocaleString()}</strong>
           </div>
           <button class="btn btn-secondary btn-sm" id="btn-refill-chips" title="若籌碼低於$1000可自動申請補滿">
-            ➕ 補給本金
+            補給本金
           </button>
         </div>
 
@@ -81,10 +81,10 @@ function _renderProfileModal(user, profile) {
 
         <!-- Game Statistics -->
         <div class="profile-stats-section">
-          <h5 style="margin:0 0 8px 0;font-size:0.875rem;color:var(--color-text-primary);">📊 遊戲對戰紀錄</h5>
+          <h5 style="margin:0 0 8px 0;font-size:0.875rem;color:var(--color-text-primary);">遊戲對戰紀錄</h5>
           <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:8px;">
             <div class="stat-card glass" style="padding:8px 10px;border-radius:8px;font-size:0.75rem;">
-              <span style="color:var(--color-accent-cyan);font-weight:bold;">🂡 德州撲克</span>
+              <span style="color:var(--color-accent-cyan);font-weight:bold;">德州撲克</span>
               <div style="margin-top:4px;color:var(--color-text-secondary);">
                 對局: ${pokerStats.played} 局<br/>
                 獲勝: ${pokerStats.won} 局<br/>
@@ -93,7 +93,7 @@ function _renderProfileModal(user, profile) {
             </div>
 
             <div class="stat-card glass" style="padding:8px 10px;border-radius:8px;font-size:0.75rem;">
-              <span style="color:var(--color-accent-gold);font-weight:bold;">♟️ 中國象棋</span>
+              <span style="color:var(--color-accent-gold);font-weight:bold;">中國象棋</span>
               <div style="margin-top:4px;color:var(--color-text-secondary);">
                 對局: ${xiangqiStats.played} 局<br/>
                 勝場: ${xiangqiStats.won} 局
@@ -101,7 +101,7 @@ function _renderProfileModal(user, profile) {
             </div>
 
             <div class="stat-card glass" style="padding:8px 10px;border-radius:8px;font-size:0.75rem;">
-              <span style="color:var(--color-accent-pink);font-weight:bold;">🧩 俄羅斯方塊</span>
+              <span style="color:var(--color-accent-pink);font-weight:bold;">俄羅斯方塊</span>
               <div style="margin-top:4px;color:var(--color-text-secondary);">
                 對局: ${tetrisStats.played} 局<br/>
                 勝場: ${tetrisStats.won} 局
@@ -109,7 +109,7 @@ function _renderProfileModal(user, profile) {
             </div>
 
             <div class="stat-card glass" style="padding:8px 10px;border-radius:8px;font-size:0.75rem;">
-              <span style="color:#ff7544;font-weight:bold;">✈️ 魔法對戰</span>
+              <span style="color:#ff7544;font-weight:bold;">魔法對戰 3D</span>
               <div style="margin-top:4px;color:var(--color-text-secondary);">
                 對局: ${magicFighterStats.played} 局<br/>
                 勝場: ${magicFighterStats.won} 局<br/>
@@ -123,7 +123,7 @@ function _renderProfileModal(user, profile) {
     actions: [
       { text: '關閉', onClick: closeModal },
       {
-        text: '🚪 登出帳號',
+        text: '登出帳號',
         class: 'btn-secondary',
         onClick: async () => {
           await signOutUser();
@@ -137,7 +137,7 @@ function _renderProfileModal(user, profile) {
   document.getElementById('btn-refill-chips')?.addEventListener('click', async () => {
     if (profile.chips < 1000) {
       await updateUserChips(1000);
-      showToast('💰 已成功為您的帳號補滿 $1000 本金！', 'success');
+      showToast('已成功為您的帳號補滿 $1000 本金！', 'success');
       closeModal();
       showAuthModal();
     } else {
@@ -161,13 +161,13 @@ function _renderProfileModal(user, profile) {
  */
 function _renderAuthFormModal() {
   showModal({
-    title: '🔑 Carrot Games 帳號登入 / 註冊',
+    title: 'Carrot Games 帳號登入 / 註冊',
     content: `
       <div class="auth-modal-content">
         <!-- Auth Tabs Header -->
         <div class="auth-tabs" style="display:flex;gap:4px;border-bottom:1px solid var(--color-border);margin-bottom:1rem;padding-bottom:4px;">
-          <button class="btn btn-ghost btn-sm auth-tab-btn active" id="tab-auth-login" style="flex:1;">🔑 帳號登入</button>
-          <button class="btn btn-ghost btn-sm auth-tab-btn" id="tab-auth-register" style="flex:1;">📝 註冊帳號 (領$1000)</button>
+          <button class="btn btn-ghost btn-sm auth-tab-btn active" id="tab-auth-login" style="flex:1;">帳號登入</button>
+          <button class="btn btn-ghost btn-sm auth-tab-btn" id="tab-auth-register" style="flex:1;">註冊帳號 (領$1000)</button>
         </div>
 
         <!-- Tab 1: Login Form -->
@@ -180,13 +180,13 @@ function _renderAuthFormModal() {
             <label style="font-size:0.8rem;color:var(--color-text-secondary);display:block;margin-bottom:4px;">密碼 Password：</label>
             <input type="password" class="input" id="login-password" placeholder="輸入密碼..." required style="width:100%;" />
           </div>
-          <button type="submit" class="btn btn-primary" style="margin-top:4px;width:100%;">🔑 登入帳號</button>
+          <button type="submit" class="btn btn-primary" style="margin-top:4px;width:100%;">登入帳號</button>
         </form>
 
         <!-- Tab 2: Register Form -->
         <form class="auth-form" id="form-register" style="display:none;flex-direction:column;gap:12px;">
           <div class="badge badge-warning" style="margin-bottom:4px;text-align:center;padding:6px;">
-            🎁 註冊完成即贈送 $1,000 開戶本金本金紀錄！
+            註冊完成即贈送 $1,000 開戶本金紀錄！
           </div>
           <div>
             <label style="font-size:0.8rem;color:var(--color-text-secondary);display:block;margin-bottom:4px;">玩家暱稱 Display Name：</label>
@@ -200,7 +200,7 @@ function _renderAuthFormModal() {
             <label style="font-size:0.8rem;color:var(--color-text-secondary);display:block;margin-bottom:4px;">設定密碼 Password (至少6碼)：</label>
             <input type="password" class="input" id="reg-password" placeholder="密碼..." minlength="6" required style="width:100%;" />
           </div>
-          <button type="submit" class="btn btn-primary" style="margin-top:4px;width:100%;">🚀 建立新帳號並領取 $1000</button>
+          <button type="submit" class="btn btn-primary" style="margin-top:4px;width:100%;">建立新帳號並領取 $1000</button>
         </form>
 
         <div style="text-align:center;margin:1rem 0;position:relative;">
@@ -211,10 +211,10 @@ function _renderAuthFormModal() {
         <!-- Social & Guest Buttons -->
         <div style="display:flex;flex-direction:column;gap:8px;">
           <button class="btn btn-secondary" id="btn-google-auth" style="width:100%;justify-content:center;">
-            🌐 使用 Google 帳號一鍵登入
+            使用 Google 帳號一鍵登入
           </button>
           <button class="btn btn-ghost btn-sm" id="btn-guest-auth" style="width:100%;justify-content:center;color:var(--color-text-muted);">
-            👤 繼續使用匿名訪客體驗
+            繼續使用匿名訪客體驗
           </button>
         </div>
       </div>
