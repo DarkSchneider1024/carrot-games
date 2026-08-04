@@ -73,7 +73,7 @@ export async function renderHome(container) {
           <span class="badge badge-warning">免下載 點擊即玩</span>
         </div>
         <h2 class="home-hero-title">
-          經典棋藝 <span class="gradient-text">即時對決</span>
+          蘿蔔大亂鬥 <span class="gradient-text">隨時開戰</span>
         </h2>
         <p class="home-hero-desc">
           無需安裝任何 App，開啟網頁即可享受流暢對戰、智慧 AI 陪練與好友跨平台連線！
