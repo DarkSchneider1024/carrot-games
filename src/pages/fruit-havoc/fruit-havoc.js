@@ -1,6 +1,6 @@
 /**
- * Fruit Havoc Page — 2.5D Storybook Platformer (半3D 繪本冒險派對)
- * Features Web Audio API Sound Effects Engine (跳躍/彈飛/陣亡/通關音效), Mode-Based Player Capacity Limits (單機最多2P, 線上最多4P).
+ * Fruit Havoc Page — Mobile-First 360x360 Square Stage Edition (手機優先直向版面)
+ * High Quality Three.js 3D & 2.5D Mobile World, Web Audio Synth, & Random Victory Video Celebrations.
  */
 
 import { SVG_ICONS } from '../../components/icons.js';
@@ -14,7 +14,7 @@ import {
   closeFruitPeer
 } from '../../network/fruit-peer-manager.js';
 
-// Web Audio Synth Sound Engine (清脆零延遲遊戲音效)
+// Web Audio Synth Sound Engine
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 
@@ -34,7 +34,7 @@ const playSound = (type) => {
     if (!ctx) return;
     const now = ctx.currentTime;
 
-    if (type === 'jump') { // 🦘 跳躍音效
+    if (type === 'jump') {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -42,11 +42,9 @@ const playSound = (type) => {
       osc.frequency.exponentialRampToValueAtTime(650, now + 0.12);
       gain.gain.setValueAtTime(0.3, now);
       gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.12);
-    } else if (type === 'spring') { // 🍄 蘑菇彈飛音效
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.12);
+    } else if (type === 'spring') {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
@@ -54,11 +52,9 @@ const playSound = (type) => {
       osc.frequency.exponentialRampToValueAtTime(950, now + 0.2);
       gain.gain.setValueAtTime(0.4, now);
       gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.2);
-    } else if (type === 'place') { // ✋ 放置陷阱音效
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.2);
+    } else if (type === 'place') {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -66,11 +62,9 @@ const playSound = (type) => {
       osc.frequency.exponentialRampToValueAtTime(380, now + 0.1);
       gain.gain.setValueAtTime(0.35, now);
       gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.1);
-    } else if (type === 'hit') { // 💥 觸碰/陣亡音效
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.1);
+    } else if (type === 'hit') {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sawtooth';
@@ -78,11 +72,9 @@ const playSound = (type) => {
       osc.frequency.exponentialRampToValueAtTime(35, now + 0.25);
       gain.gain.setValueAtTime(0.4, now);
       gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.25);
-    } else if (type === 'goal') { // 🏆 到達終點音效
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(now); osc.stop(now + 0.25);
+    } else if (type === 'goal') {
       [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -90,10 +82,8 @@ const playSound = (type) => {
         osc.frequency.setValueAtTime(freq, now + idx * 0.08);
         gain.gain.setValueAtTime(0.3, now + idx * 0.08);
         gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.2);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + idx * 0.08);
-        osc.stop(now + idx * 0.08 + 0.2);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(now + idx * 0.08); osc.stop(now + idx * 0.08 + 0.2);
       });
     }
   } catch (e) {
@@ -102,17 +92,17 @@ const playSound = (type) => {
 };
 
 export async function renderFruitHavoc(container, params = {}) {
-  const mode = params.mode || 'local'; // 'local' (單機最多2P) or 'online' (線上最多4P)
+  const mode = params.mode || 'local'; // 'local' or 'online'
 
   const FRUIT_CHARACTERS = [
-    { id: 'strawberry', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '速度型 (靈活移動)', speed: 5.2, jump: -12.5, color: '#ef4444' },
-    { id: 'banana', name: '香蕉烏薩奇', icon: '🍌', img: './assets/images/char_banana_usagi.png', trait: '高跳型 (超強跳躍)', speed: 4.6, jump: -14.2, color: '#eab308' },
-    { id: 'melon', name: '哈密瓜小八', icon: '🍈', img: './assets/images/char_melon_hachi.png', trait: '均衡型 (穩健控球)', speed: 4.8, jump: -13.0, color: '#22c55e' },
-    { id: 'peach', name: '水桃栗饅頭', icon: '🍑', img: './assets/images/char_peach_kuriman.png', trait: '重裝型 (抗推霸體)', speed: 4.2, jump: -12.0, color: '#f97316' },
-    { id: 'grape', name: '飛天葡萄飛鼠', icon: '🍇', img: './assets/images/char_grape_momonga.png', trait: '滑翔型 (空中滯空)', speed: 5.6, jump: -13.5, color: '#a855f7' }
+    { id: 'strawberry', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '速度型 (靈活移動)', speed: 4.8, jump: -11.5, color: '#ef4444' },
+    { id: 'banana', name: '香蕉烏薩奇', icon: '🍌', img: './assets/images/char_banana_usagi.png', trait: '高跳型 (超強跳躍)', speed: 4.2, jump: -13.2, color: '#eab308' },
+    { id: 'melon', name: '哈密瓜小八', icon: '🍈', img: './assets/images/char_melon_hachi.png', trait: '均衡型 (穩健控球)', speed: 4.5, jump: -12.0, color: '#22c55e' },
+    { id: 'peach', name: '水桃栗饅頭', icon: '🍑', img: './assets/images/char_peach_kuriman.png', trait: '重裝型 (抗推霸體)', speed: 3.8, jump: -11.0, color: '#f97316' },
+    { id: 'grape', name: '飛天葡萄飛鼠', icon: '🍇', img: './assets/images/char_grape_momonga.png', trait: '滑翔型 (空中滯空)', speed: 5.0, jump: -12.5, color: '#a855f7' }
   ];
 
-  // Preload Character 2.5D HD Sprites
+  // Preload Character Sprites
   const charSpriteImages = {};
   FRUIT_CHARACTERS.forEach(c => {
     const img = new Image();
@@ -121,47 +111,46 @@ export async function renderFruitHavoc(container, params = {}) {
   });
 
   const TRAP_ITEMS = [
-    { id: 1, name: '彈簧拳擊手套', icon: '🥊', desc: '向前猛力彈出擊飛玩家' },
-    { id: 2, name: '草莓電鋸擺錘', icon: '🪚', desc: '半空來回擺動的切割刀' },
-    { id: 3, name: '香蕉皮滑行區', icon: '🍌', desc: '踩中失控向前滑行' },
-    { id: 4, name: '蜂蜜黏黏膠', icon: '🍯', desc: '踩中移動速度 -70%' },
+    { id: 1, name: '彈簧拳擊', icon: '🥊', desc: '向前猛力彈出擊飛玩家' },
+    { id: 2, name: '草莓電鋸', icon: '🪚', desc: '半空來回擺動切割' },
+    { id: 3, name: '香蕉滑道', icon: '🍌', desc: '踩中失控向前滑行' },
+    { id: 4, name: '蜂蜜黏膠', icon: '🍯', desc: '踩中移動速度 -70%' },
     { id: 5, name: '西瓜大砲', icon: '💣', desc: '定時發射重型西瓜砲彈' },
-    { id: 6, name: '龍捲風漩渦', icon: '🌪️', desc: '高空向上強勁風場吹升' },
-    { id: 7, name: '葡萄十字弩', icon: '🏹', desc: '感應式連環葡萄箭矢' },
-    { id: 8, name: '仙人掌刺球', icon: '🌵', desc: '滾動刺球觸碰即陣亡' },
-    { id: 9, name: '超高跳跳菇', icon: '🍄', desc: '踩中向上猛烈彈飛跳躍' },
+    { id: 6, name: '龍捲風場', icon: '🌪️', desc: '向上強勁風場吹升' },
+    { id: 7, name: '葡萄連弩', icon: '🏹', desc: '感應式葡萄箭矢' },
+    { id: 8, name: '仙人掌刺', icon: '🌵', desc: '觸碰即陣亡' },
+    { id: 9, name: '跳跳菇', icon: '🍄', desc: '踩中高空彈飛跳躍' },
     { id: 10, name: '雷電檸檬', icon: '⚡', desc: '釋放 360 度麻痺電流' },
-    { id: 11, name: '奇異果傳送門', icon: '🌀', desc: '入口與出口瞬間轉移' },
-    { id: 12, name: '冰棒極速檔板', icon: '🧊', desc: '光滑冰面牆阻擋或滑行' },
-    { id: 13, name: '黑洞塌陷箱', icon: '🕳️', desc: '踩上去 0.5 秒後破裂' },
-    { id: 14, name: '強風大風扇', icon: '扇', desc: '持續強風干擾跳躍軌跡' },
-    { id: 15, name: '櫻桃雷射炮塔', icon: '🍒', desc: '旋轉掃射紅外能量極光' },
-    { id: 16, name: '飄飄熱氣球', icon: '🎈', desc: '停留過久會下沉的浮台' },
-    { id: 17, name: '椰子防禦盾', icon: '🛡️', desc: '阻擋弩箭與砲彈的壁壘' },
-    { id: 18, name: '蘋果極性磁鐵', icon: '🧲', desc: '強烈吸引或排斥玩家' },
-    { id: 19, name: '履帶跑道', icon: '🏃', desc: '滾動傳送帶加速或阻退' },
-    { id: 20, name: '拆除大炸彈', icon: '💥', desc: '拖放至已有陷阱可炸毀拆除' }
+    { id: 11, name: '傳送門', icon: '🌀', desc: '入口與出口瞬間轉移' },
+    { id: 12, name: '冰棒檔板', icon: '🧊', desc: '光滑冰面牆阻擋' },
+    { id: 13, name: '黑洞陷阱', icon: '🕳️', desc: '踩上去 0.5 秒後破裂' },
+    { id: 14, name: '強風扇', icon: '扇', desc: '強風干擾跳躍軌跡' },
+    { id: 15, name: '櫻桃雷射', icon: '🍒', desc: '旋轉掃射紅外極光' },
+    { id: 16, name: '熱氣球', icon: '🎈', desc: '停留過久會下沉浮台' },
+    { id: 17, name: '椰子盾', icon: '🛡️', desc: '阻擋弩箭與砲彈' },
+    { id: 18, name: '蘋果磁鐵', icon: '🧲', desc: '強烈吸引或排斥' },
+    { id: 19, name: '履帶跑道', icon: '🏃', desc: '滾動傳送帶加速' },
+    { id: 20, name: '拆除炸彈', icon: '💥', desc: '拖放至已有陷阱可炸毀拆除' }
   ];
 
   // Match Configuration
   let maxRounds = 8;
   let currentRound = 1;
   let targetScore = 10;
-  // 人數限制：單機 (local) 最多 2P；線上 (online) 支援最多 4P
-  let playerCount = 2; // 2P default
+  let playerCount = 2;
   let selectedPlayerIdx = 0;
 
-  // Player Objects Array
+  // Player Objects Array (360x360 Mobile Coords)
   let players = [
-    { id: 1, char: FRUIT_CHARACTERS[0], name: '玩家 1', x: 100, y: 360, vx: 0, vy: 0, facing: 'right', isGrounded: true, isDead: false, reached: false, score: 0, prevScore: 0, finishRank: 0 },
-    { id: 2, char: FRUIT_CHARACTERS[1], name: '玩家 2', x: 130, y: 360, vx: 0, vy: 0, facing: 'right', isGrounded: true, isDead: false, reached: false, score: 0, prevScore: 0, finishRank: 0 }
+    { id: 1, char: FRUIT_CHARACTERS[0], name: '玩家 1', x: 50, y: 270, vx: 0, vy: 0, facing: 'right', isGrounded: true, isDead: false, reached: false, score: 0, prevScore: 0, finishRank: 0 },
+    { id: 2, char: FRUIT_CHARACTERS[1], name: '玩家 2', x: 75, y: 270, vx: 0, vy: 0, facing: 'right', isGrounded: true, isDead: false, reached: false, score: 0, prevScore: 0, finishRank: 0 }
   ];
 
   let activePlacementPlayerIdx = 0;
   let selectedTrap = TRAP_ITEMS[0];
   let placedTraps = [
-    { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 7, placedBy: 1 },
-    { id: 2, trap: TRAP_ITEMS[8], gridX: 9, gridY: 8, placedBy: 2 }
+    { id: 1, trap: TRAP_ITEMS[0], gridX: 3, gridY: 4, placedBy: 1 },
+    { id: 2, trap: TRAP_ITEMS[8], gridX: 4, gridY: 5, placedBy: 2 }
   ];
   let hoverGrid = null;
 
@@ -170,16 +159,16 @@ export async function renderFruitHavoc(container, params = {}) {
   let isPeerConnected = false;
   let winnerPlayer = null;
 
-  // Key Input States
   const keysState = {
     p1Left: false, p1Right: false, p1Jump: false,
     p2Left: false, p2Right: false, p2Jump: false
   };
 
+  // 360x360 Square Stage Platforms
   const PLATFORMS = [
-    { x: 50, y: 400, w: 200, h: 50 },   // 起點大台
-    { x: 300, y: 320, w: 150, h: 30 },  // 中間跳板
-    { x: 550, y: 220, w: 200, h: 50 }   // 終點大台
+    { x: 20, y: 290, w: 120, h: 35 },   // 起點台
+    { x: 140, y: 210, w: 90, h: 25 },   // 中間台
+    { x: 230, y: 130, w: 110, h: 35 }   // 終點台
   ];
 
   container.innerHTML = `
@@ -187,64 +176,36 @@ export async function renderFruitHavoc(container, params = {}) {
       <!-- Topbar Header -->
       <div class="topbar">
         <div class="topbar-left">
-          <button class="btn btn-ghost btn-sm" id="btn-back" title="返回大廳">
-            ${SVG_ICONS.back} <span>大廳</span>
+          <button class="btn btn-ghost btn-xs" id="btn-back" title="返回大廳">
+            ${SVG_ICONS.back}
           </button>
           <div class="topbar-title">
-            <span class="game-name">🍓 水果傷害 (FRUIT HAVOC)</span>
-            <span class="badge badge-warning" id="scene-badge">1. 布置場地</span>
+            <span class="game-name">🍓 水果傷害</span>
           </div>
         </div>
-        <div class="topbar-actions" style="display:flex;gap:8px;">
-          <button class="btn btn-sm btn-rotate-screen" id="btn-rotate-screen" title="手機螢幕旋轉/滿版橫屏">
-            🔄 旋轉橫螢幕
-          </button>
-          <select id="select-player-count" style="padding:4px 8px;border-radius:8px;border:1px solid var(--color-border);background:var(--color-bg-card);font-size:0.85rem;">
-            <option value="2" ${playerCount === 2 ? 'selected' : ''}>2 人對戰 (單機同屏上限)</option>
+        <div class="topbar-actions" style="display:flex;gap:6px;align-items:center;">
+          <select id="select-player-count" style="padding:4px 6px;border-radius:8px;border:1px solid var(--color-border);background:var(--color-bg-card);font-size:0.8rem;">
+            <option value="2" ${playerCount === 2 ? 'selected' : ''}>👥 2P 對戰</option>
             ${mode === 'online' ? `
-              <option value="3" ${playerCount === 3 ? 'selected' : ''}>3 人對戰 (線上連線)</option>
-              <option value="4" ${playerCount === 4 ? 'selected' : ''}>4 人對戰 (線上連線上限)</option>
+              <option value="3" ${playerCount === 3 ? 'selected' : ''}>🌐 3P 連線</option>
+              <option value="4" ${playerCount === 4 ? 'selected' : ''}>🌐 4P 連線</option>
             ` : ''}
           </select>
-          <button class="btn btn-ghost btn-sm" id="btn-settings" title="遊戲說明">
-            📖 規則說明
-          </button>
+          <button class="btn btn-ghost btn-xs" id="btn-settings" title="遊戲說明">📖</button>
         </div>
       </div>
 
-      ${mode === 'online' ? `
-        <!-- WebRTC PeerJS Room Bar -->
-        <div class="peer-room-bar glass" style="padding:10px 16px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--color-bg-card);">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <button class="btn btn-primary btn-sm" id="btn-create-room" style="background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;">
-              🏠 創建房間
-            </button>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <input type="text" id="input-room-code" placeholder="輸入4位對戰碼" style="width:120px;padding:5px 10px;border-radius:8px;border:1px solid var(--color-border);font-size:0.85rem;" />
-              <button class="btn btn-cyan btn-sm" id="btn-join-room">
-                🔗 加入連線 (最多4P)
-              </button>
-            </div>
-          </div>
-          <div id="peer-status-bar" style="font-size:0.85rem;font-weight:600;color:var(--color-text-secondary);">
-            ⚪ 未連線 (請創建或輸入房間號)
-          </div>
-        </div>
-      ` : ''}
-
       <!-- Top Scoreboard Bar -->
-      <div class="scoreboard-bar glass" style="padding:10px 16px;border-radius:14px;background:var(--color-bg-card);display:flex;align-items:center;justify-content:space-between;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span class="badge badge-info" id="round-counter-tag">第 ${currentRound} / ${maxRounds} 輪</span>
-          <span style="font-size:0.85rem;color:var(--color-text-secondary);font-weight:600;">
-            模式：${mode === 'online' ? '🌐 線上對戰 (最多4P)' : '👥 單機對戰 (最多2P)'}
-          </span>
+      <div class="scoreboard-bar glass">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span class="badge badge-info" id="round-counter-tag" style="font-size:0.75rem;">第 ${currentRound} / ${maxRounds} 輪</span>
+          <span style="font-size:0.75rem;color:var(--color-text-secondary);font-weight:700;">目標：${targetScore} 分</span>
         </div>
-        <div class="player-scores-grid" id="player-scores-grid" style="display:flex;gap:16px;">
+        <div class="player-scores-grid" id="player-scores-grid" style="display:flex;gap:12px;justify-content:center;">
           ${players.map(p => `
-            <div class="player-score-item" style="display:flex;align-items:center;gap:6px;">
-              <span style="font-size:1.2rem;">${p.char.icon}</span>
-              <span style="font-weight:700;font-size:0.88rem;color:${p.char.color};">${p.name}: <strong>${p.score} 分</strong></span>
+            <div class="player-score-item" style="display:flex;align-items:center;gap:4px;">
+              <span style="font-size:1.05rem;">${p.char.icon}</span>
+              <span style="font-weight:700;font-size:0.82rem;color:${p.char.color};">${p.name}: <strong>${p.score}</strong></span>
             </div>
           `).join('')}
         </div>
@@ -252,21 +213,24 @@ export async function renderFruitHavoc(container, params = {}) {
 
       <!-- Main Game Content Wrapper -->
       <div class="fruit-havoc-main" id="fruit-havoc-main-box">
-        <!-- 1. 場景 1 的左側選單 -->
-        <aside class="fruit-panel-left" id="panel-left-sidebar">
-          <div class="panel-card glass" style="background:#fff7ed;border-color:#fdba74;">
-            <h4 class="panel-title" style="color:#ea580c;" id="turn-title">
-              👉 當前擺放：${players[activePlacementPlayerIdx]?.char.icon} ${players[activePlacementPlayerIdx]?.name}
-            </h4>
-            <p style="font-size:0.8rem;color:#c2410c;margin:4px 0 0 0;" id="turn-desc">
-              請從下方拖拉 1 個陷阱放置在地圖網格！
-            </p>
+        <!-- 核心 360x360 手機直向舞台區 -->
+        <main class="fruit-stage-area glass">
+          <div style="width:100%;text-align:center;">
+            <span class="stage-tip" id="stage-tip" style="font-size:0.8rem;font-weight:700;color:#ea580c;">🖐️ 請 ${players[activePlacementPlayerIdx]?.name} 選擇道具點擊/拖放地圖！</span>
           </div>
 
-          <!-- 🎨 玩家自由自訂選擇角色面板 -->
+          <!-- 360x360 Square Stage Canvas -->
+          <div class="canvas-wrapper" id="canvas-wrapper-box">
+            <canvas id="fruit-canvas" width="360" height="360"></canvas>
+          </div>
+        </main>
+
+        <!-- 1. 場景 1 下方布置選單與角色選單 -->
+        <aside class="fruit-panel-left" id="panel-left-sidebar">
+          <!-- 🎨 選擇角色 -->
           <div class="panel-card glass">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <h4 class="panel-title">1. 選擇玩家角色</h4>
+              <h4 class="panel-title">1. 選擇角色</h4>
               <div class="player-selector-tabs" id="player-tabs-box" style="display:flex;gap:4px;">
                 ${players.map((p, idx) => `
                   <button class="btn btn-xs ${idx === selectedPlayerIdx ? 'btn-primary' : 'btn-ghost'}" data-pidx="${idx}">
@@ -276,7 +240,6 @@ export async function renderFruitHavoc(container, params = {}) {
               </div>
             </div>
 
-            <!-- 5 大水果角色選擇按鈕 -->
             <div class="char-selector-grid" id="char-selector-grid">
               ${FRUIT_CHARACTERS.map(c => `
                 <div class="char-select-item ${c.id === players[selectedPlayerIdx]?.char.id ? 'active' : ''}" data-char-id="${c.id}">
@@ -285,99 +248,79 @@ export async function renderFruitHavoc(container, params = {}) {
                 </div>
               `).join('')}
             </div>
-
-            <div class="char-details-box" id="char-details-box">
-              <strong id="cdetail-name">${players[selectedPlayerIdx]?.char.name}</strong>
-              <p id="cdetail-trait" style="font-size:0.8rem;color:#ea580c;margin:2px 0 6px 0;">${players[selectedPlayerIdx]?.char.trait}</p>
-              <div class="stat-bar"><span id="cdetail-bar" style="width:${(players[selectedPlayerIdx]?.char.speed || 5) * 15}%;"></span></div>
-            </div>
           </div>
 
-          <!-- Draggable Trap Selector -->
+          <!-- 2. 擺放/拆除陷阱 -->
           <div class="panel-card glass">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <h4 class="panel-title">2. 擺放/拆除陷阱 (20種)</h4>
-              <span class="badge badge-warning" style="font-size:0.7rem;">拖放/點擊放置 ✋</span>
+              <h4 class="panel-title">2. 選擇陷阱 (點擊地圖擺放)</h4>
             </div>
             <div class="trap-selector-grid">
               ${TRAP_ITEMS.map(t => `
                 <div class="trap-select-item ${t.id === selectedTrap.id ? 'active' : ''}" 
                      draggable="true" 
                      data-trap-id="${t.id}" 
-                     title="${t.name}: ${t.desc}">
+                     title="${t.name}">
                   <span class="trap-icon">${t.icon}</span>
                   <span class="trap-name">${t.name}</span>
-                  <span class="drag-handle-hint">⋮⋮</span>
                 </div>
               `).join('')}
             </div>
+
+            <button class="btn btn-primary btn-md" id="btn-build-finish" style="width:100%;background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;margin-top:4px;">
+              🚀 布置完成！開始競速跑跳
+            </button>
           </div>
         </aside>
 
-        <!-- 主要 2.5D 冒險舞台區域 -->
-        <main class="fruit-stage-area glass">
-          <div class="stage-header" style="width:100%;max-width:800px;">
-            <span class="stage-tip" id="stage-tip">🖐️ 請 ${players[activePlacementPlayerIdx]?.name} 選擇道具拖放至地圖！</span>
-          </div>
-
-          <!-- 2.5D HD Stage Canvas Wrapper (800x480) -->
-          <div class="canvas-wrapper" id="canvas-wrapper-box" style="display:block;">
-            <canvas id="fruit-canvas" width="800" height="480"></canvas>
-
-            <!-- 場景 1 推進按鈕 Overlay -->
-            <div class="canvas-overlay-ui" id="canvas-overlay-ui">
-              <button class="btn btn-primary btn-lg" id="btn-build-finish" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;box-shadow:0 4px 16px rgba(255,117,68,0.4);">
-                🚀 布置完成！開始 2. 開始玩場地競速
-              </button>
-            </div>
-          </div>
-
-          <!-- 外置瑪利歐觸控按鍵 -->
-          <div class="mobile-touch-controls-bar" id="mobile-touch-controls" style="display:none;">
+        <!-- 2. 場景 2: 手機瑪利歐觸控按鍵 -->
+        <div class="mobile-touch-controls-bar" id="mobile-touch-controls" style="display:none;">
+          <div style="display:flex;justify-content:space-around;align-items:center;width:100%;">
             <div style="display:flex;gap:8px;align-items:center;">
-              <span style="color:#ff7544;font-size:0.85rem;font-weight:700;">🍓 P1:</span>
               <button class="dpad-btn" id="tbtn-p1-left">⬅️</button>
               <button class="dpad-btn" id="tbtn-p1-right">➡️</button>
-              <button class="jump-btn" id="tbtn-p1-jump">🦘 跳躍</button>
             </div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span style="color:#38bdf8;font-size:0.85rem;font-weight:700;">🍌 P2:</span>
-              <button class="dpad-btn" id="tbtn-p2-left">⬅️</button>
-              <button class="dpad-btn" id="tbtn-p2-right">➡️</button>
-              <button class="jump-btn" id="tbtn-p2-jump" style="background:linear-gradient(135deg,#0284c7,#38bdf8);">🦘 跳躍</button>
+            <button class="jump-btn" id="tbtn-p1-jump">🦘 跳躍</button>
+          </div>
+          ${playerCount >= 2 ? `
+            <div style="display:flex;justify-content:space-around;align-items:center;width:100%;margin-top:4px;padding-top:4px;border-top:1px dashed var(--color-border);">
+              <span style="font-size:0.75rem;font-weight:700;color:#38bdf8;">P2:</span>
+              <button class="dpad-btn" id="tbtn-p2-left" style="padding:6px 12px;font-size:0.9rem;">⬅️</button>
+              <button class="dpad-btn" id="tbtn-p2-right" style="padding:6px 12px;font-size:0.9rem;">➡️</button>
+              <button class="jump-btn" id="tbtn-p2-jump" style="padding:6px 14px;font-size:0.85rem;background:linear-gradient(135deg,#0284c7,#38bdf8);">🦘 P2跳</button>
             </div>
+          ` : ''}
+        </div>
+
+        <!-- 3. 場景 3: 記分場景 -->
+        <div class="scene-container" id="scene-score" style="display:none;padding:16px;flex-direction:column;gap:14px;align-items:center;justify-content:center;width:100%;">
+          <div style="text-align:center;">
+            <h3 style="font-size:1.3rem;color:var(--color-text-primary);margin:0;">📊 第 ${currentRound} 輪分數結算</h3>
+            <p style="color:var(--color-text-secondary);font-size:0.82rem;margin:4px 0 0 0;" id="score-summary-reason">黃金結算展報...</p>
           </div>
 
-          <!-- 3. 場景 3: 記分場景 UI -->
-          <div class="scene-container" id="scene-score" style="display:none;padding:24px;flex-direction:column;gap:20px;align-items:center;justify-content:center;min-height:480px;width:100%;">
-            <div style="text-align:center;">
-              <h3 style="font-size:1.6rem;color:var(--color-text-primary);margin:0;">📊 第 ${currentRound} 輪比賽分數結算</h3>
-              <p style="color:var(--color-text-secondary);font-size:0.9rem;margin:4px 0 0 0;" id="score-summary-reason">黃金結算結果展報...</p>
-            </div>
-
-            <div class="animated-score-bars" id="animated-score-bars" style="width:100%;max-width:520px;display:flex;flex-direction:column;gap:14px;">
-              <!-- 插入動態計分條 -->
-            </div>
-
-            <button class="btn btn-primary btn-lg" id="btn-score-next" style="background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;padding:12px 32px;font-size:1.05rem;">
-              ➡️ 進入下一輪：1. 布置場地
-            </button>
+          <div class="animated-score-bars" id="animated-score-bars" style="width:100%;display:flex;flex-direction:column;gap:10px;">
+            <!-- 插入動態計分條 -->
           </div>
 
-          <!-- 4. 場景 4: 獲勝影片場景 -->
-          <div class="scene-container" id="scene-victory" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:480px;text-align:center;width:100%;">
-            <h2 style="font-size:2rem;margin:0;color:#ea580c;text-shadow:0 2px 10px rgba(234,88,12,0.2);" id="victory-title-text">
-              👑 恭喜獲得總冠軍！
-            </h2>
-            <div style="position:relative;width:560px;height:315px;border-radius:20px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.3);border:3px solid #fdba74;background:#000;">
-              <video id="victory-video-player" width="560" height="315" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
-            </div>
-            <p style="font-size:1.15rem;font-weight:700;color:var(--color-text-primary);" id="victory-winner-desc">水果大師強勢登頂！</p>
-            <button class="btn btn-primary btn-lg" id="btn-victory-restart" style="background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;padding:12px 36px;font-size:1.1rem;">
-              🔄 重新開始全場比賽
-            </button>
+          <button class="btn btn-primary btn-md" id="btn-score-next" style="width:100%;background:linear-gradient(135deg,#0284c7,#38bdf8);border:none;">
+            ➡️ 進入下一輪：1. 布置場地
+          </button>
+        </div>
+
+        <!-- 4. 場景 4: 獲勝影片 -->
+        <div class="scene-container" id="scene-victory" style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;width:100%;">
+          <h3 style="font-size:1.5rem;margin:0;color:#ea580c;" id="victory-title-text">
+            👑 恭喜獲得總冠軍！
+          </h3>
+          <div style="position:relative;width:100%;max-width:340px;height:200px;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.3);border:2px solid #fdba74;background:#000;">
+            <video id="victory-video-player" width="340" height="200" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
           </div>
-        </main>
+          <p style="font-size:0.95rem;font-weight:700;color:var(--color-text-primary);" id="victory-winner-desc">水果大師強勢登頂！</p>
+          <button class="btn btn-primary btn-md" id="btn-victory-restart" style="width:100%;background:linear-gradient(135deg,#ff7544,#ff70a6);border:none;">
+            🔄 重新開始全場比賽
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -391,22 +334,11 @@ export async function renderFruitHavoc(container, params = {}) {
   });
   container.querySelector('#btn-settings')?.addEventListener('click', () => navigate('/guide?game=fruitHavoc'));
 
-  // 🔄 手機 90 度黃金旋轉轉屏機制 (Perfect Center 90-Degree Rotation)
-  let isRotated = false;
-  container.querySelector('#btn-rotate-screen')?.addEventListener('click', () => {
-    const pageEl = container.querySelector('.fruit-havoc-page');
-    if (pageEl) {
-      isRotated = !isRotated;
-      pageEl.classList.toggle('force-landscape', isRotated);
-      showToast(isRotated ? '🔄 已開啟 90° 橫螢幕旋轉視角！' : '🔄 已恢復直螢幕視角', 'success');
-    }
-  });
-
-  // Player Count Selector Handler (單機最多2P, 線上最多4P)
+  // Player Count Selector
   container.querySelector('#select-player-count')?.addEventListener('change', (e) => {
     const val = parseInt(e.target.value, 10);
     if (mode === 'local' && val > 2) {
-      showToast('單機同屏模式最多支援 2P 對戰！若需 3P 或 4P 請使用線上對戰模式', 'warning');
+      showToast('單機同屏模式最多支援 2P！若需 3P/4P 請使用線上對戰', 'warning');
       e.target.value = '2';
       return;
     }
@@ -424,17 +356,12 @@ export async function renderFruitHavoc(container, params = {}) {
         id: i + 1,
         char: FRUIT_CHARACTERS[i % FRUIT_CHARACTERS.length],
         name: `玩家 ${i + 1}`,
-        x: 100 + i * 30,
-        y: 360,
-        vx: 0,
-        vy: 0,
+        x: 40 + i * 25,
+        y: 270,
+        vx: 0, vy: 0,
         facing: 'right',
-        isGrounded: true,
-        isDead: false,
-        reached: false,
-        score: 0,
-        prevScore: 0,
-        finishRank: 0
+        isGrounded: true, isDead: false, reached: false,
+        score: 0, prevScore: 0, finishRank: 0
       });
     }
   }
@@ -443,28 +370,23 @@ export async function renderFruitHavoc(container, params = {}) {
     const grid = container.querySelector('#player-scores-grid');
     if (grid) {
       grid.innerHTML = players.map(p => `
-        <div class="player-score-item" style="display:flex;align-items:center;gap:6px;">
-          <span style="font-size:1.2rem;">${p.char.icon}</span>
-          <span style="font-weight:700;font-size:0.88rem;color:${p.char.color};">${p.name}: <strong>${p.score} 分</strong></span>
+        <div class="player-score-item" style="display:flex;align-items:center;gap:4px;">
+          <span style="font-size:1.05rem;">${p.char.icon}</span>
+          <span style="font-weight:700;font-size:0.82rem;color:${p.char.color};">${p.name}: <strong>${p.score}</strong></span>
         </div>
       `).join('');
     }
   }
 
   function _updateTurnUI() {
-    const turnTitle = container.querySelector('#turn-title');
-    const turnDesc = container.querySelector('#turn-desc');
     const tipEl = container.querySelector('#stage-tip');
     const activeP = players[activePlacementPlayerIdx];
-
-    if (activeP) {
-      if (turnTitle) turnTitle.textContent = `👉 當前擺放：${activeP.char.icon} ${activeP.name}`;
-      if (turnDesc) turnDesc.textContent = `請從下方拖拉 1 個陷阱放置在地圖網格！`;
-      if (tipEl) tipEl.textContent = `🖐️ 請 ${activeP.name} 選擇道具拖放至地圖！`;
+    if (activeP && tipEl) {
+      tipEl.textContent = `🖐️ 請 ${activeP.char.icon} ${activeP.name} 選擇道具點擊/拖放地圖！`;
     }
   }
 
-  // 🎮 玩家自訂角色切換與介面更新
+  // 🎮 選擇角色 UI
   function _renderPlayerCharacterSelectorUI() {
     const tabsBox = container.querySelector('#player-tabs-box');
     const gridBox = container.querySelector('#char-selector-grid');
@@ -499,23 +421,15 @@ export async function renderFruitHavoc(container, params = {}) {
           const chosenChar = FRUIT_CHARACTERS.find(c => c.id === charId);
           if (chosenChar) {
             curP.char = chosenChar;
-            playSound('place'); // 播放音效
+            playSound('place');
             _updateScoreboardUI();
             _updateTurnUI();
             _renderPlayerCharacterSelectorUI();
-            showToast(`🎉 ${curP.name} 選擇了角色：${chosenChar.icon} ${chosenChar.name}！`, 'success');
+            showToast(`🎉 ${curP.name} 選擇角色：${chosenChar.icon} ${chosenChar.name}！`, 'success');
           }
         });
       });
     }
-
-    const nameEl = container.querySelector('#cdetail-name');
-    const traitEl = container.querySelector('#cdetail-trait');
-    const barEl = container.querySelector('#cdetail-bar');
-
-    if (nameEl) nameEl.textContent = curP.char.name;
-    if (traitEl) traitEl.textContent = curP.char.trait;
-    if (barEl) barEl.style.width = `${curP.char.speed * 15}%`;
   }
 
   _renderPlayerCharacterSelectorUI();
@@ -525,201 +439,43 @@ export async function renderFruitHavoc(container, params = {}) {
   // ----------------------------------------------------
   function switchScene(targetScene) {
     currentScene = targetScene;
-    const sceneBadge = container.querySelector('#scene-badge');
-    const mainBox = container.querySelector('#fruit-havoc-main-box');
     const panelLeft = container.querySelector('#panel-left-sidebar');
-    const canvasWrapper = container.querySelector('#canvas-wrapper-box');
     const touchControls = container.querySelector('#mobile-touch-controls');
-    const overlayUI = container.querySelector('#canvas-overlay-ui');
     const sceneScore = container.querySelector('#scene-score');
     const sceneVictory = container.querySelector('#scene-victory');
 
-    canvasWrapper.style.display = 'none';
     touchControls.style.display = 'none';
-    overlayUI.style.display = 'none';
     sceneScore.style.display = 'none';
     sceneVictory.style.display = 'none';
-    mainBox.classList.remove('mode-race');
+    panelLeft.style.display = 'none';
 
     if (targetScene === 1) { // 1. 布置場地
-      if (sceneBadge) sceneBadge.textContent = '1. 布置場地';
       panelLeft.style.display = 'flex';
-      canvasWrapper.style.display = 'block';
-      overlayUI.style.display = 'block';
       _updateTurnUI();
-    } else if (targetScene === 2) { // 2. 開始玩場地競速
-      if (sceneBadge) sceneBadge.textContent = '2. 開始玩場地競速';
-      panelLeft.style.display = 'none';
-      mainBox.classList.add('mode-race');
-      canvasWrapper.style.display = 'block';
+    } else if (targetScene === 2) { // 2. 開始競速
       touchControls.style.display = 'flex';
-      showToast('🎮 倒數開跑！使用鍵盤 A/D/W 或下方按鈕操控角色的跑跳！', 'success');
+      showToast('🎮 競速開跑！使用鍵盤 A/D/W 或下方按鈕操控角色的跑跳！', 'success');
     } else if (targetScene === 3) { // 3. 記分場景
-      if (sceneBadge) sceneBadge.textContent = '3. 記分場景';
-      panelLeft.style.display = 'none';
-      mainBox.classList.add('mode-race');
       sceneScore.style.display = 'flex';
       _renderScoreboardSceneAnimation();
-    } else if (targetScene === 4) { // 4. 獲勝慶典影片
-      if (sceneBadge) sceneBadge.textContent = '4. 獲勝慶典影片';
-      panelLeft.style.display = 'none';
-      mainBox.classList.add('mode-race');
+    } else if (targetScene === 4) { // 4. 獲勝影片
       sceneVictory.style.display = 'flex';
-      playSound('goal'); // 播放終點獲勝音效
+      playSound('goal');
       _startVictoryVideoPlayer();
     }
   }
 
-  // ----------------------------------------------------
-  // 🎨 Three.js 3D Storybook Render Engine (800x480)
-  // ----------------------------------------------------
-  const canvas = container.querySelector('#fruit-canvas');
-  const dropZone = container.querySelector('#canvas-wrapper-box');
-  const ctx = canvas ? canvas.getContext('2d') : null;
-  const TILE_SIZE = 50; // 50px
-
-  const renderer3D = new FruitHavoc3DRenderer();
-  let is3DModeSupported = false;
-
-  if (canvas) {
-    try {
-      is3DModeSupported = renderer3D.init(canvas, 800, 480);
-      if (is3DModeSupported !== false) {
-        renderer3D.updatePlatforms(PLATFORMS);
-        is3DModeSupported = true;
-      }
-    } catch (e) {
-      console.warn('WebGL Renderer Init Error, falling back to 2.5D Engine:', e);
-      is3DModeSupported = false;
-    }
-  }
-
-  const drawStage = () => {
-    if (!ctx || (currentScene !== 1 && currentScene !== 2)) return;
-
-    if (is3DModeSupported && renderer3D.initialized) {
-      try {
-        renderer3D.updateTraps(placedTraps);
-        renderer3D.updateHoverGrid(currentScene === 1 ? hoverGrid : null);
-        renderer3D.render(players, currentScene);
-        return;
-      } catch (err) {
-        console.warn('3D Render loop error, switching to 2D canvas fallback:', err);
-        is3DModeSupported = false;
-      }
-    }
-
-    // 🎨 優雅降級 2.5D Canvas HD 繪圖引擎 (100% WebGL 上下文保底)
-    draw2DStage();
-  };
-
-  const draw2DStage = () => {
-    if (!ctx) return;
-    const bgGrad = ctx.createLinearGradient(0, 0, 0, 480);
-    bgGrad.addColorStop(0, '#e0f2fe');
-    bgGrad.addColorStop(1, '#bae6fd');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, 800, 480);
-
-    ctx.strokeStyle = 'rgba(2, 132, 199, 0.12)';
-    ctx.lineWidth = 1;
-    for (let x = 0; x <= 800; x += TILE_SIZE) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 480); ctx.stroke();
-    }
-    for (let y = 0; y <= 480; y += TILE_SIZE) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(800, y); ctx.stroke();
-    }
-
-    PLATFORMS.forEach(plat => {
-      ctx.fillStyle = '#b45309';
-      ctx.fillRect(plat.x, plat.y + plat.h, plat.w, 14);
-
-      const platGrad = ctx.createLinearGradient(0, plat.y, 0, plat.y + plat.h);
-      platGrad.addColorStop(0, '#fcd34d');
-      platGrad.addColorStop(1, '#f59e0b');
-      ctx.fillStyle = platGrad;
-      ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
-      ctx.strokeStyle = '#d97706';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(plat.x, plat.y, plat.w, plat.h);
-
-      ctx.fillStyle = '#4ade80';
-      ctx.fillRect(plat.x, plat.y - 4, plat.w, 6);
-    });
-
-    ctx.font = '36px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🏆', 680, 190);
-    ctx.fillText('🎂', 620, 190);
-
-    placedTraps.forEach(pt => {
-      const px = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
-      const py = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
-      ctx.fillStyle = 'rgba(255, 237, 213, 0.9)';
-      ctx.fillRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
-      ctx.strokeStyle = '#fdba74';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
-      ctx.font = '28px sans-serif';
-      ctx.fillText(pt.trap.icon, px, py);
-    });
-
-    if (currentScene === 1 && hoverGrid) {
-      const gx = hoverGrid.gridX * TILE_SIZE;
-      const gy = hoverGrid.gridY * TILE_SIZE;
-      ctx.fillStyle = 'rgba(14, 165, 233, 0.35)';
-      ctx.fillRect(gx + 2, gy + 2, TILE_SIZE - 4, TILE_SIZE - 4);
-      ctx.strokeStyle = '#0284c7';
-      ctx.lineWidth = 2.5;
-      ctx.strokeRect(gx + 2, gy + 2, TILE_SIZE - 4, TILE_SIZE - 4);
-      ctx.font = '30px sans-serif';
-      ctx.fillText(selectedTrap.icon, gx + TILE_SIZE / 2, gy + TILE_SIZE / 2);
-    }
-
-    players.forEach(p => {
-      if (!p.isDead) {
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
-        ctx.beginPath();
-        ctx.ellipse(p.x, p.y + 18, 16, 6, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        const spriteImg = charSpriteImages[p.char.id];
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        if (p.facing === 'left') ctx.scale(-1, 1);
-
-        if (spriteImg && spriteImg.complete && spriteImg.naturalWidth !== 0) {
-          ctx.drawImage(spriteImg, -26, -30, 52, 52);
-        } else {
-          ctx.font = '36px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(p.char.icon, 0, 0);
-        }
-        ctx.restore();
-
-        ctx.fillStyle = p.char.color;
-        ctx.font = 'bold 11px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${p.name} (${p.char.icon})`, p.x, p.y - 32);
-      }
-    });
-  };
-
-  // ----------------------------------------------------
-  // 3. 場景 3: 動態計分條動畫
-  // ----------------------------------------------------
   function _renderScoreboardSceneAnimation() {
     const barsContainer = container.querySelector('#animated-score-bars');
     if (!barsContainer) return;
 
     barsContainer.innerHTML = players.map(p => `
       <div style="display:flex;flex-direction:column;gap:4px;">
-        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:0.95rem;">
+        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:0.85rem;">
           <span>${p.char.icon} ${p.name}</span>
           <span style="color:${p.char.color};">${p.score} / ${targetScore} 分</span>
         </div>
-        <div style="width:100%;height:14px;background:#e2e8f0;border-radius:7px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,0.15);">
+        <div style="width:100%;height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;">
           <div class="score-progress-fill-${p.id}" style="width:${Math.min(100, (p.prevScore / targetScore) * 100)}%;height:100%;background:${p.char.color};transition:width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
         </div>
       </div>
@@ -735,18 +491,13 @@ export async function renderFruitHavoc(container, params = {}) {
     }, 150);
   }
 
-  // ----------------------------------------------------
-  // 4. 場景 4: 隨機 AI 獲勝短影片
-  // ----------------------------------------------------
   function _startVictoryVideoPlayer() {
     const videoPlayer = container.querySelector('#victory-video-player');
     if (!videoPlayer || !winnerPlayer) return;
 
     const charId = winnerPlayer.char.id;
     const randomIdx = Math.random() < 0.5 ? 1 : 2;
-    const videoSrc = `./assets/video/victory_${charId}_${randomIdx}.mp4`;
-
-    videoPlayer.src = videoSrc;
+    videoPlayer.src = `./assets/video/victory_${charId}_${randomIdx}.mp4`;
     videoPlayer.load();
     videoPlayer.play().catch(e => console.warn('Autoplay blocked:', e));
 
@@ -755,18 +506,36 @@ export async function renderFruitHavoc(container, params = {}) {
   }
 
   // ----------------------------------------------------
-  // 2.5D Storybook Platformer Physics Engine (800x480)
+  // 360x360 Square Stage Physics & Render Engine
   // ----------------------------------------------------
+  const canvas = container.querySelector('#fruit-canvas');
+  const dropZone = container.querySelector('#canvas-wrapper-box');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+  const TILE_SIZE = 45; // 45px grid (8x8 = 360px)
+
+  const renderer3D = new FruitHavoc3DRenderer();
+  let is3DModeSupported = false;
+
+  if (canvas) {
+    try {
+      is3DModeSupported = renderer3D.init(canvas, 360, 360);
+      if (is3DModeSupported !== false) {
+        renderer3D.updatePlatforms(PLATFORMS);
+        is3DModeSupported = true;
+      }
+    } catch (e) {
+      console.warn('WebGL Renderer Init Error, falling back to 2.5D Engine:', e);
+      is3DModeSupported = false;
+    }
+  }
+
   const resetAllPlayersPos = () => {
     players.forEach((p, idx) => {
-      p.x = 100 + idx * 30;
-      p.y = 360;
-      p.vx = 0;
-      p.vy = 0;
+      p.x = 40 + idx * 25;
+      p.y = 270;
+      p.vx = 0; p.vy = 0;
       p.facing = 'right';
-      p.isGrounded = true;
-      p.isDead = false;
-      p.reached = false;
+      p.isGrounded = true; p.isDead = false; p.reached = false;
       p.finishRank = 0;
     });
   };
@@ -801,7 +570,7 @@ export async function renderFruitHavoc(container, params = {}) {
     if (player && player.isGrounded && !player.isDead && !player.reached) {
       player.vy = player.char.jump;
       player.isGrounded = false;
-      playSound('jump'); // 播放跳躍音效
+      playSound('jump');
     }
   };
 
@@ -853,45 +622,45 @@ export async function renderFruitHavoc(container, params = {}) {
         p.vx *= 0.82;
       }
 
-      p.vy += 0.58;
+      p.vy += 0.55;
       p.x += p.vx;
       p.y += p.vy;
 
-      if (p.x < 25) p.x = 25;
-      if (p.x > 775) p.x = 775;
+      if (p.x < 15) p.x = 15;
+      if (p.x > 345) p.x = 345;
 
       p.isGrounded = false;
       PLATFORMS.forEach(plat => {
         if (
-          p.x + 18 > plat.x &&
-          p.x - 18 < plat.x + plat.w &&
-          p.y + 20 >= plat.y &&
-          p.y + 20 <= plat.y + plat.h + 10 &&
+          p.x + 14 > plat.x &&
+          p.x - 14 < plat.x + plat.w &&
+          p.y + 16 >= plat.y &&
+          p.y + 16 <= plat.y + plat.h + 10 &&
           p.vy >= 0
         ) {
-          p.y = plat.y - 20;
+          p.y = plat.y - 16;
           p.vy = 0;
           p.isGrounded = true;
         }
       });
 
       placedTraps.forEach(pt => {
-        const tx = pt.gridX * TILE_SIZE + 25;
-        const ty = pt.gridY * TILE_SIZE + 25;
+        const tx = pt.gridX * TILE_SIZE + 22;
+        const ty = pt.gridY * TILE_SIZE + 22;
         const dist = Math.hypot(p.x - tx, p.y - ty);
 
-        if (dist < 32) {
+        if (dist < 26) {
           if (pt.trap.id === 9) {
-            p.vy = -17;
+            p.vy = -15;
             p.isGrounded = false;
-            playSound('spring'); // 蘑菇高彈音效
+            playSound('spring');
           } else if (pt.trap.id === 1) {
-            p.vx = 12;
-            p.vy = -6;
+            p.vx = 10;
+            p.vy = -5;
             playSound('hit');
           } else if (pt.trap.id === 2 || pt.trap.id === 8) {
             p.isDead = true;
-            playSound('hit'); // 陣亡音效
+            playSound('hit');
             showToast(`💥 ${p.name} 踩中【${pt.trap.name}】陣亡！`, 'warning');
             const killerP = players.find(player => player.id === pt.placedBy);
             if (killerP && killerP.id !== p.id) {
@@ -901,18 +670,18 @@ export async function renderFruitHavoc(container, params = {}) {
         }
       });
 
-      if (p.y > 470) {
+      if (p.y > 350) {
         p.isDead = true;
         playSound('hit');
         showToast(`🕳️ ${p.name} 掉入深淵陣亡！`, 'warning');
       }
 
-      if (p.x >= 650 && p.y <= 230) {
+      if (p.x >= 280 && p.y <= 140) {
         p.reached = true;
         finishOrderCounter++;
         p.finishRank = finishOrderCounter;
-        playSound('goal'); // 抵達終點音效
-        showToast(`🚩 ${p.name} 成功到達終點！(第 ${p.finishRank} 名)`, 'success');
+        playSound('goal');
+        showToast(`🚩 ${p.name} 到達終點！(第 ${p.finishRank} 名)`, 'success');
       }
     });
 
@@ -924,19 +693,17 @@ export async function renderFruitHavoc(container, params = {}) {
 
   const _evaluateRoundResults = () => {
     players.forEach(p => p.prevScore = p.score);
-
     const reachedPlayers = players.filter(p => p.reached);
     const totalCount = players.length;
     const reasonEl = container.querySelector('#score-summary-reason');
 
     let summaryText = '';
-
     if (reachedPlayers.length === totalCount) {
-      summaryText = '❌ 本輪全員皆到達終點！關卡太簡單，所有人得 0 分！';
+      summaryText = '❌ 全員皆到達終點！所有人得 0 分！';
     } else if (reachedPlayers.length === 0) {
-      summaryText = '💥 本輪全體陣亡無人到達！關卡太危險，所有人得 0 分！';
+      summaryText = '💥 全體陣亡無人到達！所有人得 0 分！';
     } else {
-      summaryText = '🏆 本輪關卡難易度適中！順利得分：';
+      summaryText = '🏆 關卡得分：';
       reachedPlayers.forEach(p => {
         let pts = 1;
         if (p.finishRank === 1) pts += 1;
@@ -953,7 +720,115 @@ export async function renderFruitHavoc(container, params = {}) {
     }, 800);
   };
 
+  const drawStage = () => {
+    if (!ctx || (currentScene !== 1 && currentScene !== 2)) return;
 
+    if (is3DModeSupported && renderer3D.initialized) {
+      try {
+        renderer3D.updateTraps(placedTraps, TILE_SIZE);
+        renderer3D.updateHoverGrid(currentScene === 1 ? hoverGrid : null, TILE_SIZE);
+        renderer3D.render(players, currentScene);
+        return;
+      } catch (err) {
+        console.warn('3D Render loop error, switching to 2D canvas fallback:', err);
+        is3DModeSupported = false;
+      }
+    }
+
+    draw2DStage();
+  };
+
+  const draw2DStage = () => {
+    if (!ctx) return;
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, 360);
+    bgGrad.addColorStop(0, '#e0f2fe');
+    bgGrad.addColorStop(1, '#bae6fd');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 360, 360);
+
+    ctx.strokeStyle = 'rgba(2, 132, 199, 0.12)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= 360; x += TILE_SIZE) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 360); ctx.stroke();
+    }
+    for (let y = 0; y <= 360; y += TILE_SIZE) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(360, y); ctx.stroke();
+    }
+
+    PLATFORMS.forEach(plat => {
+      ctx.fillStyle = '#b45309';
+      ctx.fillRect(plat.x, plat.y + plat.h, plat.w, 10);
+
+      const platGrad = ctx.createLinearGradient(0, plat.y, 0, plat.y + plat.h);
+      platGrad.addColorStop(0, '#fcd34d');
+      platGrad.addColorStop(1, '#f59e0b');
+      ctx.fillStyle = platGrad;
+      ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(plat.x, plat.y, plat.w, plat.h);
+
+      ctx.fillStyle = '#4ade80';
+      ctx.fillRect(plat.x, plat.y - 3, plat.w, 5);
+    });
+
+    ctx.font = '28px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🏆', 290, 110);
+
+    placedTraps.forEach(pt => {
+      const px = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
+      const py = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
+      ctx.fillStyle = 'rgba(255, 237, 213, 0.9)';
+      ctx.fillRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.strokeStyle = '#fdba74';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(pt.gridX * TILE_SIZE + 2, pt.gridY * TILE_SIZE + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.font = '24px sans-serif';
+      ctx.fillText(pt.trap.icon, px, py);
+    });
+
+    if (currentScene === 1 && hoverGrid) {
+      const gx = hoverGrid.gridX * TILE_SIZE;
+      const gy = hoverGrid.gridY * TILE_SIZE;
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.35)';
+      ctx.fillRect(gx + 2, gy + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(gx + 2, gy + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+      ctx.font = '24px sans-serif';
+      ctx.fillText(selectedTrap.icon, gx + TILE_SIZE / 2, gy + TILE_SIZE / 2);
+    }
+
+    players.forEach(p => {
+      if (!p.isDead) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y + 14, 14, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        const spriteImg = charSpriteImages[p.char.id];
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        if (p.facing === 'left') ctx.scale(-1, 1);
+
+        if (spriteImg && spriteImg.complete && spriteImg.naturalWidth !== 0) {
+          ctx.drawImage(spriteImg, -20, -24, 40, 40);
+        } else {
+          ctx.font = '28px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(p.char.icon, 0, 0);
+        }
+        ctx.restore();
+
+        ctx.fillStyle = p.char.color;
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${p.name} (${p.char.icon})`, p.x, p.y - 26);
+      }
+    });
+  };
 
   const gameLoop = () => {
     updatePhysics();
@@ -975,8 +850,8 @@ export async function renderFruitHavoc(container, params = {}) {
       selectedTrap = TRAP_ITEMS.find(t => t.id === trapId);
       draggedTrapId = trapId;
 
-      playSound('place'); // 播放音效
-      showToast(`已選中道具：${selectedTrap.name}`, 'info');
+      playSound('place');
+      showToast(`選中：${selectedTrap.name}`, 'info');
     });
 
     item.addEventListener('dragstart', (e) => {
@@ -987,14 +862,11 @@ export async function renderFruitHavoc(container, params = {}) {
 
       container.querySelectorAll('.trap-select-item').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
-      item.classList.add('is-dragging');
-
       e.dataTransfer.setData('text/plain', trapId.toString());
       e.dataTransfer.effectAllowed = 'copy';
     });
 
     item.addEventListener('dragend', () => {
-      item.classList.remove('is-dragging');
       hoverGrid = null;
     });
   });
@@ -1007,11 +879,11 @@ export async function renderFruitHavoc(container, params = {}) {
     if (targetTrap.id === 20) {
       placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
       playSound('hit');
-      showToast(`💥 ${currentP.name} 拆除了位置 (${gridX}, ${gridY}) 的障礙物！`, 'warning');
+      showToast(`💥 ${currentP.name} 拆除位置 (${gridX}, ${gridY}) 障礙！`, 'warning');
     } else {
       placedTraps = placedTraps.filter(pt => !(pt.gridX === gridX && pt.gridY === gridY));
       placedTraps.push({ id: Date.now(), trap: targetTrap, gridX, gridY, placedBy: currentP.id });
-      playSound('place'); // 播放放置陷阱音效
+      playSound('place');
       showToast(`🎉 ${currentP.name} 放置【${targetTrap.icon} ${targetTrap.name}】至 (${gridX}, ${gridY})！`, 'success');
     }
 
@@ -1036,21 +908,18 @@ export async function renderFruitHavoc(container, params = {}) {
       const relX = (e.clientX - rect.left) * scaleX;
       const relY = (e.clientY - rect.top) * scaleY;
 
-      if (relX >= 0 && relX < 800 && relY >= 0 && relY < 480) {
+      if (relX >= 0 && relX < 360 && relY >= 0 && relY < 360) {
         const gridX = Math.floor(relX / TILE_SIZE);
         const gridY = Math.floor(relY / TILE_SIZE);
         hoverGrid = { gridX, gridY };
       }
     });
 
-    dropZone.addEventListener('dragleave', () => {
-      hoverGrid = null;
-    });
+    dropZone.addEventListener('dragleave', () => { hoverGrid = null; });
 
     dropZone.addEventListener('drop', (e) => {
       if (currentScene !== 1) return;
-      e.preventDefault();
-      hoverGrid = null;
+      e.preventDefault(); hoverGrid = null;
 
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvas.width / rect.width;
@@ -1059,7 +928,7 @@ export async function renderFruitHavoc(container, params = {}) {
       const relX = (e.clientX - rect.left) * scaleX;
       const relY = (e.clientY - rect.top) * scaleY;
 
-      if (relX >= 0 && relX < 800 && relY >= 0 && relY < 480) {
+      if (relX >= 0 && relX < 360 && relY >= 0 && relY < 360) {
         const gridX = Math.floor(relX / TILE_SIZE);
         const gridY = Math.floor(relY / TILE_SIZE);
         handlePlaceTrapAtGrid(gridX, gridY);
@@ -1075,7 +944,7 @@ export async function renderFruitHavoc(container, params = {}) {
       const relX = (e.clientX - rect.left) * scaleX;
       const relY = (e.clientY - rect.top) * scaleY;
 
-      if (relX >= 0 && relX < 800 && relY >= 0 && relY < 480) {
+      if (relX >= 0 && relX < 360 && relY >= 0 && relY < 360) {
         const gridX = Math.floor(relX / TILE_SIZE);
         const gridY = Math.floor(relY / TILE_SIZE);
         handlePlaceTrapAtGrid(gridX, gridY);
@@ -1095,7 +964,6 @@ export async function renderFruitHavoc(container, params = {}) {
     _updateScoreboardUI();
 
     const winner = players.find(p => p.score >= targetScore);
-
     if (winner) {
       winnerPlayer = winner;
       switchScene(4);
@@ -1116,8 +984,8 @@ export async function renderFruitHavoc(container, params = {}) {
     players.forEach(p => { p.score = 0; p.prevScore = 0; });
     activePlacementPlayerIdx = 0;
     placedTraps = [
-      { id: 1, trap: TRAP_ITEMS[0], gridX: 6, gridY: 7, placedBy: 1 },
-      { id: 2, trap: TRAP_ITEMS[8], gridX: 9, gridY: 8, placedBy: 2 }
+      { id: 1, trap: TRAP_ITEMS[0], gridX: 3, gridY: 4, placedBy: 1 },
+      { id: 2, trap: TRAP_ITEMS[8], gridX: 4, gridY: 5, placedBy: 2 }
     ];
     _reinitPlayers();
     _updateScoreboardUI();
