@@ -464,8 +464,19 @@ export class MagicFighterGame {
     for (let i = this.playerCreeps.length - 1; i >= 0; i--) {
       const c = this.playerCreeps[i];
 
-      // March towards Enemy Base (UP)
-      c.y -= c.speed;
+      // March towards Enemy Base (UP) with collision check
+      const nextY = c.y - c.speed;
+      if (!this._checkWallCollision(c.x, nextY, c.width, c.height)) {
+        c.y = nextY;
+      } else {
+        // Slide horizontally around obstacles
+        const altX = c.x + (Math.random() > 0.5 ? c.speed : -c.speed);
+        if (!this._checkWallCollision(altX, c.y, c.width, c.height)) {
+          c.x = altX;
+        } else {
+          c.y = nextY; // Force push if stuck
+        }
+      }
 
       // Attack Enemy Base HQ when reached
       if (this._rectOverlap(c, this.enemyBase)) {
@@ -494,8 +505,19 @@ export class MagicFighterGame {
     for (let i = this.enemyCreeps.length - 1; i >= 0; i--) {
       const c = this.enemyCreeps[i];
 
-      // March towards Player Base (DOWN)
-      c.y += c.speed;
+      // March towards Player Base (DOWN) with collision check
+      const nextY = c.y + c.speed;
+      if (!this._checkWallCollision(c.x, nextY, c.width, c.height)) {
+        c.y = nextY;
+      } else {
+        // Slide horizontally around obstacles
+        const altX = c.x + (Math.random() > 0.5 ? c.speed : -c.speed);
+        if (!this._checkWallCollision(altX, c.y, c.width, c.height)) {
+          c.x = altX;
+        } else {
+          c.y = nextY; // Force push if stuck
+        }
+      }
 
       // Attack Player Base HQ when reached
       if (this._rectOverlap(c, this.playerBase)) {

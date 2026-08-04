@@ -395,32 +395,133 @@ export class FighterRenderer3D {
       monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'griffin' };
 
     } else {
-      // Dragon
-      const bodyMat = new THREE.MeshStandardMaterial({
-        color: isFriendly ? 0x3a86ff : 0x991b1b,
-        emissive: isFriendly ? 0x3a86ff : 0x7f1d1d,
-        emissiveIntensity: 0.4,
+      // 🐲 飛龍 (img2threejs Procedural 3D Red Baby Dragon Model based on user image)
+      const redMat = new THREE.MeshStandardMaterial({
+        color: isFriendly ? 0x38bdf8 : 0xef4444,
+        emissive: isFriendly ? 0x0284c7 : 0x991b1b,
+        emissiveIntensity: 0.25,
         roughness: 0.3,
-        metalness: 0.5
+        metalness: 0.2
       });
 
-      const bodyGeo = new THREE.CylinderGeometry(8, 13, 34, 6);
-      const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-      bodyMesh.rotation.x = isFriendly ? Math.PI / 2 : -Math.PI / 2;
-      monsterGroup.add(bodyMesh);
+      const bellyMat = new THREE.MeshStandardMaterial({
+        color: 0xfed7aa,
+        roughness: 0.4
+      });
 
-      const wingGeo = new THREE.BoxGeometry(28, 3, 18);
-      const wingMat = new THREE.MeshStandardMaterial({ color: isFriendly ? 0x2ec4b6 : 0xd97706, roughness: 0.4 });
+      const clawMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        roughness: 0.1
+      });
 
-      const leftWing = new THREE.Mesh(wingGeo, wingMat);
-      leftWing.position.set(-16, 2, 0);
+      const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const eyeBlueMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+      const eyePupilMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+
+      // 1. Chubby Red Torso & Peach Belly
+      const torsoGeo = new THREE.SphereGeometry(13, 16, 16);
+      const torsoMesh = new THREE.Mesh(torsoGeo, redMat);
+      torsoMesh.scale.set(1.0, 1.25, 0.9);
+      monsterGroup.add(torsoMesh);
+
+      const bellyGeo = new THREE.SphereGeometry(10.5, 14, 14);
+      const bellyMesh = new THREE.Mesh(bellyGeo, bellyMat);
+      bellyMesh.scale.set(0.85, 1.1, 0.6);
+      bellyMesh.position.set(0, -1, -6);
+      monsterGroup.add(bellyMesh);
+
+      // 2. Large Cute Dragon Head
+      const headGeo = new THREE.SphereGeometry(13, 16, 16);
+      const headMesh = new THREE.Mesh(headGeo, redMat);
+      headMesh.position.set(0, 15, -2);
+      monsterGroup.add(headMesh);
+
+      // Cute Snout Nose
+      const snoutGeo = new THREE.SphereGeometry(6, 12, 12);
+      const snoutMesh = new THREE.Mesh(snoutGeo, redMat);
+      snoutMesh.scale.set(1.1, 0.8, 1.0);
+      snoutMesh.position.set(0, 12, -11);
+      monsterGroup.add(snoutMesh);
+
+      // 3. Big Anime Blue Eyes (Left & Right)
+      [-5.5, 5.5].forEach(xOff => {
+        const eyeWhite = new THREE.Mesh(new THREE.SphereGeometry(4, 12, 12), eyeWhiteMat);
+        eyeWhite.position.set(xOff, 17, -10);
+        monsterGroup.add(eyeWhite);
+
+        const eyeBlue = new THREE.Mesh(new THREE.SphereGeometry(2.6, 10, 10), eyeBlueMat);
+        eyeBlue.position.set(xOff + (xOff > 0 ? -0.4 : 0.4), 17, -12);
+        monsterGroup.add(eyeBlue);
+
+        const pupil = new THREE.Mesh(new THREE.SphereGeometry(1.4, 8, 8), eyePupilMat);
+        pupil.position.set(xOff + (xOff > 0 ? -0.4 : 0.4), 17, -13.6);
+        monsterGroup.add(pupil);
+
+        const spark = new THREE.Mesh(new THREE.SphereGeometry(0.8, 6, 6), eyeWhiteMat);
+        spark.position.set(xOff - 1, 18.2, -13.8);
+        monsterGroup.add(spark);
+      });
+
+      // 4. Curved Horns & Hair Crest
+      [-6, 6].forEach(xOff => {
+        const hornGeo = new THREE.ConeGeometry(2.5, 12, 8);
+        const hornMesh = new THREE.Mesh(hornGeo, redMat);
+        hornMesh.rotation.x = -Math.PI / 4;
+        hornMesh.rotation.z = xOff > 0 ? 0.3 : -0.3;
+        hornMesh.position.set(xOff, 24, 2);
+        monsterGroup.add(hornMesh);
+      });
+
+      // 5. Bat Wings (Left & Right)
+      const wingMat = new THREE.MeshStandardMaterial({
+        color: isFriendly ? 0x0284c7 : 0xd97706,
+        roughness: 0.4,
+        side: THREE.DoubleSide
+      });
+
+      const wingShape = new THREE.Shape();
+      wingShape.moveTo(0, 0);
+      wingShape.quadraticCurveTo(15, 18, 28, 8);
+      wingShape.quadraticCurveTo(20, -4, 14, -8);
+      wingShape.quadraticCurveTo(8, -12, 0, 0);
+
+      const wingExtrude = new THREE.ExtrudeGeometry(wingShape, { depth: 1.5, bevelEnabled: false });
+
+      const leftWing = new THREE.Mesh(wingExtrude, wingMat);
+      leftWing.position.set(-6, 8, 4);
+      leftWing.rotation.y = Math.PI / 6;
+      leftWing.scale.set(0.9, 0.9, 0.9);
       monsterGroup.add(leftWing);
 
-      const rightWing = new THREE.Mesh(wingGeo, wingMat);
-      rightWing.position.set(16, 2, 0);
+      const rightWing = new THREE.Mesh(wingExtrude, wingMat);
+      rightWing.position.set(6, 8, 4);
+      rightWing.rotation.y = -Math.PI / 6;
+      rightWing.scale.set(-0.9, 0.9, 0.9);
       monsterGroup.add(rightWing);
 
-      monsterGroup.userData = { bodyMesh, bodyMat, leftWing, rightWing, monsterType: 'dragon' };
+      // 6. Curved Spiked Dragon Tail
+      const tailGeo = new THREE.TorusGeometry(8, 2.5, 8, 16, Math.PI * 0.7);
+      const tailMesh = new THREE.Mesh(tailGeo, redMat);
+      tailMesh.rotation.x = Math.PI / 2;
+      tailMesh.rotation.z = -Math.PI / 4;
+      tailMesh.position.set(0, -8, 8);
+      monsterGroup.add(tailMesh);
+
+      // 7. Claws (Arms & Feet)
+      [-5, 5].forEach(xOff => {
+        const foot = new THREE.Mesh(new THREE.SphereGeometry(4, 10, 10), redMat);
+        foot.position.set(xOff, -12, -4);
+        monsterGroup.add(foot);
+
+        [-1.5, 0, 1.5].forEach(clawOff => {
+          const claw = new THREE.Mesh(new THREE.ConeGeometry(1, 3.5, 4), clawMat);
+          claw.rotation.x = Math.PI / 2;
+          claw.position.set(xOff + clawOff, -13, -7);
+          monsterGroup.add(claw);
+        });
+      });
+
+      monsterGroup.userData = { bodyMesh: headMesh, bodyMat: redMat, leftWing, rightWing, monsterType: 'dragon' };
     }
 
     return monsterGroup;
