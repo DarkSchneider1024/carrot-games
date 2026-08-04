@@ -456,11 +456,8 @@ function _updatePokerUI(engine) {
     // Record stats and sync chips
     const userPlayer = engine.players[0];
     if (userPlayer) {
-      const user = getCurrentUser();
-      if (user && !user.isAnonymous) {
-        const isWin = engine.winnerMsg.includes(userPlayer.name) || engine.winnerMsg.includes('你');
-        updateUserStats('poker', { isWin, netProfit: userPlayer.chips - initialUserChips });
-      }
+      const isWin = engine.winnerMsg.includes(userPlayer.name) || engine.winnerMsg.includes('你');
+      updateUserStats('poker', { isWin, netProfit: userPlayer.chips - initialUserChips });
     }
   } else {
     const banner = document.getElementById('winner-banner');

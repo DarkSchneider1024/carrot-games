@@ -1,7 +1,7 @@
 /**
- * Authentication & User Profile Manager — Firebase Auth + Realtime Database
+ * Authentication & User Profile Manager — Firebase Auth + Realtime Database + Dual Local Persistence
  *
- * Supports Email/Password, Google Sign-In, Anonymous Guest, Cloud Chip Persistence ($1000 Default),
+ * Supports Email/Password, Google Sign-In, Anonymous Guest, Cloud & Local Stats/Chip Persistence ($1000 Default),
  * and Automatic Bankruptcy Refill (+1000 Chips).
  */
 
@@ -29,6 +29,47 @@ const authListeners = new Set();
 let profileUnsub = null;
 
 const DEFAULT_STARTING_CHIPS = 1000;
+const DEFAULT_STATS = {
+  poker: { played: 0, won: 0, netProfit: 0 },
+  xiangqi: { played: 0, won: 0 },
+  tetris: { played: 0, won: 0 },
+  magicFighter: { played: 0, won: 0, netProfit: 0 }
+};
+
+/**
+ * Local Storage Persistence Helpers
+ */
+function _loadLocalStats() {
+  try {
+    const raw = localStorage.getItem('carrot_game_stats');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        poker: { ...DEFAULT_STATS.poker, ...(parsed.poker || {}) },
+        xiangqi: { ...DEFAULT_STATS.xiangqi, ...(parsed.xiangqi || {}) },
+        tetris: { ...DEFAULT_STATS.tetris, ...(parsed.tetris || {}) },
+        magicFighter: { ...DEFAULT_STATS.magicFighter, ...(parsed.magicFighter || {}) }
+      };
+    }
+  } catch (e) {
+    console.warn('Failed to load local stats:', e);
+  }
+  return { ...DEFAULT_STATS };
+}
+
+function _saveLocalProfile(profile) {
+  if (!profile) return;
+  try {
+    if (profile.stats) {
+      localStorage.setItem('carrot_game_stats', JSON.stringify(profile.stats));
+    }
+    if (profile.chips !== undefined) {
+      localStorage.setItem('carrot_user_chips', profile.chips.toString());
+    }
+  } catch (e) {
+    console.warn('Failed to save local profile:', e);
+  }
+}
 
 /**
  * Initialize Authentication System
@@ -60,6 +101,13 @@ export function initAuth(onAuthChangeCallback) {
       profileUnsub = null;
     }
 
+    const localStats = _loadLocalStats();
+    let savedChips = DEFAULT_STARTING_CHIPS;
+    try {
+      const c = localStorage.getItem('carrot_user_chips');
+      if (c) savedChips = parseInt(c, 10) || DEFAULT_STARTING_CHIPS;
+    } catch (e) {}
+
     if (user) {
       if (user.isAnonymous) {
         // Anonymous Guest Profile
@@ -69,12 +117,8 @@ export function initAuth(onAuthChangeCallback) {
           email: '',
           photoURL: '',
           isAnonymous: true,
-          chips: 1000,
-          stats: {
-            poker: { played: 0, won: 0, netProfit: 0 },
-            xiangqi: { played: 0, won: 0 },
-            tetris: { played: 0, won: 0 }
-          }
+          chips: savedChips,
+          stats: localStats
         };
         _notifyAuthListeners();
       } else {
@@ -86,12 +130,8 @@ export function initAuth(onAuthChangeCallback) {
             email: user.email || '',
             photoURL: user.photoURL || '',
             isAnonymous: false,
-            chips: DEFAULT_STARTING_CHIPS,
-            stats: {
-              poker: { played: 0, won: 0, netProfit: 0 },
-              xiangqi: { played: 0, won: 0 },
-              tetris: { played: 0, won: 0 }
-            }
+            chips: savedChips,
+            stats: localStats
           };
           _notifyAuthListeners();
         }
@@ -102,13 +142,20 @@ export function initAuth(onAuthChangeCallback) {
           profileUnsub = onValue(userRef, (snapshot) => {
             if (snapshot.exists()) {
               const data = snapshot.val();
+              const dbStats = data.stats || {};
               currentProfile = {
                 ...data,
                 uid: user.uid,
                 email: user.email || data.email || '',
                 isAnonymous: false,
-                chips: data.chips !== undefined ? data.chips : DEFAULT_STARTING_CHIPS,
-                displayName: data.displayName || user.displayName || getPlayerName() || '玩家'
+                chips: data.chips !== undefined ? data.chips : savedChips,
+                displayName: data.displayName || user.displayName || getPlayerName() || '玩家',
+                stats: {
+                  poker: { ...DEFAULT_STATS.poker, ...localStats.poker, ...(dbStats.poker || {}) },
+                  xiangqi: { ...DEFAULT_STATS.xiangqi, ...localStats.xiangqi, ...(dbStats.xiangqi || {}) },
+                  tetris: { ...DEFAULT_STATS.tetris, ...localStats.tetris, ...(dbStats.tetris || {}) },
+                  magicFighter: { ...DEFAULT_STATS.magicFighter, ...localStats.magicFighter, ...(dbStats.magicFighter || {}) }
+                }
               };
             } else {
               // Initial RTDB write for new account
@@ -118,12 +165,8 @@ export function initAuth(onAuthChangeCallback) {
                 email: user.email || '',
                 photoURL: user.photoURL || '',
                 isAnonymous: false,
-                chips: DEFAULT_STARTING_CHIPS,
-                stats: {
-                  poker: { played: 0, won: 0, netProfit: 0 },
-                  xiangqi: { played: 0, won: 0 },
-                  tetris: { played: 0, won: 0 }
-                },
+                chips: savedChips,
+                stats: localStats,
                 createdAt: Date.now(),
                 updatedAt: Date.now()
               };
@@ -134,6 +177,7 @@ export function initAuth(onAuthChangeCallback) {
               setPlayerName(currentProfile.displayName);
             }
 
+            _saveLocalProfile(currentProfile);
             _notifyAuthListeners();
           });
         }
@@ -170,8 +214,18 @@ export function getUserProfile() {
     if (currentUser) {
       currentProfile.isAnonymous = currentUser.isAnonymous;
     }
+    if (!currentProfile.stats) {
+      currentProfile.stats = _loadLocalStats();
+    }
     return currentProfile;
   }
+
+  const localStats = _loadLocalStats();
+  let savedChips = DEFAULT_STARTING_CHIPS;
+  try {
+    const c = localStorage.getItem('carrot_user_chips');
+    if (c) savedChips = parseInt(c, 10) || DEFAULT_STARTING_CHIPS;
+  } catch (e) {}
 
   return {
     uid: currentUser ? currentUser.uid : 'guest',
@@ -179,12 +233,8 @@ export function getUserProfile() {
     email: currentUser ? currentUser.email : '',
     photoURL: '',
     isAnonymous: currentUser ? currentUser.isAnonymous : true,
-    chips: 1000,
-    stats: {
-      poker: { played: 0, won: 0, netProfit: 0 },
-      xiangqi: { played: 0, won: 0 },
-      tetris: { played: 0, won: 0 }
-    }
+    chips: savedChips,
+    stats: localStats
   };
 }
 
@@ -199,7 +249,6 @@ export async function signUpWithEmail(email, password, displayName) {
 
     const name = displayName?.trim() || email.split('@')[0] || '蘿蔔玩家';
 
-    // Non-fatal updateProfile
     try {
       await updateProfile(user, { displayName: name });
     } catch (e) {
@@ -207,6 +256,7 @@ export async function signUpWithEmail(email, password, displayName) {
     }
     setPlayerName(name);
 
+    const localStats = _loadLocalStats();
     const initialData = {
       uid: user.uid,
       displayName: name,
@@ -214,36 +264,27 @@ export async function signUpWithEmail(email, password, displayName) {
       photoURL: '',
       isAnonymous: false,
       chips: DEFAULT_STARTING_CHIPS,
-      stats: {
-        poker: { played: 0, won: 0, netProfit: 0 },
-        xiangqi: { played: 0, won: 0 },
-        tetris: { played: 0, won: 0 }
-      },
+      stats: localStats,
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
 
-    currentUser = user;
-    currentProfile = initialData;
-
     if (db) {
-      try {
-        await set(ref(db, `users/${user.uid}`), initialData);
-      } catch (dbErr) {
-        console.warn('Initial DB set warning:', dbErr);
-      }
+      await set(ref(db, `users/${user.uid}`), initialData);
     }
 
+    currentProfile = initialData;
+    _saveLocalProfile(currentProfile);
     _notifyAuthListeners();
-    showToast(`註冊成功！已為您開立帳號並發放本金 $${DEFAULT_STARTING_CHIPS}`, 'success');
+
+    showToast(`歡迎加入 Carrot Games！已發放初始 $${DEFAULT_STARTING_CHIPS} 籌碼本金！`, 'success');
     return { success: true, user };
   } catch (err) {
     console.error('Sign up error:', err);
     let msg = '註冊失敗';
-    if (err.code === 'auth/email-already-in-use') msg = '該電子郵件已被註冊，請直接登入';
-    else if (err.code === 'auth/weak-password') msg = '密碼長度過短 (至少 6 個字元)';
-    else if (err.code === 'auth/invalid-email') msg = '無效的電子郵件格式';
-    else if (err.message) msg = `註冊失敗: ${err.message}`;
+    if (err.code === 'auth/email-already-in-use') msg = '該 Email 已被註冊使用';
+    else if (err.code === 'auth/weak-password') msg = '密碼長度至少需要 6 個字元';
+    else if (err.code === 'auth/invalid-email') msg = '無效的 Email 格式';
 
     showToast(msg, 'warning');
     return { success: false, reason: msg };
@@ -258,14 +299,36 @@ export async function signInWithEmail(email, password) {
   try {
     const cred = await signInWithEmailAndPassword(auth, email, password);
     currentUser = cred.user;
+
+    if (db) {
+      const snapshot = await get(ref(db, `users/${cred.user.uid}`));
+      if (snapshot.exists()) {
+        const localStats = _loadLocalStats();
+        const data = snapshot.val();
+        const dbStats = data.stats || {};
+        currentProfile = {
+          ...data,
+          uid: cred.user.uid,
+          isAnonymous: false,
+          stats: {
+            poker: { ...DEFAULT_STATS.poker, ...localStats.poker, ...(dbStats.poker || {}) },
+            xiangqi: { ...DEFAULT_STATS.xiangqi, ...localStats.xiangqi, ...(dbStats.xiangqi || {}) },
+            tetris: { ...DEFAULT_STATS.tetris, ...localStats.tetris, ...(dbStats.tetris || {}) },
+            magicFighter: { ...DEFAULT_STATS.magicFighter, ...localStats.magicFighter, ...(dbStats.magicFighter || {}) }
+          }
+        };
+      }
+    }
+
+    _saveLocalProfile(currentProfile);
     _notifyAuthListeners();
-    showToast(`歡迎回來，${cred.user.displayName || cred.user.email}！`, 'success');
+    showToast(`歡迎回來，${currentProfile?.displayName || '玩家'}！`, 'success');
     return { success: true, user: cred.user };
   } catch (err) {
     console.error('Sign in error:', err);
     let msg = '登入失敗，請檢查帳號密碼';
-    if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-      msg = '電子郵件或密碼不正確';
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      msg = 'Email 或密碼不正確';
     }
     showToast(msg, 'warning');
     return { success: false, reason: msg };
@@ -273,7 +336,7 @@ export async function signInWithEmail(email, password) {
 }
 
 /**
- * Sign in with Google
+ * Sign in with Google Popup
  */
 export async function signInWithGoogle() {
   if (!auth) initAuth();
@@ -281,21 +344,58 @@ export async function signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(auth, provider);
     currentUser = cred.user;
-    if (cred.user.displayName) setPlayerName(cred.user.displayName);
+
+    if (db) {
+      const userRef = ref(db, `users/${cred.user.uid}`);
+      const snapshot = await get(userRef);
+
+      const localStats = _loadLocalStats();
+      if (!snapshot.exists()) {
+        const newProfile = {
+          uid: cred.user.uid,
+          displayName: cred.user.displayName || 'Google 玩家',
+          email: cred.user.email || '',
+          photoURL: cred.user.photoURL || '',
+          isAnonymous: false,
+          chips: DEFAULT_STARTING_CHIPS,
+          stats: localStats,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+        await set(userRef, newProfile);
+        currentProfile = newProfile;
+      } else {
+        const data = snapshot.val();
+        const dbStats = data.stats || {};
+        currentProfile = {
+          ...data,
+          uid: cred.user.uid,
+          isAnonymous: false,
+          stats: {
+            poker: { ...DEFAULT_STATS.poker, ...localStats.poker, ...(dbStats.poker || {}) },
+            xiangqi: { ...DEFAULT_STATS.xiangqi, ...localStats.xiangqi, ...(dbStats.xiangqi || {}) },
+            tetris: { ...DEFAULT_STATS.tetris, ...localStats.tetris, ...(dbStats.tetris || {}) },
+            magicFighter: { ...DEFAULT_STATS.magicFighter, ...localStats.magicFighter, ...(dbStats.magicFighter || {}) }
+          }
+        };
+      }
+    }
+
+    _saveLocalProfile(currentProfile);
     _notifyAuthListeners();
-    showToast(`Google 登入成功！歡迎 ${cred.user.displayName || '玩家'}`, 'success');
+    showToast(`Google 帳號聯動成功！歡迎，${currentProfile?.displayName}！`, 'success');
     return { success: true, user: cred.user };
   } catch (err) {
     console.error('Google Sign in error:', err);
-    showToast('Google 登入取消或失敗', 'warning');
+    showToast('Google 聯動失敗', 'warning');
     return { success: false, reason: err.message };
   }
 }
 
 /**
- * Sign in Anonymously
+ * Sign in Anonymously (Guest)
  */
-export async function signInAsGuest() {
+export async function signInGuest() {
   if (!auth) initAuth();
   try {
     const cred = await signInAnonymously(auth);
@@ -309,6 +409,8 @@ export async function signInAsGuest() {
     return { success: false, reason: err.message };
   }
 }
+
+export const signInAsGuest = signInGuest;
 
 /**
  * Sign Out
@@ -340,6 +442,7 @@ export async function updateUserChips(newChipsAmount) {
   }
 
   profile.chips = targetChips;
+  _saveLocalProfile(profile);
 
   if (currentUser && !currentUser.isAnonymous && db) {
     try {
@@ -361,16 +464,12 @@ export async function updateUserChips(newChipsAmount) {
 }
 
 /**
- * Update Match Statistics
+ * Update Match Statistics — Dual Cloud & Local Persistence
  */
 export async function updateUserStats(gameType, { isWin = false, netProfit = 0 } = {}) {
   const profile = getUserProfile();
   if (!profile.stats) {
-    profile.stats = {
-      poker: { played: 0, won: 0, netProfit: 0 },
-      xiangqi: { played: 0, won: 0 },
-      tetris: { played: 0, won: 0 }
-    };
+    profile.stats = _loadLocalStats();
   }
 
   if (!profile.stats[gameType]) {
@@ -382,6 +481,10 @@ export async function updateUserStats(gameType, { isWin = false, netProfit = 0 }
   if (isWin) stat.won = (stat.won || 0) + 1;
   if (netProfit) stat.netProfit = (stat.netProfit || 0) + netProfit;
 
+  // Persist locally immediately (works for both guests & logged users)
+  _saveLocalProfile(profile);
+
+  // Sync to Firebase RTDB if logged in
   if (currentUser && !currentUser.isAnonymous && db) {
     try {
       await update(ref(db, `users/${currentUser.uid}/stats/${gameType}`), stat);
