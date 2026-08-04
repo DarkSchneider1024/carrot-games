@@ -9,6 +9,7 @@ import './pages/tetris/tetris.css';
 import './pages/pwa-guide/pwa-guide.css';
 import './pages/poker/poker.css';
 import './pages/magic-fighter/magic-fighter.css';
+import './pages/fruit-havoc/fruit-havoc.css';
 import './pages/guide/guide.css';
 
 import { registerRoute, initRouter } from './router.js';
@@ -18,6 +19,7 @@ import { renderTetris } from './pages/tetris/tetris.js';
 import { renderPwaGuide } from './pages/pwa-guide/pwa-guide.js';
 import { renderPoker } from './pages/poker/poker.js';
 import { renderMagicFighter } from './pages/magic-fighter/magic-fighter.js';
+import { renderFruitHavoc } from './pages/fruit-havoc/fruit-havoc.js';
 import { renderGameGuide } from './pages/guide/guide.js';
 import { showToast } from './components/toast.js';
 import { updateLoadingProgress, hideLoadingScreen } from './utils/loading-manager.js';
@@ -31,6 +33,7 @@ registerRoute('/xiangqi/:mode', renderXiangqi);
 registerRoute('/tetris/:mode', renderTetris);
 registerRoute('/poker/:mode', renderPoker);
 registerRoute('/magic-fighter/:mode', renderMagicFighter);
+registerRoute('/fruit-havoc/:mode', renderFruitHavoc);
 registerRoute('/pwa-guide', renderPwaGuide);
 registerRoute('/guide', renderGameGuide);
 

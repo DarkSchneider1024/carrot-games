@@ -24,6 +24,9 @@ export async function renderGameGuide(container, params = {}) {
 
       <!-- Navigation Tabs -->
       <div class="guide-tabs-bar">
+        <button class="guide-tab-btn ${defaultTab === 'fruitHavoc' ? 'active' : ''}" data-tab="fruitHavoc" style="background:linear-gradient(135deg,#ff7544,#ff70a6);color:#fff;border:none;">
+          🍓 水果傷害 2D
+        </button>
         <button class="guide-tab-btn ${defaultTab === 'xiangqi' ? 'active' : ''}" data-tab="xiangqi">
           中國象棋
         </button>
@@ -262,6 +265,165 @@ export async function renderGameGuide(container, params = {}) {
               <li><strong>星星 / 火力升級 (Star)</strong>：升級戰機火力。LV.1 標準 -> LV.2 雙發子彈 -> LV.3 破鋼貫穿子彈（可打碎鋼鐵牆）。</li>
               <li><strong>鐵鏟 / 總部加固 (Shovel)</strong>：將總部四周磚牆瞬間升級為堅硬鋼鐵牆 (Steel Wall) 15 秒！</li>
               <li><strong>戰機加命 (Extra Life)</strong>：戰機生命值 HP +1（最高上限 5 HP）。</li>
+            </ul>
+          </section>
+        </article>
+
+        <!-- 5. Fruit Havoc Guide -->
+        <article class="guide-article ${defaultTab === 'fruitHavoc' ? 'active' : ''}" id="guide-fruitHavoc">
+          <h3>🍓 水果傷害 (FRUIT HAVOC) — 2D 派對對戰手冊</h3>
+
+          <section class="guide-section">
+            <h4>1. 遊戲核心玩法與《超級雞馬》對戰機制</h4>
+            <p>《水果傷害》是一款 2D 橫向平台派對競速對戰遊戲！玩家們輪流或同時在關卡地圖中<strong>自由擺放陷阱與助攻道具</strong>，擺放完畢後一齊衝向終點蛋糕旗！<br/>
+            <strong>得分規則</strong>：如果所有人通通順利抵達終點，或所有人通通陣亡，則該輪「沒有人得分」；唯有<strong>成功穿越自己或朋友設置的危險陷阱到達終點</strong>，才能獲得勝場積分！</p>
+          </section>
+
+          <!-- 5 大吉伊卡哇風格 2D 水果角色圖鑑 -->
+          <section class="guide-section">
+            <h4>2. 5 大三麗鷗 / 吉伊卡哇風格水果角色圖鑑</h4>
+            <div class="guide-character-grid">
+              <!-- Card 1: 草莓吉伊 -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/char_strawberry_berry.png" alt="草莓吉伊" class="character-img" />
+                  <span class="character-tag">速度型 🍓</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">草莓吉伊 (Strawberry Berry)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>7.5</strong></span>
+                    <span>跳躍: <strong>6.5</strong></span>
+                    <span>性格: <strong>愛哭包</strong></span>
+                  </div>
+                  <p class="character-desc">圓滾滾水靈靈的粉嫩草莓，帶著水汪汪大眼睛與小綠葉帽子。雖然膽小愛哭，但奔跑反應非常敏捷！</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">🌸 專屬天賦：淚流滿面閃避 (Tear Dash)</span>
+                    <p class="skill-desc">受到驚嚇或觸發陷阱瞬間有 25% 機率觸發淚水衝刺，無敵平移 0.5 秒避開致命傷害！</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: 香蕉烏薩奇 -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/char_banana_usagi.png" alt="香蕉烏薩奇" class="character-img" />
+                  <span class="character-tag">高跳型 🍌</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">香蕉烏薩奇 (Banana Usagi)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>6.0</strong></span>
+                    <span>跳躍: <strong>9.5</strong></span>
+                    <span>性格: <strong>奇行種</strong></span>
+                  </div>
+                  <p class="character-desc">剝皮一半的金黃香蕉兔，頭上豎著香蕉皮耳。動作極度搞怪過面，喜歡發出「烏拉 (Ura!)」奇妙叫聲。</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">🍌 專屬天賦：烏拉二段旋風跳 (Ura Spin Jump)</span>
+                    <p class="skill-desc">具備全遊戲最高的二段跳躍高度，空中旋轉跳躍可直接越過巨型高牆與尖刺防線！</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: 哈密瓜小八 -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/char_melon_hachi.png" alt="哈密瓜小八" class="character-img" />
+                  <span class="character-tag">智慧型 🍈</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">哈密瓜小八 (Melon Hachi)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>6.5</strong></span>
+                    <span>跳躍: <strong>7.0</strong></span>
+                    <span>性格: <strong>智商擔當</strong></span>
+                  </div>
+                  <p class="character-desc">綠色網紋哈密瓜貓貓，帶著甜甜笑臉與雙色貓耳。個性溫暖睿智，最懂得在最陰險的位置佈置陷阱。</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">🍈 專屬天賦：陷阱隱蔽大師 (Hidden Trap Master)</span>
+                    <p class="skill-desc">每輪佈置陷阱時額外獲得 1 次擬態機會，可將陷阱偽裝成一般方塊，出其不意坑害對手！</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: 水桃栗饅頭 -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/char_peach_kuriman.png" alt="水桃栗饅頭" class="character-img" />
+                  <span class="character-tag">重裝型 🍑</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">水桃栗饅頭 (Peach Kuriman)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>5.5</strong></span>
+                    <span>跳躍: <strong>6.0</strong></span>
+                    <span>性格: <strong>老練大叔</strong></span>
+                  </div>
+                  <p class="character-desc">粉嫩水蜜桃配微醺紅潤小腮紅。性格無比沉穩，手裡總拿著一杯果汁，面對各類陷阱臨危不亂。</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">🍑 專屬天賦：哈哼防禦霸體 (Ha-Heng Armor)</span>
+                    <p class="skill-desc">受到第一次輕微障礙（如香蕉皮或黏液）時不產生硬直，直接霸體穩定通過！</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 5: 飛天葡萄飛鼠 -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/char_grape_momonga.png" alt="飛天葡萄飛鼠" class="character-img" />
+                  <span class="character-tag">滑翔型 🍇</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">飛天葡萄飛鼠 (Grape Momonga)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>8.0</strong></span>
+                    <span>跳躍: <strong>7.5</strong></span>
+                    <span>性格: <strong>賣萌自戀</strong></span>
+                  </div>
+                  <p class="character-desc">深紫晶瑩葡萄串小飛鼠，帶著大蓬鬆大尾巴與賣萌眼神。喜歡在空中展示滑翔美姿。</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">🍇 專屬天賦：葡萄空降滑翔 (Grape Glide)</span>
+                    <p class="skill-desc">空中長按跳躍鍵可展開滑翔翼慢速滯空，輕鬆橫跨深淵與長距離地底陷阱區！</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 20 個障礙與助攻道具全集圖鑑 -->
+          <section class="guide-section">
+            <h4>3. 20 個障礙與助攻道具全集圖鑑</h4>
+            <ul>
+              <li><strong>1. 🥊 彈簧拳擊手套 (Spring Boxing Glove)</strong>：踏過時向前方猛力彈出拳擊手套，將玩家直接擊飛！</li>
+              <li><strong>2. 🪚 草莓電鋸擺錘 (Strawberry Saw Pendulum)</strong>：懸掛於半空中來回擺動的可愛旋轉電鋸，切中即陣亡。</li>
+              <li><strong>3. 🍌 香蕉皮滑行區 (Banana Peel Trap)</strong>：踩上去瞬間失控向前滑行，滑行期間無法進行跳躍。</li>
+              <li><strong>4. 🍯 蜂蜜黏黏膠 (Honey Sticky Mud)</strong>：濃稠的甜蜜泥沼，踩中玩家移動速度大幅降低 70%。</li>
+              <li><strong>5. 💣 西瓜大砲 (Watermelon Cannon)</strong>：定時向前方發射重型西瓜子砲彈，可破壞阻擋木箱。</li>
+              <li><strong>6. 🌪️ 龍捲風漩渦 (Fruit Whirlwind)</strong>：產生高空向上強勁風場，將經過的玩家直接吹升至高空。</li>
+              <li><strong>7. 🏹 葡萄十字弩 (Grape Crossbow)</strong>：感應式紅外線弩箭，玩家路過時瞬間發射連環葡萄箭矢。</li>
+              <li><strong>8. 🌵 仙人掌刺球 (Cactus Spike Ball)</strong>：懸掛或地滑滾動的植物刺球，觸碰即產生致命傷。</li>
+              <li><strong>9. 🍄 超高跳跳菇 (Super Bounce Mushroom)</strong>：高彈力蘑菇踏板，踩踏後向上 3 倍高高彈跳！</li>
+              <li><strong>10. ⚡ 雷電檸檬 (Electric Lemon Trap)</strong>：觸發後向周圍 360 度釋放黃色電流，使玩家暫時麻痺。</li>
+              <li><strong>11. 🌀 奇異果傳送門 (Kiwi Portal Gate)</strong>：成對的入口與出口傳送門，可瞬間將玩家轉移位置。</li>
+              <li><strong>12. 🧊 冰棒極速檔板 (Popsicle Ice Wall)</strong>：光滑無比的冰面高牆，可順利滑牆降落或阻擋路徑。</li>
+              <li><strong>13. 🕳️ 黑洞塌陷箱 (Pitfall Trap Box)</strong>：看似堅固的木箱踏板，踩上去 0.5 秒後瞬間坍榻破裂！</li>
+              <li><strong>14. 扇 強力大風扇 (Giant Fruit Fan)</strong>：持續向左或右吹出強風干擾跳躍軌跡。</li>
+              <li><strong>15. 🍒 櫻桃雷射炮塔 (Cherry Laser Turret)</strong>：360 度旋轉掃射紅外線能量極光光束。</li>
+              <li><strong>16. 🎈 飄飄熱氣球 (Floating Balloon Platform)</strong>：浮空移動平台，隨著踩踏停留時間過長會緩緩下降。</li>
+              <li><strong>17. 🛡️ 椰子防禦盾 (Coconut Shield Barrier)</strong>：硬度極高的堅固壁壘，可完全阻擋弩箭與砲彈。</li>
+              <li><strong>18. 🧲 蘋果極性磁鐵 (Apple Magnet)</strong>：強烈吸引或排斥周圍的水果玩家，改變飛行軌跡。</li>
+              <li><strong>19. 🏃 履帶跑道 (Conveyor Belt Track)</strong>：滾動傳送帶，大幅提升 forward 加速度或倒退阻礙。</li>
+              <li><strong>20. 🏆 草莓蛋糕終點旗 (Fruit Cake Goal Flag)</strong>：關卡最終終點站！率先成功抵達且通過陷阱考驗者獲得高分！</li>
             </ul>
           </section>
         </article>
