@@ -136,34 +136,133 @@ export async function renderGameGuide(container, params = {}) {
 
         <!-- 4. Magic Fighter Guide -->
         <article class="guide-article ${defaultTab === 'magicFighter' ? 'active' : ''}" id="guide-magicFighter">
-          <h3>魔法對戰 3D (MAGIC FIGHTER) 手冊與道具大全</h3>
+          <h3>魔法對戰 3D (MAGIC FIGHTER) 角色與技能全書</h3>
 
           <section class="guide-section">
-            <h4>1. 遊戲核心目標</h4>
-            <p>傳承經典《坦克大戰 (Battle City)》靈魂，重塑為 Three.js WebGL 3D 魔法空戰對決！保護地圖底部的 <strong>蘿蔔 HQ 水晶總部</strong>，擊退一共 5 波次攻勢敵軍，保護基地不被摧毀！</p>
+            <h4>1. 遊戲核心目標與戰局簡介</h4>
+            <p>傳承經典《坦克大戰 (Battle City)》靈魂，重塑為 Three.js WebGL 3D 魔法空戰對決！玩家駕駛橘黑雙色賽亞戰機，保護地圖底部的 <strong>蘿蔔 HQ 水晶總部</strong>，擊退一共 5 波次攻勢敵軍，保護基地不被摧毀！</p>
           </section>
 
+          <!-- 3D 角色與技能特刊 (3D Character & Skill Showcase) -->
           <section class="guide-section">
-            <h4>2. 經典 6 大寶箱道具功能列表</h4>
+            <h4>2. 3D 戰機角色與單位技能說明特刊</h4>
+            <div class="guide-character-grid">
+              <!-- Card 1: Saiyan Jet -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/fighter_hero_jet.png" alt="賽亞戰機" class="character-img" />
+                  <span class="character-tag">玩家主控戰機</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">超級賽亞戰機 (Saiyan Jet)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>6.5</strong></span>
+                    <span>血量: <strong>5 HP</strong></span>
+                    <span>出發: <strong>左側城牆</strong></span>
+                  </div>
+                  <p class="character-desc">競速橘身配曜石黑護翼。具備靈活空中平移與極速發射能力，一開始於基地左側安全空域平穩升空。</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">⚡ 專屬技能：賽亞變身 (SSJ Transformation)</span>
+                    <p class="skill-desc">吃到星星即觸發金黃色賽亞氣場光罩！LV.1 升級雙發雷射，LV.3 解鎖【破鋼貫穿能量彈】，可一擊粉碎堅硬鋼鐵牆防線！</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Purple Bat -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/fighter_purple_bat.png" alt="小紫蝠偵察機" class="character-img" />
+                  <span class="character-tag">敵方蜂擁單位</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">小紫蝠偵察機 (Purple Bat)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>3.2</strong></span>
+                    <span>血量: <strong>2 HP</strong></span>
+                    <span>生成: <strong>頂部空地</strong></span>
+                  </div>
+                  <p class="character-desc">紫色機翼機械偵察蝠。數值輕巧但數量龐大，會自動避開障礙物並於空中進行邊移動邊射擊。</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">🎯 專屬技能：自動過牆襲擊 (Smart Navigation)</span>
+                    <p class="skill-desc">具備動態尋路 AI，自動繞過城牆與鋼鐵堡壘。撞擊基地後不會消失，而是持續進行近戰咬擊！</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Griffin -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/fighter_griffin.png" alt="金翅皇家獅鷲" class="character-img" />
+                  <span class="character-tag">中型召喚獸 / 精英</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">金翅皇家獅鷲 (Royal Griffin)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>4.0</strong></span>
+                    <span>血量: <strong>4 HP</strong></span>
+                    <span>消耗: <strong>100 Mana</strong></span>
+                  </div>
+                  <p class="character-desc">金黃羽翼高空神獸。玩家可消耗 100 瑪那魔力召喚空戰獅鷲，向北方敵陣展開推進！</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">🦅 專屬技能：高空疾飛風暴 (Dive Storm)</span>
+                    <p class="skill-desc">高頻率揮翅拍擊，具備 2 倍速度的高頻發射彈幕，提供強大的中距離火力壓制與護衛效果！</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Shadow Dragon -->
+              <div class="character-card">
+                <div class="character-img-wrapper">
+                  <img src="./assets/images/fighter_dragon.png" alt="紫黑暗影魔龍" class="character-img" />
+                  <span class="character-tag">重裝 BOSS / 巨獸</span>
+                </div>
+                <div class="character-info">
+                  <div class="character-header">
+                    <h5 class="character-name">紫黑暗影魔龍 (Shadow Dragon)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>2.0</strong></span>
+                    <span>血量: <strong>10 HP</strong></span>
+                    <span>消耗: <strong>200 Mana</strong></span>
+                  </div>
+                  <p class="character-desc">身披重型暗影龍鱗裝甲的巨型龍族霸主。具備全場最高的生存血量與毀滅撞擊力。</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">🔥 專屬技能：毀滅火焰龍息 (Dragon Breath)</span>
+                    <p class="skill-desc">10 HP 超高防禦力。近距離靠近基地可造成高額近戰傷害，遠距離持續吐出灼熱龍息火球！</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 地形與建物說明 (包含 3D 國泰人壽大樹) -->
+          <section class="guide-section">
+            <h4>3. 3D 地形與地圖要素介紹</h4>
             <ul>
-              <li><strong>頭盔 / 護盾 (Helmet)</strong>：觸發 8 秒藍色無敵光罩，防禦所有子彈攻擊。</li>
-              <li><strong>時鐘 / 定身 (Clock)</strong>：凍結全場所有敵機 6 秒，敵機停止移動與射擊。</li>
-              <li><strong>手榴彈 / 全滅爆破 (Grenade / Bomb)</strong>：引爆當前全場畫面上所有敵機，獲得相應得分！</li>
-              <li><strong>星星 / 火力升級 (Star)</strong>：升級戰機火力。LV.1 標準 -> LV.2 雙發子彈 -> LV.4 破鋼貫穿子彈（可打碎鋼鐵牆）。</li>
-              <li><strong>鐵鏟 / 總部加固 (Shovel)</strong>：將總部四周磚牆瞬間升級為堅硬鋼鐵牆 (Steel Wall) 15 秒！</li>
-              <li><strong>戰機加命 (Extra Life)</strong>：戰機生命值 HP +1（最高上限 5 HP）。</li>
+              <li><strong>🌳 國泰人壽大樹 (Cathay Life Tree - Forest)</strong>：經典圓弧造型大樹冠與寬底樹幹！戰機飛入樹冠可享受半透明迷霧防禦，避開敵人雷射鎖定。</li>
+              <li><strong>🏰 中世紀城垛石牆 (Battlement Stone Wall)</strong>：由溫暖石灰岩與頂部城垛口構成，可抵擋一般子彈防護基地。</li>
+              <li><strong>🛡️ 鋼鐵地堡 (Steel Bunker)</strong>：極致防禦地堡，普通子彈無法打穿，唯有賽亞戰機 LV.3 貫穿能量彈可將其擊碎。</li>
+              <li><strong>🧊 冰面 (Ice Field)</strong>：飛行行經冰面可獲得 1.3 倍極速滑行加速效果！</li>
+              <li><strong>🌊 藍晶水域 (Water Zone)</strong>：戰機與空中怪物可飛越，但地面裝甲無法跨越，子彈可直接穿透水面。</li>
             </ul>
           </section>
 
           <section class="guide-section">
-            <h4>3. 地形與敵軍種類</h4>
-            <p><strong>五大地形</strong>：紅磚牆（可打碎）、鋼鐵牆（防普通彈/貫穿彈可破）、森林樹叢（飛入半透明隱密）、冰面（滑行慣性）、水域（子彈穿透/戰機阻擋）。<br/>
-            <strong>四類敵機</strong>：普通偵察機、超高速突擊機、3 HP 重型裝甲機（受擊變色）、閃爍紅光道具機（擊毀 100% 掉落隨機寶物）。</p>
-          </section>
-
-          <section class="guide-section">
-            <h4>4. 手機 360° 模擬手勢搖桿</h4>
-            <p>手機端左側視窗提供 360 度無死角動態虛擬搖桿，具備高速飛行回應，右側按鈕快速開火！</p>
+            <h4>4. 經典 6 大寶箱道具功能列表</h4>
+            <ul>
+              <li><strong>頭盔 / 護盾 (Helmet)</strong>：觸發 8 秒藍色無敵光罩，防禦所有子彈攻擊。</li>
+              <li><strong>時鐘 / 定身 (Clock)</strong>：凍結全場所有敵機 6 秒，敵機停止移動與射擊。</li>
+              <li><strong>手榴彈 / 全滅爆破 (Grenade / Bomb)</strong>：引爆當前全場畫面上所有敵機，獲得相應得分！</li>
+              <li><strong>星星 / 火力升級 (Star)</strong>：升級戰機火力。LV.1 標準 -> LV.2 雙發子彈 -> LV.3 破鋼貫穿子彈（可打碎鋼鐵牆）。</li>
+              <li><strong>鐵鏟 / 總部加固 (Shovel)</strong>：將總部四周磚牆瞬間升級為堅硬鋼鐵牆 (Steel Wall) 15 秒！</li>
+              <li><strong>戰機加命 (Extra Life)</strong>：戰機生命值 HP +1（最高上限 5 HP）。</li>
+            </ul>
           </section>
         </article>
       </main>

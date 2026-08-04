@@ -93,8 +93,27 @@ export class FighterRenderer3D {
     this.waterGeo = new THREE.BoxGeometry(tileSize - 2, 6, tileSize - 2);
     this.waterMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, transparent: true, opacity: 0.8, roughness: 0.1 });
 
-    this.treeGeo = new THREE.ConeGeometry(16, 32, 6);
-    this.treeMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, transparent: true, opacity: 0.9 });
+    // 🌳 國泰人壽風格大樹材質 (Cathay Tree Materials)
+    this.cathayCanopyMat = new THREE.MeshStandardMaterial({
+      color: 0x00a84f, // 國泰經典綠
+      roughness: 0.5,
+      metalness: 0.05
+    });
+    this.cathayCanopyTopMat = new THREE.MeshStandardMaterial({
+      color: 0x24c25e, // 樹冠頂部高光鮮綠
+      roughness: 0.45,
+      metalness: 0.05
+    });
+    this.cathayCanopyShadowMat = new THREE.MeshStandardMaterial({
+      color: 0x007837, // 樹冠底部深陰影綠
+      roughness: 0.6,
+      metalness: 0.05
+    });
+    this.cathayTrunkMat = new THREE.MeshStandardMaterial({
+      color: 0x004d23, // 國泰深綠樹幹底座
+      roughness: 0.8,
+      metalness: 0.1
+    });
 
     this.bulletGeo = new THREE.SphereGeometry(6, 8, 8);
     this.bulletPlayerMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
@@ -1141,12 +1160,71 @@ export class FighterRenderer3D {
           mesh.position.set(x, 3, z);
           this.terrainGroup.add(mesh);
         } else if (tile === TILE_FOREST) {
-          const mesh = new THREE.Mesh(this.treeGeo, this.treeMat);
-          mesh.position.set(x, 16, z);
-          this.terrainGroup.add(mesh);
+          const treeGroup = this._createCathayTreeGroup();
+          treeGroup.position.set(x, 0, z);
+          this.terrainGroup.add(treeGroup);
         }
       }
     }
+  }
+
+  /**
+   * 🌳 打造國泰人壽風格 3D 大樹 (Cathay Life Tree 3D Model)
+   */
+  _createCathayTreeGroup() {
+    const treeGroup = new THREE.Group();
+
+    // 1. 國泰底座樹幹 (喇叭狀下開展 + 寬底座)
+    const baseGeo = new THREE.CylinderGeometry(6, 11, 4, 16);
+    const baseMesh = new THREE.Mesh(baseGeo, this.cathayTrunkMat);
+    baseMesh.position.y = 2;
+    baseMesh.castShadow = true;
+    treeGroup.add(baseMesh);
+
+    const trunkGeo = new THREE.CylinderGeometry(4.5, 6, 12, 16);
+    const trunkMesh = new THREE.Mesh(trunkGeo, this.cathayTrunkMat);
+    trunkMesh.position.y = 8;
+    trunkMesh.castShadow = true;
+    treeGroup.add(trunkMesh);
+
+    // 2. 國泰巨型弧形大樹冠 (主體蓬鬆圓弧)
+    const mainCanopyGeo = new THREE.SphereGeometry(15, 20, 16);
+    const mainCanopy = new THREE.Mesh(mainCanopyGeo, this.cathayCanopyMat);
+    mainCanopy.scale.set(1.25, 0.75, 1.25); // 展延寬廣的圓弧造型
+    mainCanopy.position.y = 20;
+    mainCanopy.castShadow = true;
+    mainCanopy.receiveShadow = true;
+    treeGroup.add(mainCanopy);
+
+    // 3. 國泰樹冠 - 頂部圓滑綠色高光層
+    const topCanopyGeo = new THREE.SphereGeometry(11.5, 18, 14);
+    const topCanopy = new THREE.Mesh(topCanopyGeo, this.cathayCanopyTopMat);
+    topCanopy.scale.set(1.15, 0.7, 1.15);
+    topCanopy.position.y = 23.5;
+    topCanopy.castShadow = true;
+    treeGroup.add(topCanopy);
+
+    // 4. 國泰綠樹左/右經典膨圓雲弧 (還原 LOGO 大樹頂側雙弧特徵)
+    const sideLeftGeo = new THREE.SphereGeometry(8.5, 16, 12);
+    const sideLeft = new THREE.Mesh(sideLeftGeo, this.cathayCanopyMat);
+    sideLeft.scale.set(1.1, 0.75, 1.0);
+    sideLeft.position.set(-8.5, 19, 0);
+    sideLeft.castShadow = true;
+    treeGroup.add(sideLeft);
+
+    const sideRight = new THREE.Mesh(sideLeftGeo, this.cathayCanopyMat);
+    sideRight.scale.set(1.1, 0.75, 1.0);
+    sideRight.position.set(8.5, 19, 0);
+    sideRight.castShadow = true;
+    treeGroup.add(sideRight);
+
+    // 5. 底部濃綠陰影層
+    const bottomGeo = new THREE.CylinderGeometry(14, 10, 4, 16);
+    const bottomShadow = new THREE.Mesh(bottomGeo, this.cathayCanopyShadowMat);
+    bottomShadow.position.y = 15;
+    treeGroup.add(bottomShadow);
+
+    return treeGroup;
   }
 
   _syncBulletsPooled(bullets) {
