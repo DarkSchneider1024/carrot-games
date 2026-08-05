@@ -238,13 +238,18 @@ export class BigTwoEngine {
     // Check Player Finish
     if (p.hand.length === 0) {
       p.isFinished = true;
-      this.rankings.push(playerIdx);
-      p.rank = this.rankings.length;
+      p.rank = this.rankings.length + 1;
+      this.rankings.push(p);
 
       if (this.mode === 'FIRST_OUT_WINS' || this.rankings.length === 3) {
-        this._endGame();
+        this.gamePhase = 'GAME_OVER';
+        this._calculateSettlement();
         return { success: true, finished: true };
       }
+    }
+
+    if (this.gamePhase === 'GAME_OVER') {
+      return { success: true, finished: true };
     }
 
     this._advanceTurn();

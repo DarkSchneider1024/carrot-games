@@ -1,5 +1,5 @@
 /**
- * 🀄 台灣 16 張麻將 — GodGame Style UIUX & Collapsible Floating Chatbox
+ * 🀄 台灣 16 張麻將 — GodGame Style 3D UIUX & Collapsible Floating Chatbox
  */
 
 .mahjong-page {
@@ -48,7 +48,7 @@
   50% { transform: rotate(90deg); }
 }
 
-/* 🌿 經典翡翠綠絨布 4 人對局檯面 */
+/* 🌿 經典翡翠綠絨布 3D 對局檯面 */
 .mahjong-table {
   position: relative;
   width: 100%;
@@ -58,17 +58,18 @@
   border-radius: 36px;
   border: 10px solid #78350f;
   box-shadow: 
-    inset 0 0 50px rgba(0, 0, 0, 0.6),
-    0 16px 40px rgba(0, 0, 0, 0.4);
+    inset 0 0 60px rgba(0, 0, 0, 0.7),
+    0 18px 45px rgba(0, 0, 0, 0.5);
   display: grid;
   grid-template-rows: 95px 1fr 180px;
   grid-template-columns: 130px 1fr 130px;
   padding: 12px;
   box-sizing: border-box;
   margin: 4px auto;
+  perspective: 1000px;
 }
 
-/* ── 🎭 神來也 4 大角色頭像卡片與發言泡泡 (Character Slots & Bubbles) ── */
+/* ── 🎭 神來也 4 大角色頭像卡片與喜怒哀樂表情 ── */
 .player-slot {
   display: flex;
   flex-direction: column;
@@ -81,28 +82,34 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   padding: 4px 10px;
   border-radius: 20px;
   border: 1.5px solid #34d399;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .char-avatar-img {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background-size: cover;
-  background-position: center;
-  border: 2px solid #34d399;
+  background-size: 200% 200% !important;
+  border: 2.5px solid #34d399;
   background-color: #fff;
   flex-shrink: 0;
+  transition: background-position 0.25s ease, transform 0.2s ease;
 }
 
 .char-avatar-img.small {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
 }
+
+/* 🎭 4種喜怒哀樂表情切換 (Joy, Angry, Sad, Happy) */
+.char-avatar-img.joy { background-position: 0% 0% !important; }
+.char-avatar-img.angry { background-position: 100% 0% !important; }
+.char-avatar-img.sad { background-position: 0% 100% !important; }
+.char-avatar-img.happy { background-position: 100% 100% !important; }
 
 .char-info-name {
   display: flex;
@@ -184,7 +191,7 @@
   padding: 4px;
 }
 
-/* 🀄 壓克力麻將牌樣式 */
+/* 🀄 Three3D 質感立體壓克力麻將牌 (3D Thick Tiles) */
 .mj-tile {
   display: inline-flex;
   flex-direction: column;
@@ -196,7 +203,11 @@
   border-radius: 8px;
   border: 1px solid #94a3b8;
   border-bottom: 6px solid #166534;
-  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.35);
+  box-shadow: 
+    0 12px 24px rgba(0, 0, 0, 0.35),
+    0 5px 0 #166534,
+    0 9px 0 #064e3b,
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.9);
   font-size: 1.9rem;
   font-weight: 900;
   color: #0f172a;
@@ -204,17 +215,21 @@
   transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   flex-shrink: 0;
+  transform-style: preserve-3d;
 }
 
 .mj-tile:hover {
-  transform: translateY(-8px);
+  transform: translateY(-10px) rotateX(8deg);
   border-color: #38bdf8;
 }
 
 .mj-tile.selected {
-  transform: translateY(-22px) !important;
+  transform: translateY(-24px) rotateX(12deg) !important;
   border: 3.5px solid #facc15 !important;
-  box-shadow: 0 0 26px #facc15, 0 10px 20px rgba(250, 204, 21, 0.6) !important;
+  box-shadow: 
+    0 0 28px #facc15,
+    0 12px 24px rgba(250, 204, 21, 0.6),
+    0 5px 0 #ca8a04 !important;
   z-index: 99 !important;
 }
 
@@ -229,7 +244,7 @@
   width: 20px;
   height: 30px;
   background: linear-gradient(135deg, #15803d 0%, #047857 100%);
-  border: 1px solid #22c55e;
+  border: 1.5px solid #22c55e;
 }
 
 /* 玩家手牌區 */
