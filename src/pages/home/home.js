@@ -190,7 +190,7 @@ export async function renderHome(container) {
         <!-- Big Two 13 Cards Card -->
         <div class="game-card animate-fade-in-up stagger-1" id="card-big-two" data-category="board">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_poker.png" alt="台灣大老二" class="game-card-img" />
+            <img src="./assets/images/icon_bigtwo.png" alt="台灣大老二" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">棋牌對戰</span>
             <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;">熱門爆發</span>
@@ -219,7 +219,7 @@ export async function renderHome(container) {
         <!-- Taiwan Mahjong 16 Card -->
         <div class="game-card animate-fade-in-up stagger-1" id="card-mahjong" data-category="board mahjong">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_fruit_havoc.png" alt="台灣16張麻將" class="game-card-img" />
+            <img src="./assets/images/icon_mahjong.png" alt="台灣16張麻將" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">棋牌 / 麻將</span>
             <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#10b981,#047857);color:#fff;">傳統重磅</span>
