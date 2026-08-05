@@ -178,16 +178,44 @@ export async function renderHome(container) {
         </div>
         <div class="home-filter-pills" id="home-filter-pills">
           <button class="filter-pill active" data-filter="all">全部遊戲</button>
-          <button class="filter-pill" data-filter="party">2D派對競速</button>
-          <button class="filter-pill" data-filter="board">棋牌對戰</button>
-          <button class="filter-pill" data-filter="puzzle">益智街機</button>
-          <button class="filter-pill" data-filter="card">撲克娛樂</button>
-          <button class="filter-pill" data-filter="action">3D動作空戰</button>
+          <button class="filter-pill" data-filter="board">🎴 棋牌對戰</button>
+          <button class="filter-pill" data-filter="strategy">⚔️ 戰略遊戲</button>
+          <button class="filter-pill" data-filter="party">🥳 派對遊戲</button>
+          <button class="filter-pill" data-filter="mahjong">🀄 麻將</button>
         </div>
       </div>
 
       <!-- Games Showcase Grid -->
       <section class="home-games" id="home-games-grid">
+        <!-- Taiwan Mahjong 16 Card -->
+        <div class="game-card animate-fade-in-up stagger-1" id="card-mahjong" data-category="board mahjong">
+          <div class="game-card-banner">
+            <img src="./assets/images/icon_fruit_havoc.png" alt="台灣16張麻將" class="game-card-img" />
+            <div class="game-card-overlay"></div>
+            <span class="badge badge-category">棋牌 / 麻將</span>
+            <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#10b981,#047857);color:#fff;">傳統重磅</span>
+          </div>
+          <div class="game-card-content">
+            <h3>台灣 16 張麻將 (TAIWAN MAHJONG)</h3>
+            <p>傳統十六張正宗麻將！具備智慧 AI 聽牌提示、吃碰槓與經典台數計算。</p>
+            
+            <div class="game-card-tags">
+              <span class="tag">${SVG_ICONS.cpu} 正宗16張</span>
+              <span class="tag">${SVG_ICONS.globe} 聽牌分析提示</span>
+              <span class="tag">${SVG_ICONS.storage} 台數自動計分</span>
+            </div>
+
+            <div class="game-card-actions">
+              <button class="btn btn-primary" id="btn-mahjong-ai">
+                ${SVG_ICONS.bot} 開局對戰 AI
+              </button>
+              <button class="btn btn-cyan" id="btn-mahjong-online">
+                ${SVG_ICONS.globe} 線上開房
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Chinese Chess Card -->
         <div class="game-card animate-fade-in-up stagger-2" id="card-xiangqi" data-category="board">
           <div class="game-card-banner">
@@ -218,11 +246,11 @@ export async function renderHome(container) {
         </div>
 
         <!-- Tetris Battle Card -->
-        <div class="game-card animate-fade-in-up stagger-3" id="card-tetris" data-category="puzzle">
+        <div class="game-card animate-fade-in-up stagger-3" id="card-tetris" data-category="party">
           <div class="game-card-banner">
             <img src="./assets/images/icon_gomoku.png" alt="俄羅斯方塊對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">益智街機</span>
+            <span class="badge badge-category">派對遊戲</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
           </div>
           <div class="game-card-content">
@@ -247,11 +275,11 @@ export async function renderHome(container) {
         </div>
 
         <!-- Poker Card -->
-        <div class="game-card animate-fade-in-up stagger-4" id="card-poker" data-category="card">
+        <div class="game-card animate-fade-in-up stagger-4" id="card-poker" data-category="board">
           <div class="game-card-banner">
             <img src="./assets/images/icon_poker.png" alt="德州撲克" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">撲克娛樂</span>
+            <span class="badge badge-category">棋牌對戰</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
           </div>
           <div class="game-card-content">
@@ -274,19 +302,19 @@ export async function renderHome(container) {
         </div>
 
         <!-- Magic Fighter Card -->
-        <div class="game-card animate-fade-in-up stagger-5" id="card-magic-fighter" data-category="action">
+        <div class="game-card animate-fade-in-up stagger-5" id="card-magic-fighter" data-category="strategy">
           <div class="game-card-banner">
             <img src="./assets/images/icon_magic_fighter.png" alt="魔法對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">3D動作空戰</span>
+            <span class="badge badge-category">戰略遊戲</span>
             <span class="badge badge-warning game-card-status">3D上市</span>
           </div>
           <div class="game-card-content">
             <h3>魔法對戰 (MAGIC FIGHTER)</h3>
             <p>傳承經典《坦克大戰》靈魂！重塑為魔法戰機空戰對決，保護蘿蔔水晶基地！</p>
             <div class="game-card-tags">
-              <span class="tag">${SVG_ICONS.cpu} 波次 AI 關卡</span>
-              <span class="tag">${SVG_ICONS.globe} 破壞磚牆</span>
+              <span class="tag">${SVG_ICONS.cpu} 36關卡進程</span>
+              <span class="tag">${SVG_ICONS.globe} 火龍Boss戰</span>
               <span class="tag">${SVG_ICONS.smartphone} 魔法道具升級</span>
             </div>
 
@@ -301,12 +329,12 @@ export async function renderHome(container) {
           </div>
         </div>
 
-        <!-- Fruit Havoc Card (超級雞馬玩法水果陷阱派對) -->
+        <!-- Fruit Havoc Card -->
         <div class="game-card animate-fade-in-up stagger-6" id="card-fruit-havoc" data-category="party">
           <div class="game-card-banner">
             <img src="./assets/images/icon_fruit_havoc.png" alt="水果極限闖關" class="game-card-img" />
             <div class="game-card-overlay"></div>
-            <span class="badge badge-category">派對平台競速</span>
+            <span class="badge badge-category">派對遊戲</span>
             <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ff7544,#ff70a6);color:#fff;">全新派對</span>
           </div>
           <div class="game-card-content">
@@ -571,8 +599,8 @@ export async function renderHome(container) {
       let visibleCount = 0;
 
       gameCards.forEach(card => {
-        const category = card.getAttribute('data-category');
-        if (selectedFilter === 'all' || category === selectedFilter) {
+        const category = card.getAttribute('data-category') || '';
+        if (selectedFilter === 'all' || category.includes(selectedFilter)) {
           card.style.display = 'flex';
           card.classList.remove('filter-hidden');
           visibleCount++;
@@ -591,6 +619,8 @@ export async function renderHome(container) {
 
   // Event handlers
   document.getElementById('btn-pwa-guide')?.addEventListener('click', () => navigate('/pwa-guide'));
+  document.getElementById('btn-mahjong-ai')?.addEventListener('click', () => navigate('/mahjong/ai'));
+  document.getElementById('btn-mahjong-online')?.addEventListener('click', () => navigate('/mahjong/online'));
   document.getElementById('btn-xiangqi-ai')?.addEventListener('click', () => navigate('/xiangqi/ai'));
   document.getElementById('btn-xiangqi-online')?.addEventListener('click', () => navigate('/xiangqi/online'));
   document.getElementById('btn-tetris-ai')?.addEventListener('click', () => navigate('/tetris/ai'));

@@ -1,0 +1,193 @@
+/**
+ * 🀄 台灣 16 張麻將 (Taiwan Mahjong 16 Tiles) — Page & Felt Table Styles
+ * Design System: Luxurious Mahogany Wood & Deep Emerald Green Felt Table Mat
+ */
+
+.mahjong-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at center, #064e3b 0%, #022c22 70%, #0f172a 100%);
+  color: #f8fafc;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+}
+
+/* 🌿 傳統綠色絨布沉浸式 4 人對局麻將檯面 */
+.mahjong-table {
+  position: relative;
+  flex: 1;
+  margin: 12px auto;
+  width: min(96vw, 860px);
+  height: min(78vh, 660px);
+  background: #047857;
+  border-radius: 20px;
+  border: 12px solid #78350f; /* 高級紅木雕花圍欄 */
+  box-shadow: 
+    inset 0 0 40px rgba(0, 0, 0, 0.6),
+    0 16px 36px rgba(0, 0, 0, 0.5),
+    0 0 0 2px #451a03;
+  display: grid;
+  grid-template-rows: 90px 1fr 140px;
+  grid-template-columns: 100px 1fr 100px;
+  padding: 12px;
+}
+
+/* 中央河牌區與資訊牌坊 */
+.mahjong-center-box {
+  grid-row: 2;
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: rgba(2, 44, 34, 0.45);
+  border-radius: 16px;
+  border: 1.5px solid rgba(52, 211, 153, 0.3);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+  padding: 10px;
+}
+
+.mahjong-dice-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.75);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #34d399;
+  font-size: 0.85rem;
+  color: #a7f3d0;
+  margin-bottom: 8px;
+}
+
+.discard-river-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  max-width: 360px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+/* 🀄 經典台灣壓克力立體麻將牌 (3D Acrylic Tiles) */
+.mj-tile {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 52px;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 85%, #cbd5e1 100%);
+  border-radius: 6px;
+  border: 1px solid #94a3b8;
+  border-bottom: 4px solid #166534; /* 綠色翡翠背牌膠底 */
+  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.35);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0f172a;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  position: relative;
+}
+
+.mj-tile:hover {
+  transform: translateY(-8px) scale(1.06);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 20px rgba(56, 189, 248, 0.4);
+}
+
+.mj-tile.selected {
+  transform: translateY(-14px);
+  border: 2px solid #facc15;
+  box-shadow: 0 0 16px #facc15;
+}
+
+.mj-tile.small {
+  width: 28px;
+  height: 38px;
+  font-size: 1.1rem;
+  border-bottom: 3px solid #166534;
+}
+
+.mj-tile.back {
+  background: linear-gradient(135deg, #15803d 0%, #047857 100%);
+  border: 1px solid #22c55e;
+  border-bottom: 4px solid #064e3b;
+}
+
+/* 玩家手牌區 (Bottom Player 1) */
+.player-bottom-zone {
+  grid-row: 3;
+  grid-column: 1 / span 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.player-hand-tiles {
+  display: flex;
+  gap: 3px;
+  flex-wrap: nowrap;
+  padding: 4px;
+}
+
+/* 動作操作面板 (Eat, Pong, Kong, Hu, Discard) */
+.mahjong-actions-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  padding: 10px 20px;
+  border-radius: 30px;
+  border: 1.5px solid #f59e0b;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  margin-bottom: 6px;
+}
+
+.btn-mj-action {
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.btn-mj-action:hover {
+  transform: scale(1.08);
+  filter: brightness(1.15);
+}
+
+.btn-mj-hu { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+.btn-mj-pong { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+.btn-mj-chow { background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; }
+.btn-mj-pass { background: linear-gradient(135deg, #64748b, #475569); color: #fff; }
+.btn-mj-ting { background: linear-gradient(135deg, #a855f7, #9333ea); color: #fff; }
+
+/* 聽牌提示面板 (Ting Hints Popover) */
+.ting-hint-box {
+  position: absolute;
+  bottom: 120px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid #c084fc;
+  border-radius: 16px;
+  padding: 12px 18px;
+  color: #f3e8ff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 320px;
+}
