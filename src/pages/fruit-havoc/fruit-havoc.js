@@ -582,6 +582,7 @@ export async function renderFruitHavoc(container, params = {}) {
       p.facing = 'right';
       p.isGrounded = true; p.isDead = false; p.reached = false;
       p.finishRank = 0;
+      p.teleportCD = 0;
     });
   };
 
@@ -740,6 +741,7 @@ export async function renderFruitHavoc(container, params = {}) {
     });
 
     players.forEach((p, idx) => {
+      if (p.teleportCD > 0) p.teleportCD -= 1;
       if (p.isDead || p.reached) return;
 
       let isLeft = idx === 0 ? keysState.p1Left : (idx === 1 ? keysState.p2Left : false);
@@ -783,16 +785,53 @@ export async function renderFruitHavoc(container, params = {}) {
         const ty = pt.gridY * TILE_SIZE + TILE_SIZE / 2;
         const dist = Math.hypot(p.x - tx, p.y - ty);
 
-        if (dist < 28) {
-          if (pt.trap.id === 9) {
+        if (dist < 32) {
+          // 🌀 傳送門 (ID 11)
+          if (pt.trap.id === 11 && p.teleportCD <= 0) {
+            const otherPortals = placedTraps.filter(t => t.trap.id === 11 && t.id !== pt.id);
+            if (otherPortals.length > 0) {
+              const destPortal = otherPortals[Math.floor(Math.random() * otherPortals.length)];
+              p.x = destPortal.gridX * TILE_SIZE + TILE_SIZE / 2;
+              p.y = destPortal.gridY * TILE_SIZE + TILE_SIZE / 2 - 12;
+              p.teleportCD = 30; // 0.5s 冷卻時間
+              playSound('spring');
+              showToast(`🌀 ${p.name} 穿過傳送門！`, 'info');
+            } else {
+              // 單傳送門向上彈躍
+              p.vy = -13.5;
+              p.teleportCD = 20;
+              playSound('spring');
+              showToast(`🌀 ${p.name} 觸發相位躍遷！`, 'info');
+            }
+          }
+          // 🍄 跳跳菇 (ID 9)
+          else if (pt.trap.id === 9) {
             p.vy = -16;
             p.isGrounded = false;
             playSound('spring');
-          } else if (pt.trap.id === 1) {
+          }
+          // 🥊 彈簧拳擊 (ID 1)
+          else if (pt.trap.id === 1) {
             p.vx = 11;
             p.vy = -5;
             playSound('hit');
-          } else if (pt.trap.id === 2 || pt.trap.id === 8) {
+          }
+          // 🌪️ 龍捲風場 (ID 6)
+          else if (pt.trap.id === 6) {
+            p.vy = -12.5;
+            p.isGrounded = false;
+            playSound('spring');
+          }
+          // 🍯 蜂蜜黏膠 (ID 4)
+          else if (pt.trap.id === 4) {
+            p.vx *= 0.3;
+          }
+          // 🍌 香蕉滑道 (ID 3)
+          else if (pt.trap.id === 3) {
+            p.vx = p.facing === 'left' ? -8.5 : 8.5;
+          }
+          // 💥 致命陷阱: 草莓電鋸 (ID 2), 仙人掌刺 (ID 8), 黑洞 (ID 13)
+          else if (pt.trap.id === 2 || pt.trap.id === 8 || pt.trap.id === 13) {
             p.isDead = true;
             playSound('hit');
             showToast(`💥 ${p.name} 踩中【${pt.trap.name}】陣亡！`, 'warning');
