@@ -95,9 +95,9 @@ export async function renderFruitHavoc(container, params = {}) {
   const mode = params.mode || 'local'; // 'local' or 'online'
 
   const FRUIT_CHARACTERS = [
-    { id: 'strawberry', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '速度型 (靈活移動)', speed: 5.2, jump: -12.5, color: '#ef4444' },
-    { id: 'banana', name: '香蕉烏薩奇', icon: '🍌', img: './assets/images/char_banana_usagi.png', trait: '高跳型 (超強跳躍)', speed: 4.6, jump: -14.2, color: '#eab308' },
-    { id: 'melon', name: '哈密瓜小八', icon: '🍈', img: './assets/images/char_melon_hachi.png', trait: '均衡型 (穩健控球)', speed: 4.8, jump: -13.0, color: '#22c55e' },
+    { id: 'strawberry', name: '金黃寶貝兔', icon: '🐰', img: './assets/images/kenney_jumper_hero.png', trait: '速度型 (靈活跳躍)', speed: 5.2, jump: -12.5, color: '#eab308' },
+    { id: 'banana', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '高跳型 (超強衝刺)', speed: 4.8, jump: -13.5, color: '#ef4444' },
+    { id: 'melon', name: '哈密瓜小八', icon: '🍈', img: './assets/images/char_melon_hachi.png', trait: '均衡型 (穩健跳躍)', speed: 4.8, jump: -13.0, color: '#22c55e' },
     { id: 'peach', name: '水桃栗饅頭', icon: '🍑', img: './assets/images/char_peach_kuriman.png', trait: '重裝型 (抗推霸體)', speed: 4.2, jump: -12.0, color: '#f97316' },
     { id: 'grape', name: '飛天葡萄飛鼠', icon: '🍇', img: './assets/images/char_grape_momonga.png', trait: '滑翔型 (空中滯空)', speed: 5.6, jump: -13.5, color: '#a855f7' }
   ];
@@ -915,6 +915,8 @@ export async function renderFruitHavoc(container, params = {}) {
   bgFairylandImg.src = './assets/images/kenney_sky_bg.png';
   const goalCastleImg = new Image();
   goalCastleImg.src = './assets/images/asset_goal_castle.png';
+  const kenneyPlatformImg = new Image();
+  kenneyPlatformImg.src = './assets/images/kenney_platform_grass.png';
 
   const draw2DStage = () => {
     if (!ctx) return;
@@ -938,21 +940,29 @@ export async function renderFruitHavoc(container, params = {}) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(stageWidth, y); ctx.stroke();
     }
 
+    // 🌟 Kenney Jumper Pack 經典風格草皮平台資產繪製
     PLATFORMS.forEach(plat => {
-      ctx.fillStyle = '#b45309';
-      ctx.fillRect(plat.x, plat.y + plat.h, plat.w, 10);
+      if (kenneyPlatformImg.complete && kenneyPlatformImg.naturalWidth !== 0) {
+        ctx.save();
+        // 繪製地圖平台
+        ctx.drawImage(kenneyPlatformImg, plat.x, plat.y - 2, plat.w, plat.h + 4);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = '#b45309';
+        ctx.fillRect(plat.x, plat.y + plat.h, plat.w, 10);
 
-      const platGrad = ctx.createLinearGradient(0, plat.y, 0, plat.y + plat.h);
-      platGrad.addColorStop(0, '#fcd34d');
-      platGrad.addColorStop(1, '#f59e0b');
-      ctx.fillStyle = platGrad;
-      ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
-      ctx.strokeStyle = '#d97706';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(plat.x, plat.y, plat.w, plat.h);
+        const platGrad = ctx.createLinearGradient(0, plat.y, 0, plat.y + plat.h);
+        platGrad.addColorStop(0, '#fcd34d');
+        platGrad.addColorStop(1, '#f59e0b');
+        ctx.fillStyle = platGrad;
+        ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(plat.x, plat.y, plat.w, plat.h);
 
-      ctx.fillStyle = '#4ade80';
-      ctx.fillRect(plat.x, plat.y - 3, plat.w, 5);
+        ctx.fillStyle = '#4ade80';
+        ctx.fillRect(plat.x, plat.y - 3, plat.w, 5);
+      }
     });
 
     if (goalCastleImg.complete && goalCastleImg.naturalWidth !== 0) {
