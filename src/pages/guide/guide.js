@@ -24,7 +24,10 @@ export async function renderGameGuide(container, params = {}) {
 
       <!-- Navigation Tabs -->
       <div class="guide-tabs-bar">
-        <button class="guide-tab-btn ${defaultTab === 'mahjong' ? 'active' : ''}" data-tab="mahjong" style="background:linear-gradient(135deg,#10b981,#047857);color:#fff;border:none;">
+        <button class="guide-tab-btn ${defaultTab === 'bigTwo' ? 'active' : ''}" data-tab="bigTwo" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;">
+          ♠ 台灣大老二
+        </button>
+        <button class="guide-tab-btn ${defaultTab === 'mahjong' ? 'active' : ''}" data-tab="mahjong">
           🀄 台灣16張麻將
         </button>
         <button class="guide-tab-btn ${defaultTab === 'fruitHavoc' ? 'active' : ''}" data-tab="fruitHavoc">

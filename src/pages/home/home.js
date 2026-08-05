@@ -187,6 +187,35 @@ export async function renderHome(container) {
 
       <!-- Games Showcase Grid -->
       <section class="home-games" id="home-games-grid">
+        <!-- Big Two 13 Cards Card -->
+        <div class="game-card animate-fade-in-up stagger-1" id="card-big-two" data-category="board">
+          <div class="game-card-banner">
+            <img src="./assets/images/icon_poker.png" alt="台灣大老二" class="game-card-img" />
+            <div class="game-card-overlay"></div>
+            <span class="badge badge-category">棋牌對戰</span>
+            <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;">熱門爆發</span>
+          </div>
+          <div class="game-card-content">
+            <h3>台灣大老二 (BIG TWO)</h3>
+            <p>經典十三張大老二！支援「快殺結束」與「全打完排名」雙玩法，業界標準台數計分。</p>
+            
+            <div class="game-card-tags">
+              <span class="tag">${SVG_ICONS.cpu} 雙模式競賽</span>
+              <span class="tag">${SVG_ICONS.globe} 爆張三倍計算</span>
+              <span class="tag">${SVG_ICONS.storage} 2加倍懲罰</span>
+            </div>
+
+            <div class="game-card-actions">
+              <button class="btn btn-primary" id="btn-bigtwo-ai">
+                ${SVG_ICONS.bot} 開局對戰 AI
+              </button>
+              <button class="btn btn-cyan" id="btn-bigtwo-online">
+                ${SVG_ICONS.globe} 線上開房
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Taiwan Mahjong 16 Card -->
         <div class="game-card animate-fade-in-up stagger-1" id="card-mahjong" data-category="board mahjong">
           <div class="game-card-banner">
@@ -619,6 +648,8 @@ export async function renderHome(container) {
 
   // Event handlers
   document.getElementById('btn-pwa-guide')?.addEventListener('click', () => navigate('/pwa-guide'));
+  document.getElementById('btn-bigtwo-ai')?.addEventListener('click', () => navigate('/big-two/ai'));
+  document.getElementById('btn-bigtwo-online')?.addEventListener('click', () => navigate('/big-two/online'));
   document.getElementById('btn-mahjong-ai')?.addEventListener('click', () => navigate('/mahjong/ai'));
   document.getElementById('btn-mahjong-online')?.addEventListener('click', () => navigate('/mahjong/online'));
   document.getElementById('btn-xiangqi-ai')?.addEventListener('click', () => navigate('/xiangqi/ai'));
