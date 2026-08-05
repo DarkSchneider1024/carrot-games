@@ -1,6 +1,6 @@
 /**
  * 🀄 台灣 16 張麻將 — Sanrio & Chiikawa Kawaii Theme Page
- * Features Macaron Pastel UI, Rotate Device Notice, & Chiikawa Player Avatars
+ * Extreme Mobile & Landscape Adaptation Fix
  */
 
 import { MahjongEngine, TILE_NAMES, TILE_UNICODE } from '../../games/mahjong/mahjong-engine.js';
@@ -11,7 +11,7 @@ import './mahjong.css';
 
 export async function renderMahjong(container, params = {}) {
   let engine = new MahjongEngine();
-  engine.initGame(0, 0); // Start with P1 as Dealer
+  engine.initGame(0, 0);
 
   let selectedTileIdx = -1;
   let showTingHint = false;
@@ -33,13 +33,13 @@ export async function renderMahjong(container, params = {}) {
             ${SVG_ICONS.back} <span>大廳</span>
           </button>
           <div class="topbar-title">
-            <span class="game-name">🀄 台灣 16 張麻將 (SANRIO & CHIIKAWA MAHJONG)</span>
-            <span class="badge badge-warning" style="background:linear-gradient(135deg,#f472b6,#c084fc);color:#fff;">吉伊三麗鷗萌系對局</span>
+            <span class="game-name">🀄 台灣 16 張麻將 (MAHJONG 16)</span>
+            <span class="badge badge-warning" style="background:linear-gradient(135deg,#f472b6,#c084fc);color:#fff;">正宗傳統對局</span>
           </div>
         </div>
         <div class="topbar-actions">
-          <button class="btn btn-ghost btn-sm" id="btn-mj-restart" title="重新發牌">
-            ${SVG_ICONS.refresh} 重新發牌
+          <button class="btn btn-ghost btn-sm" id="btn-mj-restart" title="發牌">
+            ${SVG_ICONS.refresh} 發牌
           </button>
         </div>
       </div>
@@ -47,23 +47,23 @@ export async function renderMahjong(container, params = {}) {
       <!-- 🌿 Emerald Green Felt Mahjong Table -->
       <div class="mahjong-table">
         <!-- Top AI Player (P3) -->
-        <div style="grid-row:1;grid-column:2;display:flex;flex-direction:column;align-items:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;">
+        <div style="grid-row:1;grid-column:2;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;">
             🥕 北家 (北極萌蘿蔔)
           </div>
-          <div id="p3-tiles" style="display:flex;gap:2px;margin-top:4px;"></div>
+          <div id="p3-tiles" style="display:flex;gap:1px;margin-top:2px;"></div>
         </div>
 
         <!-- Left AI Player (P4) -->
         <div style="grid-row:2;grid-column:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(-90deg);">
+          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;transform:rotate(-90deg);">
             🥕 西家 (西城白蘿蔔)
           </div>
         </div>
 
         <!-- Right AI Player (P2) -->
         <div style="grid-row:2;grid-column:3;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(90deg);">
+          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;transform:rotate(90deg);">
             🥕 南家 (東區胡蘿蔔)
           </div>
         </div>
@@ -82,26 +82,23 @@ export async function renderMahjong(container, params = {}) {
 
         <!-- Bottom Player Zone (P1 - Human) -->
         <div class="player-bottom-zone">
-          <!-- Action Control Bar (Eat, Pong, Kong, Hu, Ting) -->
+          <!-- 🀄 主要手牌顯示區 (放在頂部醒目位置) -->
+          <div class="player-hand-tiles" id="p1-hand-tiles"></div>
+
+          <!-- 動作控制按鈕區 -->
           <div class="mahjong-actions-bar" id="mj-actions-bar">
             <button class="btn-mj-action btn-mj-ting" id="btn-mj-ting">💡 聽牌分析</button>
             <button class="btn-mj-action btn-mj-hu" id="btn-mj-hu" style="display:none;">🀄 自摸 / 胡牌</button>
-          </div>
-
-          <!-- Hand Tiles -->
-          <div class="player-hand-tiles" id="p1-hand-tiles"></div>
-          <div style="font-size:0.85rem;color:#db2777;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 12px;border-radius:12px;">
-            🥕 東家 (黃金蘿蔔寶貝) — 點擊手牌出牌
           </div>
         </div>
       </div>
 
       <!-- Ting Hint Popover -->
-      <div class="ting-hint-box" id="ting-hint-box" style="display:none;position:absolute;bottom:120px;background:rgba(255,255,255,0.95);border:2px solid #f472b6;border-radius:16px;padding:12px;color:#1e293b;z-index:99;"></div>
+      <div class="ting-hint-box" id="ting-hint-box" style="display:none;position:absolute;bottom:110px;background:rgba(255,255,255,0.95);border:2px solid #f472b6;border-radius:16px;padding:12px;color:#1e293b;z-index:99;"></div>
     </div>
   `;
 
-  // Bind Header Controls
+  // Bind Controls
   container.querySelector('#btn-mj-back')?.addEventListener('click', () => navigate('/'));
   container.querySelector('#btn-close-mj-notice')?.addEventListener('click', () => {
     const notice = container.querySelector('#mj-rotate-notice');
@@ -142,7 +139,7 @@ export async function renderMahjong(container, params = {}) {
       p1HandBox.innerHTML = p1.hand.map((t, idx) => `
         <div class="mj-tile ${idx === selectedTileIdx ? 'selected' : ''}" data-idx="${idx}" data-tile="${t}">
           <span>${TILE_UNICODE[t] || t}</span>
-          <span style="font-size:0.65rem;margin-top:-3px;color:#64748b;">${TILE_NAMES[t] || t}</span>
+          <span style="font-size:0.6rem;margin-top:-2px;color:#64748b;">${TILE_NAMES[t] || t}</span>
         </div>
       `).join('');
 

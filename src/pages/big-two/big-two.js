@@ -12,7 +12,7 @@ import './big-two.css';
 
 export async function renderBigTwo(container, params = {}) {
   let engine = new BigTwoEngine();
-  let currentMode = 'FIRST_OUT_WINS'; // 'FIRST_OUT_WINS' or 'PLAY_ALL_OUT'
+  let currentMode = 'FIRST_OUT_WINS';
   engine.initGame(currentMode);
 
   let selectedCards = [];
@@ -34,67 +34,66 @@ export async function renderBigTwo(container, params = {}) {
             ${SVG_ICONS.back} <span>大廳</span>
           </button>
           <div class="topbar-title">
-            <span class="game-name">♠ 台灣大老二 (SANRIO & CHIIKAWA BIG TWO)</span>
-            <span class="badge badge-warning" style="background:linear-gradient(135deg,#c084fc,#f472b6);color:#fff;">吉伊酷洛米萌系大決戰</span>
+            <span class="game-name">♠ 台灣大老二 (BIG TWO)</span>
+            <span class="badge badge-warning" style="background:linear-gradient(135deg,#c084fc,#f472b6);color:#fff;">正宗競賽模式</span>
           </div>
         </div>
         <div class="topbar-actions" style="display:flex;gap:8px;">
-          <select id="select-bt-mode" style="padding:6px 12px;border-radius:12px;background:#ffffff;border:1.5px solid #f472b6;color:#db2777;font-weight:800;">
-            <option value="FIRST_OUT_WINS">⚡ 模式 1: 快殺結束 (首位出完即勝)</option>
-            <option value="PLAY_ALL_OUT">👑 模式 2: 全打完排名 (爭奪前三名)</option>
+          <select id="select-bt-mode" style="padding:4px 10px;border-radius:12px;background:#ffffff;border:1.5px solid #f472b6;color:#db2777;font-weight:800;font-size:0.8rem;">
+            <option value="FIRST_OUT_WINS">⚡ 模式 1: 快殺結束</option>
+            <option value="PLAY_ALL_OUT">👑 模式 2: 全打完排名</option>
           </select>
           <button class="btn btn-ghost btn-sm" id="btn-bt-restart">
-            ${SVG_ICONS.refresh} 重新發牌
+            ${SVG_ICONS.refresh} 發牌
           </button>
         </div>
       </div>
 
-      <!-- ♠ Casino Navy Blue / Kuromi Purple Table -->
+      <!-- ♠ Casino Kuromi Purple Table -->
       <div class="bigtwo-table">
         <!-- Top AI Player (P3) -->
-        <div style="grid-row:1;grid-column:2;display:flex;flex-direction:column;align-items:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;">
+        <div style="grid-row:1;grid-column:2;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;">
             🥕 北極萌蘿蔔 (<span id="p3-card-count">13</span>張)
           </div>
-          <div id="p3-cards-row" style="display:flex;gap:2px;margin-top:4px;"></div>
+          <div id="p3-cards-row" style="display:flex;gap:1px;margin-top:2px;"></div>
         </div>
 
         <!-- Left AI Player (P4) -->
         <div style="grid-row:2;grid-column:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(-90deg);">
+          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;transform:rotate(-90deg);">
             🥕 西城白蘿蔔 (<span id="p4-card-count">13</span>張)
           </div>
         </div>
 
         <!-- Right AI Player (P2) -->
         <div style="grid-row:2;grid-column:3;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(90deg);">
+          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;transform:rotate(90deg);">
             🥕 東區胡蘿蔔 (<span id="p2-card-count">13</span>張)
           </div>
         </div>
 
         <!-- Center Discard & Round Information -->
         <div class="bigtwo-center-area">
-          <div style="font-size:0.85rem;color:#db2777;font-weight:800;margin-bottom:6px;" id="bt-current-turn-label">
+          <div style="font-size:0.8rem;color:#db2777;font-weight:800;margin-bottom:4px;" id="bt-current-turn-label">
             當前回合: 🥕 玩家 (你)
           </div>
 
           <!-- Last Played Combination -->
           <div class="last-play-combo-box" id="last-played-box">
-            <span style="font-size:0.85rem;color:#94a3b8;">等待首家開局出牌 (須含 ♣3)</span>
+            <span style="font-size:0.8rem;color:#64748b;">自由出牌輪 (自由選擇任意合法牌型)</span>
           </div>
         </div>
 
         <!-- Bottom Player Hand Zone (P1 - Human) -->
         <div class="bigtwo-player-hand">
+          <!-- ♠ 主要手牌顯示區 (放在頂部醒目可按位置) -->
+          <div class="cards-hand-row" id="p1-hand-cards"></div>
+
+          <!-- 動作控制按鈕區 -->
           <div class="bigtwo-actions-bar">
             <button class="btn-bt-action btn-bt-play" id="btn-bt-play">♠ 確定出牌</button>
             <button class="btn-bt-action btn-bt-pass" id="btn-bt-pass">❌ PASS 過牌</button>
-          </div>
-
-          <div class="cards-hand-row" id="p1-hand-cards"></div>
-          <div style="font-size:0.85rem;color:#db2777;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 12px;border-radius:12px;">
-            🥕 玩家 (黃金蘿蔔寶貝) — 點擊選取或取消手牌
           </div>
         </div>
       </div>
@@ -115,7 +114,7 @@ export async function renderBigTwo(container, params = {}) {
     </div>
   `;
 
-  // Bind Header Controls
+  // Bind Controls
   container.querySelector('#btn-bt-back')?.addEventListener('click', () => navigate('/'));
   
   const selectMode = container.querySelector('#select-bt-mode');
@@ -160,7 +159,7 @@ export async function renderBigTwo(container, params = {}) {
     // Current turn label
     const turnLabel = container.querySelector('#bt-current-turn-label');
     if (turnLabel) {
-      turnLabel.textContent = `當前回合: ${state.players[state.currentTurn].name}`;
+      turnLabel.textContent = `當前的回合: ${state.players[state.currentTurn].name}`;
     }
 
     // Top AI (P3) Concealed Back Cards
@@ -180,7 +179,7 @@ export async function renderBigTwo(container, params = {}) {
           </div>
         `).join('');
       } else {
-        lastBox.innerHTML = `<span style="font-size:0.85rem;color:#db2777;font-weight:700;">自由出牌輪 (自由選擇任意合法牌型)</span>`;
+        lastBox.innerHTML = `<span style="font-size:0.8rem;color:#db2777;font-weight:700;">自由出牌輪 (自由選擇任意合法牌型)</span>`;
       }
     }
 
