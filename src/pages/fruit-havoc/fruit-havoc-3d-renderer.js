@@ -311,10 +311,33 @@ export class FruitHavoc3DRenderer {
         const targetY = this.canvasHeight - p.y;
         playerMeshGroup.position.set(targetX, targetY, 20);
 
+        const now = Date.now();
+        let scaleX = 1.0;
+        let scaleY = 1.0;
+        let scaleZ = 1.0;
+        let rotZ = 0;
+
+        if (p.animState === 'run') {
+          scaleY = 1.0 + Math.sin(now * 0.018) * 0.08;
+        } else if (p.animState === 'jump') {
+          scaleX = 0.82; scaleY = 1.3; scaleZ = 0.82; // 3D Stretch
+        } else if (p.animState === 'fall') {
+          scaleX = 1.2; scaleY = 0.8; scaleZ = 1.2; // 3D Squish
+        } else if (p.animState === 'wallSlide') {
+          rotZ = p.facing === 'left' ? 0.28 : -0.28; // 3D Wall Tilt
+        } else if (p.animState === 'wallJump') {
+          rotZ = p.facing === 'left' ? -0.45 : 0.45;
+          scaleX = 0.85; scaleY = 1.25;
+        }
+
+        playerMeshGroup.scale.set(scaleX, scaleY, scaleZ);
+
         if (p.facing === 'left') {
           playerMeshGroup.rotation.y = Math.PI;
+          playerMeshGroup.rotation.z = -rotZ;
         } else {
           playerMeshGroup.rotation.y = 0;
+          playerMeshGroup.rotation.z = rotZ;
         }
 
         const tex = this.characterTextures[p.char.id];

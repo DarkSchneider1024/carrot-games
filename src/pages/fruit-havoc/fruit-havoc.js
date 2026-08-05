@@ -630,9 +630,21 @@ export async function renderFruitHavoc(container, params = {}) {
   };
 
   const _playerJump = (player) => {
-    if (player && player.isGrounded && !player.isDead && !player.reached) {
+    if (!player || player.isDead || player.reached) return;
+
+    if (player.isGrounded) {
       player.vy = player.char.jump;
       player.isGrounded = false;
+      player.isWallSliding = false;
+      player.animState = 'jump';
+      playSound('jump');
+    } else if (player.isWallSliding) {
+      // 🧗 蹬牆反彈爬牆跳 (Wall Jump Counter Boost!)
+      player.vy = player.char.jump * 0.95;
+      player.vx = player.wallSide === 'left' ? player.char.speed * 1.35 : -player.char.speed * 1.35;
+      player.facing = player.wallSide === 'left' ? 'right' : 'left';
+      player.isWallSliding = false;
+      player.animState = 'wallJump';
       playSound('jump');
     }
   };
@@ -783,6 +795,23 @@ export async function renderFruitHavoc(container, params = {}) {
       if (p.x > stageWidth - 15) p.x = stageWidth - 15;
 
       p.isGrounded = false;
+      p.isWallSliding = false;
+      p.wallSide = null;
+
+      // 🧗 檢測周圍平台牆面摩擦 (Wall Sliding Detection)
+      if (!p.isGrounded && p.vy > 0) {
+        PLATFORMS.forEach(plat => {
+          const isTouchingLeftWall = (p.x + 18 >= plat.x && p.x + 18 <= plat.x + 10 && p.y >= plat.y && p.y <= plat.y + plat.h);
+          const isTouchingRightWall = (p.x - 18 <= plat.x + plat.w && p.x - 18 >= plat.x + plat.w - 10 && p.y >= plat.y && p.y <= plat.y + plat.h);
+
+          if ((isTouchingLeftWall && isRight) || (isTouchingRightWall && isLeft)) {
+            p.isWallSliding = true;
+            p.wallSide = isTouchingLeftWall ? 'left' : 'right';
+            p.vy = Math.min(p.vy, 2.2); // 貼牆緩慢滑下摩擦力
+          }
+        });
+      }
+
       PLATFORMS.forEach(plat => {
         if (
           p.x + 16 > plat.x &&
@@ -794,8 +823,19 @@ export async function renderFruitHavoc(container, params = {}) {
           p.y = plat.y - 18;
           p.vy = 0;
           p.isGrounded = true;
+          p.isWallSliding = false;
         }
       });
+
+      // 姿態動作動態判定 (Animation State Machine)
+      if (p.isWallSliding) {
+        p.animState = 'wallSlide';
+      } else if (p.isGrounded) {
+        p.animState = Math.abs(p.vx) > 0.5 ? 'run' : 'idle';
+      } else {
+        if (p.vy < 0) p.animState = 'jump';
+        else p.animState = 'fall';
+      }
 
       placedTraps.forEach(pt => {
         const tx = pt.gridX * TILE_SIZE + TILE_SIZE / 2;
@@ -1037,39 +1077,69 @@ export async function renderFruitHavoc(container, params = {}) {
       if (!p.isDead) {
         ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
         ctx.beginPath();
-        ctx.ellipse(p.x, p.y + 14, 14, 5, 0, 0, Math.PI * 2);
+        ctx.ellipse(p.x, p.y + 16, 14, 5, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        const spriteImg = charSpriteImages[p.char.id];
         ctx.save();
         ctx.translate(p.x, p.y);
         if (p.facing === 'left') ctx.scale(-1, 1);
 
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(0, -6, 20, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = p.char.color || '#ff7544';
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
+        const now = Date.now();
+        let scaleX = 1.0;
+        let scaleY = 1.0;
+        let offsetY = 0;
+        let rotAngle = 0;
 
-        ctx.beginPath();
-        ctx.arc(0, -6, 18.5, 0, Math.PI * 2);
-        ctx.clip();
-
-        if (spriteImg && spriteImg.complete && spriteImg.naturalWidth !== 0) {
-          ctx.drawImage(spriteImg, -20, -26, 40, 40);
-        } else {
-          ctx.font = '24px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(p.char.icon, 0, 0);
+        // 🎨 動作姿態變換邏輯 (Dynamic Pixel-Art Action Pose Engine)
+        if (p.animState === 'run') {
+          offsetY = Math.sin(now * 0.018) * 3; // 跑步上下踏步彈躍
+          rotAngle = Math.sin(now * 0.018) * 0.12;
+        } else if (p.animState === 'jump') {
+          scaleX = 0.82; scaleY = 1.25; // 起跳拉長伸縮 (Stretch Up)
+        } else if (p.animState === 'fall') {
+          scaleX = 1.18; scaleY = 0.85; // 下落壓扁預備 (Squish Down)
+        } else if (p.animState === 'wallSlide') {
+          rotAngle = -0.25; // 攀貼牆面傾斜角度
+          offsetY = -2;
+        } else if (p.animState === 'wallJump') {
+          rotAngle = 0.45; // 蹬牆反彈向外旋轉
+          scaleX = 0.8; scaleY = 1.3;
         }
+
+        ctx.rotate(rotAngle);
+        ctx.scale(scaleX, scaleY);
+
+        // 👾 畫像素風純色亮眼主體邊線外框 (Pixel Style Character Silhouette)
+        ctx.fillStyle = p.char.color || '#ff7544';
+        ctx.fillRect(-16, -22 + offsetY, 32, 32);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(-16, -22 + offsetY, 32, 32);
+
+        // 👾 畫像素閃爍大眼睛與動作表情
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(2, -16 + offsetY, 7, 7);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(5, -14 + offsetY, 3, 3);
+
+        const spriteImg = charSpriteImages[p.char.id];
+        if (spriteImg && spriteImg.complete && spriteImg.naturalWidth !== 0) {
+          ctx.drawImage(spriteImg, -14, -20 + offsetY, 28, 28);
+        }
+
+        // 攀牆滑行效果水花火花氣泡
+        if (p.animState === 'wallSlide') {
+          ctx.fillStyle = '#cbd5e1';
+          ctx.fillRect(-18, 2 + offsetY, 4, 4);
+          ctx.fillRect(-22, 6 + offsetY, 4, 4);
+        }
+
         ctx.restore();
 
         ctx.fillStyle = p.char.color;
-        ctx.font = 'bold 10px sans-serif';
+        ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`${p.name} (${p.char.icon})`, p.x, p.y - 30);
+        ctx.fillText(`${p.name} (${p.char.icon})`, p.x, p.y - 32);
       }
     });
   };
