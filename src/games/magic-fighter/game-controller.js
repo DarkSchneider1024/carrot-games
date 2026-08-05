@@ -29,6 +29,17 @@ export const POWERUP_STAR = 'star';
 export const POWERUP_SHOVEL = 'shovel';
 export const POWERUP_LIFE = 'life';
 
+export const TOTAL_STAGES = 36;
+export const IMPLEMENTED_STAGES = 5;
+
+export const STAGE_CONFIGS = {
+  1: { count: 10, maxOnScreen: 4, label: '第 1 關 - 紫蝠小試身手', boss: null },
+  2: { count: 14, maxOnScreen: 5, label: '第 2 關 - 皇家獅鷲空襲', boss: null },
+  3: { count: 18, maxOnScreen: 5, label: '第 3 關 - 龍族衛隊進犯', boss: null },
+  4: { count: 22, maxOnScreen: 6, label: '第 4 關 - 狂暴軍團總動員', boss: null },
+  5: { count: 20, maxOnScreen: 6, label: '第 5 關 - 終極 Boss 烈焰火龍大決戰！', boss: 'red_dragon' }
+};
+
 export class MagicFighterGame {
   constructor() {
     this.width = 640;
@@ -39,11 +50,11 @@ export class MagicFighterGame {
     this.gameOver = false;
     this.victory = false;
     this.score = 0;
-    this.mode = 'ai'; // 'ai' (NES Wave Stage) or 'pvp' (Dual HQ)
-    this.wave = 1;
-    this.maxWaves = 5;
-    this.enemiesRemaining = 12;
-    this.maxEnemiesOnScreen = 5;
+    this.mode = 'ai'; // 'ai' (NES Stage) or 'pvp' (Dual HQ)
+    this.stage = 1;
+    this.maxStages = TOTAL_STAGES;
+    this.enemiesRemaining = 10;
+    this.maxEnemiesOnScreen = 4;
 
     // Player Mana Resource & Base HQ (Bottom)
     this.playerMana = 120;
@@ -113,12 +124,16 @@ export class MagicFighterGame {
     this.newGame(1);
   }
 
-  newGame(wave = 1) {
+  newGame(stage = 1) {
     this.running = true;
     this.gameOver = false;
     this.victory = false;
-    this.wave = wave;
-    this.enemiesRemaining = 8 + wave * 4; // Wave 1: 12, Wave 2: 16, Wave 3: 20, Wave 4: 24, Wave 5: 28
+    this.stage = Math.min(TOTAL_STAGES, Math.max(1, stage));
+
+    const cfg = STAGE_CONFIGS[this.stage] || { count: 12 + this.stage * 3, maxOnScreen: 5, boss: null };
+    this.enemiesRemaining = cfg.count;
+    this.maxEnemiesOnScreen = cfg.maxOnScreen;
+    this.hasSpawnedBoss = false;
     this.playerMana = 120;
 
     this.playerBase.hp = 500;
@@ -410,24 +425,27 @@ export class MagicFighterGame {
     this._updateEnemyAI(now);
     this._updateBullets();
 
-    if (this.mode === 'ai') {
-      if (this.enemiesRemaining <= 0 && this.enemyCreeps.length === 0) {
-        if (this.wave < this.maxWaves) {
-          this.newGame(this.wave + 1);
-        } else {
-          this.gameOver = true;
-          this.victory = true;
-          this.score += 3000;
-          if (this.onGameOver) this.onGameOver({ victory: true, score: this.score, reason: '🎉 恭喜全通 5 大波次關卡！獲得 3D 空戰總冠軍！' });
+    if (this.enemiesRemaining <= 0 && this.enemyCreeps.length === 0) {
+      this.gameOver = true;
+      this.victory = true;
+      this.score += 500 * this.stage;
+
+      if (this.stage < IMPLEMENTED_STAGES) {
+        if (this.onStageClear) {
+          this.onStageClear({
+            clearedStage: this.stage,
+            nextStage: this.stage + 1,
+            score: this.score
+          });
         }
-      }
-    } else if (this.mode === 'pvp') {
-      if (this.enemyBase.hp <= 0) {
-        this.enemyBase.destroyed = true;
-        this.gameOver = true;
-        this.victory = true;
-        this.score += 2000;
-        if (this.onGameOver) this.onGameOver({ victory: true, score: this.score, reason: '成功摧毀敵方魔龍主塔！3D 戰局全勝！' });
+      } else {
+        if (this.onGameOver) {
+          this.onGameOver({
+            victory: true,
+            score: this.score,
+            reason: '👑 恭喜成功擊敗第 5 關【烈焰火龍 Boss】！通關當前版本所有關卡！'
+          });
+        }
       }
     }
 
@@ -435,7 +453,7 @@ export class MagicFighterGame {
       this.playerBase.destroyed = true;
       this.gameOver = true;
       this.victory = false;
-      if (this.onGameOver) this.onGameOver({ victory: false, score: this.score, reason: '蘿蔔 HQ 藍晶總部失守毀壞！戰局結束！' });
+      if (this.onGameOver) this.onGameOver({ victory: false, score: this.score, reason: '💥 我方藍晶城堡主塔失守崩塌！挑戰失敗！' });
     }
   }
 
@@ -653,19 +671,26 @@ export class MagicFighterGame {
           : 7;
         const spawnX = spawnCol * this.tileSize + this.tileSize / 2 - 17;
 
-        const rand = Math.random();
         let type = 'bat';
         let hp = 2;
         let speed = 3.2;
 
-        if (rand > 0.7) {
-          type = 'dragon';
-          hp = 8;
-          speed = 2.0;
-        } else if (rand > 0.4) {
-          type = 'griffin';
-          hp = 4;
-          speed = 4.0;
+        if (this.stage === 1) {
+          type = 'bat'; hp = 2; speed = 3.2;
+        } else if (this.stage === 2) {
+          type = Math.random() < 0.4 ? 'griffin' : 'bat';
+          hp = type === 'griffin' ? 4 : 2;
+          speed = type === 'griffin' ? 4.0 : 3.2;
+        } else if (this.stage === 3) {
+          const r = Math.random();
+          type = r < 0.35 ? 'dragon' : (r < 0.7 ? 'griffin' : 'bat');
+          hp = type === 'dragon' ? 8 : (type === 'griffin' ? 4 : 2);
+          speed = type === 'dragon' ? 2.0 : (type === 'griffin' ? 4.0 : 3.2);
+        } else {
+          const r = Math.random();
+          type = r < 0.4 ? 'dragon' : (r < 0.75 ? 'griffin' : 'bat');
+          hp = type === 'dragon' ? 10 : (type === 'griffin' ? 5 : 3);
+          speed = type === 'dragon' ? 2.2 : (type === 'griffin' ? 4.2 : 3.5);
         }
 
         this.enemyCreeps.push({
@@ -683,6 +708,28 @@ export class MagicFighterGame {
           fireRate: 1200,
           isFriendly: false
         });
+
+        // 🔥 第 5 關最後登場 霸氣 Boss 烈焰火龍 (Red Dragon Boss)
+        if (this.stage === 5 && this.enemiesRemaining === 0 && !this.hasSpawnedBoss) {
+          this.hasSpawnedBoss = true;
+          this.enemyCreeps.push({
+            id: 'boss_red_dragon_' + Date.now(),
+            type: 'red_dragon',
+            isBoss: true,
+            x: 284,
+            y: 30,
+            width: 72,
+            height: 72,
+            hp: 800,
+            maxHp: 800,
+            speed: 1.8,
+            direction: 'DOWN',
+            lastFire: 0,
+            fireRate: 800,
+            isFriendly: false
+          });
+          playBaseHitAlarmSound();
+        }
       }
     }
   }

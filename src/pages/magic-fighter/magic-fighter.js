@@ -61,12 +61,12 @@ export async function renderMagicFighter(container, params = {}) {
             <!-- Stats & Chips HUD Box -->
             <div class="hud-box">
               <div class="hud-item">
-                <span class="hud-label">當前關卡波次</span>
-                <span class="hud-value" id="hud-wave" style="color:#ff7544;">1 / 5</span>
+                <span class="hud-label">當前關卡</span>
+                <span class="hud-value" id="hud-wave" style="color:#ff7544;">STAGE 1 / 36</span>
               </div>
               <div class="hud-item">
                 <span class="hud-label">剩餘敵軍軍團</span>
-                <span class="hud-value" id="hud-enemies" style="color:#06b6d4;">16</span>
+                <span class="hud-value" id="hud-enemies" style="color:#06b6d4;">10</span>
               </div>
               <div class="hud-item">
                 <span class="hud-label">魔法資源 MANA</span>
@@ -203,7 +203,7 @@ export async function renderMagicFighter(container, params = {}) {
 
     if (hudMana) hudMana.textContent = `${Math.floor(state.playerMana)} / 999`;
     if (hudPBase) hudPBase.textContent = `${Math.max(0, state.playerBase.hp)} / 500`;
-    if (hudWave) hudWave.textContent = `${state.wave} / ${state.maxWaves}`;
+    if (hudWave) hudWave.textContent = `STAGE ${state.stage} / 36`;
     if (hudEnemies) hudEnemies.textContent = Math.max(0, state.enemiesRemaining);
     if (hudScore) hudScore.textContent = state.score;
     if (hudPower) {
@@ -218,6 +218,36 @@ export async function renderMagicFighter(container, params = {}) {
     if (renderer3D) {
       renderer3D.triggerBaseDamageEffect(isEnemy, hitX, hitY);
     }
+  };
+
+  // Stage Clear Callback
+  game.onStageClear = ({ clearedStage, nextStage, score }) => {
+    const modal = container.querySelector('#game-over-modal');
+    const titleEl = container.querySelector('#go-title');
+    const descEl = container.querySelector('#go-desc');
+    const btnRestart = container.querySelector('#btn-go-restart');
+
+    if (nextStage === 6) {
+      if (titleEl) titleEl.textContent = `🎉 恭喜完成第 5 關挑戰！`;
+      if (descEl) descEl.textContent = `🚧 第 6 關 - 關卡製作中，敬請期待全新 36 關卡大更新！`;
+      if (btnRestart) {
+        btnRestart.textContent = '🔄 重新開始挑戰';
+      }
+    } else {
+      if (titleEl) titleEl.textContent = `🎉 成功通關第 ${clearedStage} 關！`;
+      if (descEl) descEl.textContent = `下一關：第 ${nextStage} 關 (共 36 關)`;
+      if (btnRestart) {
+        btnRestart.textContent = `🚀 進入第 ${nextStage} 關`;
+        const nextHandler = () => {
+          btnRestart.removeEventListener('click', nextHandler);
+          btnRestart.textContent = '🔄 重新開始遊戲';
+          if (modal) modal.style.display = 'none';
+          game.newGame(nextStage);
+        };
+        btnRestart.addEventListener('click', nextHandler);
+      }
+    }
+    if (modal) modal.style.display = 'flex';
   };
 
   // Game Over Callback

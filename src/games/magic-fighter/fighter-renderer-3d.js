@@ -361,7 +361,7 @@ export class FighterRenderer3D {
   }
 
   /**
-   * Build Floating Sky Castles in the Sky (天空之城 - 主塔)
+   * Build Floating Sky Castle for Player (天空之城 - 我方主塔)
    */
   _createSkyCastles3D() {
     // 1. Player Sky Castle (Bottom, Cyan/White Laputa)
@@ -371,14 +371,6 @@ export class FighterRenderer3D {
     this.playerBaseGroup = pCastle;
     this.playerCrystalMesh = pCastle.userData.crystalMesh;
     this.scene.add(pCastle);
-
-    // 2. Enemy Sky Castle (Top, Obsidian/Crimson Dark Laputa)
-    const eCastle = this._createFloatingCastleMesh(true);
-    eCastle.position.set(320, -6, 65);
-    eCastle.scale.set(0.92, 0.92, 0.92);
-    this.enemyBaseGroup = eCastle;
-    this.enemyCrystalMesh = eCastle.userData.crystalMesh;
-    this.scene.add(eCastle);
   }
 
   _createFloatingCastleMesh(isEnemy = false) {
@@ -527,13 +519,54 @@ export class FighterRenderer3D {
     const hpFillMesh = new THREE.Mesh(hpFillGeo, hpFillMat);
     hpFillMesh.position.set(0, 140, 0);
     castleGroup.add(hpFillMesh);
-
-    castleGroup.userData = { crystalMesh, hpFillMesh, hpFillMat };
+      castleGroup.userData = { crystalMesh, hpFillMesh, hpFillMat };
     return castleGroup;
   }
 
-  _createMonsterMesh(type, isFriendly = false) {
+  _createMonsterMesh(type = 'bat', isFriendly = false) {
     const monsterGroup = new THREE.Group();
+
+    if (type === 'red_dragon') {
+      // 🔥 巨型 Boss 烈焰火龍 (Red Dragon Boss 3D Model)
+      const dragonMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0x991b1b, emissiveIntensity: 0.5, roughness: 0.3 });
+      const wingMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.4 });
+      const hornMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8 });
+
+      const bodyMesh = new THREE.Mesh(new THREE.CylinderGeometry(14, 18, 50, 16), dragonMat);
+      bodyMesh.rotation.x = Math.PI / 2;
+      monsterGroup.add(bodyMesh);
+
+      const headMesh = new THREE.Mesh(new THREE.ConeGeometry(16, 28, 12), dragonMat);
+      headMesh.rotation.x = -Math.PI / 2;
+      headMesh.position.set(0, 8, -28);
+      monsterGroup.add(headMesh);
+
+      // Horns
+      [-9, 9].forEach(xOff => {
+        const horn = new THREE.Mesh(new THREE.ConeGeometry(3.5, 18, 8), hornMat);
+        horn.rotation.x = -0.5;
+        horn.position.set(xOff, 20, -22);
+        monsterGroup.add(horn);
+      });
+
+      // Giant Wings
+      const leftWing = new THREE.Mesh(new THREE.BoxGeometry(45, 2, 25), wingMat);
+      leftWing.position.set(-26, 12, -4);
+      monsterGroup.add(leftWing);
+
+      const rightWing = new THREE.Mesh(new THREE.BoxGeometry(45, 2, 25), wingMat);
+      rightWing.position.set(26, 12, -4);
+      monsterGroup.add(rightWing);
+
+      monsterGroup.userData = {
+        bodyMat: dragonMat,
+        leftWing,
+        rightWing,
+        monsterType: 'red_dragon'
+      };
+      monsterGroup.scale.set(1.4, 1.4, 1.4);
+      return monsterGroup;
+    }
 
     if (type === 'bat') {
       // 🧛 吸血鬼伯爵 (Vampire Count Procedural 3D Model based on user image)
