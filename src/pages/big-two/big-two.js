@@ -162,6 +162,11 @@ export async function renderBigTwo(container, params = {}) {
       turnLabel.textContent = `當前的回合: ${state.players[state.currentTurn].name}`;
     }
 
+    // Auto polling update during AI turns
+    if (state.currentTurn !== 0 && state.gamePhase === 'PLAY') {
+      setTimeout(() => renderUI(), 750);
+    }
+
     // Top AI (P3) Concealed Back Cards
     const p3Box = container.querySelector('#p3-cards-row');
     if (p3Box) {

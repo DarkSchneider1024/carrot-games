@@ -81,6 +81,11 @@ export class BigTwoEngine {
         break;
       }
     }
+
+    // If initial player is AI, automatically start AI turn
+    if (!this.players[this.currentTurn].isHuman && this.gamePhase === 'PLAY') {
+      setTimeout(() => this.processAiTurn(), 800);
+    }
   }
 
   _generateDeck() {

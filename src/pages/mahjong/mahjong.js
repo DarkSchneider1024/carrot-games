@@ -87,6 +87,7 @@ export async function renderMahjong(container, params = {}) {
 
           <!-- 動作控制按鈕區 -->
           <div class="mahjong-actions-bar" id="mj-actions-bar">
+            <button class="btn-mj-action btn-mj-discard" id="btn-mj-discard">🀄 確定打牌</button>
             <button class="btn-mj-action btn-mj-ting" id="btn-mj-ting">💡 聽牌分析</button>
             <button class="btn-mj-action btn-mj-hu" id="btn-mj-hu" style="display:none;">🀄 自摸 / 胡牌</button>
           </div>
@@ -161,6 +162,26 @@ export async function renderMahjong(container, params = {}) {
           }
         });
       });
+    }
+
+    // Discard Button Action
+    const btnDiscard = container.querySelector('#btn-mj-discard');
+    if (btnDiscard) {
+      btnDiscard.onclick = () => {
+        if (engine.currentTurn !== 0 || engine.phase !== 'PLAY') {
+          showToast('尚未輪到您的回合！', 'warning');
+          return;
+        }
+        if (selectedTileIdx < 0 || selectedTileIdx >= p1.hand.length) {
+          showToast('請先點擊選擇一張手牌打出！', 'warning');
+          return;
+        }
+        const tileToDiscard = p1.hand[selectedTileIdx];
+        engine.discardTile(0, tileToDiscard);
+        selectedTileIdx = -1;
+        showToast(`🀄 打出 ${TILE_NAMES[tileToDiscard]}`, 'info');
+        renderUI();
+      };
     }
 
     // Ting Hints Popover Logic
