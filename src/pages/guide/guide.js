@@ -25,7 +25,7 @@ export async function renderGameGuide(container, params = {}) {
       <!-- Navigation Tabs -->
       <div class="guide-tabs-bar">
         <button class="guide-tab-btn ${defaultTab === 'fruitHavoc' ? 'active' : ''}" data-tab="fruitHavoc" style="background:linear-gradient(135deg,#ff7544,#ff70a6);color:#fff;border:none;">
-          🍓 水果傷害
+          🍓 水果極限闖關
         </button>
         <button class="guide-tab-btn ${defaultTab === 'xiangqi' ? 'active' : ''}" data-tab="xiangqi">
           中國象棋
@@ -271,11 +271,11 @@ export async function renderGameGuide(container, params = {}) {
 
         <!-- 5. Fruit Havoc Guide -->
         <article class="guide-article ${defaultTab === 'fruitHavoc' ? 'active' : ''}" id="guide-fruitHavoc">
-          <h3>🍓 水果傷害 (FRUIT HAVOC) — 派對對戰手冊</h3>
+          <h3>🍓 水果極限闖關 (FRUIT EXTREME) — 派對對戰手冊</h3>
 
           <section class="guide-section">
             <h4>1. 遊戲核心玩法與《超級雞馬》對戰機制</h4>
-            <p>《水果傷害》是一款橫向平台派對競速對戰遊戲！玩家們輪流或同時在關卡地圖中<strong>自由擺放陷阱與助攻道具</strong>，擺放完畢後一齊衝向終點蛋糕旗！<br/>
+            <p>《水果極限闖關》是一款橫向平台派對競速對戰遊戲！玩家們輪流或同時在關卡地圖中<strong>自由擺放陷阱與助攻道具</strong>，擺放完畢後一齊衝向終點蛋糕旗！<br/>
             <strong>得分規則</strong>：如果所有人通通順利抵達終點，或所有人通通陣亡，則該輪「沒有人得分」；唯有<strong>成功穿越自己或朋友設置的危險陷阱到達終點</strong>，才能獲得勝場積分！</p>
           </section>
 

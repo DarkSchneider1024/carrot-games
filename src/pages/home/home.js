@@ -304,13 +304,13 @@ export async function renderHome(container) {
         <!-- Fruit Havoc Card (超級雞馬玩法水果陷阱派對) -->
         <div class="game-card animate-fade-in-up stagger-6" id="card-fruit-havoc" data-category="party">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_fruit_havoc.png" alt="水果傷害" class="game-card-img" />
+            <img src="./assets/images/icon_fruit_havoc.png" alt="水果極限闖關" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">派對平台競速</span>
             <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ff7544,#ff70a6);color:#fff;">全新派對</span>
           </div>
           <div class="game-card-content">
-            <h3>水果傷害 (FRUIT HAVOC)</h3>
+            <h3>水果極限闖關 (FRUIT EXTREME)</h3>
             <p>類似《超級雞馬》的派對平台對戰！支援單機同屏輪流擺放 20 種陷阱道具，闖過重重危險衝向終點！</p>
             <div class="game-card-tags">
               <span class="tag">${SVG_ICONS.user} 單機同屏對戰</span>

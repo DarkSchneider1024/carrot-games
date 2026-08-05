@@ -190,7 +190,7 @@ export async function renderFruitHavoc(container, params = {}) {
             ${SVG_ICONS.back} <span>大廳</span>
           </button>
           <div class="topbar-title">
-            <span class="game-name">🍓 水果傷害 (FRUIT HAVOC)</span>
+            <span class="game-name">🍓 水果極限闖關 (FRUIT EXTREME)</span>
             <span class="badge badge-warning" id="scene-badge">1. 布置場地</span>
           </div>
         </div>
