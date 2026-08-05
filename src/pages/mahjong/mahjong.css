@@ -275,8 +275,9 @@
   gap: 3px;
   max-width: 100%;
   overflow-x: auto;
-  padding: 28px 12px 6px 12px;
-  margin-top: -24px;
+  overflow-y: visible;
+  padding: 60px 12px 16px 12px;
+  margin-top: -50px;
 }
 
 /* 動作控制面板 */
