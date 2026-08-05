@@ -293,23 +293,40 @@ export async function renderFruitHavoc(container, params = {}) {
             <canvas id="fruit-canvas" width="${stageWidth}" height="${stageHeight}"></canvas>
           </div>
 
-          <!-- 手機競速瑪利歐觸控按鍵 -->
+          <!-- 平板/雙人實體觸控搖桿按鍵 -->
           <div class="mobile-touch-controls-bar" id="mobile-touch-controls" style="display:none;">
-            <div style="display:flex;justify-content:space-around;align-items:center;width:100%;">
-              <div style="display:flex;gap:8px;align-items:center;">
-                <button class="dpad-btn" id="tbtn-p1-left">⬅️</button>
-                <button class="dpad-btn" id="tbtn-p1-right">➡️</button>
-              </div>
-              <button class="jump-btn" id="tbtn-p1-jump">🦘 跳躍</button>
+            <!-- 頂部標記提示 -->
+            <div style="width:100%;text-align:center;font-size:0.75rem;font-weight:700;color:#ea580c;background:rgba(234,88,12,0.08);padding:6px 10px;border-radius:10px;border:1px dashed rgba(234,88,12,0.3);">
+              📱 雙人實體觸控搖桿（僅支援平板 / iPad / 大螢幕裝置）
             </div>
-            ${playerCount >= 2 ? `
-              <div style="display:flex;justify-content:space-around;align-items:center;width:100%;margin-top:6px;padding-top:6px;border-top:1px dashed var(--color-border);">
-                <span style="font-size:0.8rem;font-weight:700;color:#38bdf8;">P2:</span>
-                <button class="dpad-btn" id="tbtn-p2-left" style="padding:6px 12px;font-size:0.9rem;">⬅️</button>
-                <button class="dpad-btn" id="tbtn-p2-right" style="padding:6px 12px;font-size:0.9rem;">➡️</button>
-                <button class="jump-btn" id="tbtn-p2-jump" style="padding:6px 14px;font-size:0.88rem;background:linear-gradient(135deg,#0284c7,#38bdf8);">🦘 P2跳</button>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;width:100%;gap:16px;">
+              <!-- 👈 左邊: 1P 控制區 -->
+              <div class="player-touch-zone p1-zone" style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:14px;background:rgba(255,117,68,0.08);border:1.5px solid rgba(255,117,68,0.3);">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <span style="font-size:0.82rem;font-weight:800;color:#ea580c;">P1 控制 (左側)</span>
+                  <div style="display:flex;gap:6px;">
+                    <button class="dpad-btn" id="tbtn-p1-left">⬅️</button>
+                    <button class="dpad-btn" id="tbtn-p1-right">➡️</button>
+                  </div>
+                </div>
+                <button class="jump-btn" id="tbtn-p1-jump">🦘 P1跳躍</button>
               </div>
-            ` : ''}
+
+              ${playerCount >= 2 ? `
+                <!-- 👉 右邊: 2P 控制區 -->
+                <div class="player-touch-zone p2-zone" style="flex:1;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:14px;background:rgba(2,132,199,0.08);border:1.5px solid rgba(2,132,199,0.3);">
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <span style="font-size:0.82rem;font-weight:800;color:#0284c7;">P2 控制 (右側)</span>
+                    <div style="display:flex;gap:6px;">
+                      <button class="dpad-btn" id="tbtn-p2-left" style="background:#e0f2fe;color:#0369a1;">⬅️</button>
+                      <button class="dpad-btn" id="tbtn-p2-right" style="background:#e0f2fe;color:#0369a1;">➡️</button>
+                    </div>
+                  </div>
+                  <button class="jump-btn" id="tbtn-p2-jump" style="background:linear-gradient(135deg,#0284c7,#38bdf8);box-shadow:0 4px 12px rgba(2,132,199,0.35);">🦘 P2跳躍</button>
+                </div>
+              ` : ''}
+            </div>
           </div>
 
           <!-- 3. 場景 3: 記分場景 -->
