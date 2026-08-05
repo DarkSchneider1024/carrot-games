@@ -54,7 +54,7 @@ export async function renderBigTwo(container, params = {}) {
         <!-- Top AI Player (P3) -->
         <div style="grid-row:1;grid-column:2;display:flex;flex-direction:column;align-items:center;">
           <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;">
-            栗 北極吉伊 (<span id="p3-card-count">13</span>張)
+            🥕 北極萌蘿蔔 (<span id="p3-card-count">13</span>張)
           </div>
           <div id="p3-cards-row" style="display:flex;gap:2px;margin-top:4px;"></div>
         </div>
@@ -62,21 +62,21 @@ export async function renderBigTwo(container, params = {}) {
         <!-- Left AI Player (P4) -->
         <div style="grid-row:2;grid-column:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
           <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(-90deg);">
-            🐿️ 西城飛鼠 (<span id="p4-card-count">13</span>張)
+            🥕 西城白蘿蔔 (<span id="p4-card-count">13</span>張)
           </div>
         </div>
 
         <!-- Right AI Player (P2) -->
         <div style="grid-row:2;grid-column:3;display:flex;flex-direction:column;align-items:center;justify-content:center;">
           <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(90deg);">
-            🐱 東區皮卡 (<span id="p2-card-count">13</span>張)
+            🥕 東區胡蘿蔔 (<span id="p2-card-count">13</span>張)
           </div>
         </div>
 
         <!-- Center Discard & Round Information -->
         <div class="bigtwo-center-area">
           <div style="font-size:0.85rem;color:#db2777;font-weight:800;margin-bottom:6px;" id="bt-current-turn-label">
-            當前回合: 🐰 玩家 (吉伊)
+            當前回合: 🥕 玩家 (你)
           </div>
 
           <!-- Last Played Combination -->
@@ -94,7 +94,7 @@ export async function renderBigTwo(container, params = {}) {
 
           <div class="cards-hand-row" id="p1-hand-cards"></div>
           <div style="font-size:0.85rem;color:#db2777;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 12px;border-radius:12px;">
-            🐰 玩家 (吉伊小寶貝) — 點擊選取或取消手牌
+            🥕 玩家 (黃金蘿蔔寶貝) — 點擊選取或取消手牌
           </div>
         </div>
       </div>

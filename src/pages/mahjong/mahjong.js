@@ -48,23 +48,23 @@ export async function renderMahjong(container, params = {}) {
       <div class="mahjong-table">
         <!-- Top AI Player (P3) -->
         <div style="grid-row:1;grid-column:2;display:flex;flex-direction:column;align-items:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.8);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;">
-            栗 北家 (栗饅頭大叔)
+          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;">
+            🥕 北家 (北極萌蘿蔔)
           </div>
           <div id="p3-tiles" style="display:flex;gap:2px;margin-top:4px;"></div>
         </div>
 
         <!-- Left AI Player (P4) -->
         <div style="grid-row:2;grid-column:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.8);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(-90deg);">
-            🐿️ 西家 (飛鼠)
+          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(-90deg);">
+            🥕 西家 (西城白蘿蔔)
           </div>
         </div>
 
         <!-- Right AI Player (P2) -->
         <div style="grid-row:2;grid-column:3;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.8);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(90deg);">
-            🐱 南家 (小八貓)
+          <div style="font-size:0.85rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 10px;border-radius:12px;border:1px solid #f472b6;transform:rotate(90deg);">
+            🥕 南家 (東區胡蘿蔔)
           </div>
         </div>
 
@@ -72,7 +72,7 @@ export async function renderMahjong(container, params = {}) {
         <div class="mahjong-center-box">
           <div class="mahjong-dice-box">
             <span>🌸 東風圈</span> |
-            <span>莊家: <strong style="color:#db2777;" id="mj-dealer-name">🐰 東家 (吉伊)</strong></span> |
+            <span>莊家: <strong style="color:#db2777;" id="mj-dealer-name">🥕 東家 (你)</strong></span> |
             <span>剩牌: <strong style="color:#0284c7;" id="mj-wall-count">100</strong> 張</span>
           </div>
 
@@ -90,8 +90,8 @@ export async function renderMahjong(container, params = {}) {
 
           <!-- Hand Tiles -->
           <div class="player-hand-tiles" id="p1-hand-tiles"></div>
-          <div style="font-size:0.85rem;color:#db2777;font-weight:800;background:rgba(255,255,255,0.8);padding:2px 12px;border-radius:12px;">
-            🐰 東家 (吉伊小寶貝) — 點擊手牌出牌
+          <div style="font-size:0.85rem;color:#db2777;font-weight:800;background:rgba(255,255,255,0.85);padding:2px 12px;border-radius:12px;">
+            🥕 東家 (黃金蘿蔔寶貝) — 點擊手牌出牌
           </div>
         </div>
       </div>
