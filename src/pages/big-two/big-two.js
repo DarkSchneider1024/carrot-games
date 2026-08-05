@@ -1,6 +1,7 @@
 /**
- * ♠ 台灣大老二 (Taiwan Big Two — Sanrio & Chiikawa Kawaii Theme Page)
- * Features Macaron Pastel UI, Rotate Device Notice, & Chiikawa Player Avatars
+ * ♠ 台灣大老二 (Taiwan Big Two — GodGame UIUX Style Page)
+ * Features 4 Original Avatar Characters (Carrot, Veggie, Flute, Fridge),
+ * Collapsible Floating Chatbox, Speech Bubbles, & Dynamic Emotion Swapping
  */
 
 import { BigTwoEngine, SUIT_NAMES } from '../../games/big-two/big-two-engine.js';
@@ -16,6 +17,23 @@ export async function renderBigTwo(container, params = {}) {
   engine.initGame(currentMode);
 
   let selectedCards = [];
+  let isChatCollapsed = false;
+
+  const CHARACTERS = [
+    { id: 'carrot', name: '🥕 蘿蔔寶貝', img: './assets/images/characters/char_carrot.png' },
+    { id: 'veggie', name: '🥬 生菜寶寶', img: './assets/images/characters/char_veggie.png' },
+    { id: 'flute', name: '🎵 竹笛精靈', img: './assets/images/characters/char_flute.png' },
+    { id: 'fridge', name: '🧊 酷酷冰箱', img: './assets/images/characters/char_fridge.png' }
+  ];
+
+  const QUICK_PHRASES = [
+    { text: '打快一點啦~ 等到都發芽了！', emotion: 'angry' },
+    { text: '吃！看我的厲害！', emotion: 'joy' },
+    { text: '別走！我們決戰到天亮！', emotion: 'joy' },
+    { text: '慘了慘了... 這次手牌好爛哭哭', emotion: 'sad' },
+    { text: '哼！誰都別想壓過我的大牌！', emotion: 'angry' },
+    { text: '承讓承讓！這局是我贏啦~', emotion: 'happy' }
+  ];
 
   container.innerHTML = `
     <div class="bigtwo-page animate-fade-in">
@@ -35,7 +53,7 @@ export async function renderBigTwo(container, params = {}) {
           </button>
           <div class="topbar-title">
             <span class="game-name">♠ 台灣大老二 (BIG TWO)</span>
-            <span class="badge badge-warning" style="background:linear-gradient(135deg,#c084fc,#f472b6);color:#fff;">正宗競賽模式</span>
+            <span class="badge badge-warning">神來也對決風</span>
           </div>
         </div>
         <div class="topbar-actions" style="display:flex;gap:8px;">
@@ -49,34 +67,52 @@ export async function renderBigTwo(container, params = {}) {
         </div>
       </div>
 
-      <!-- ♠ Casino Kuromi Purple Table -->
+      <!-- ♠ Casino Kuromi Purple Table (GodGame 4-Player Character Layout) -->
       <div class="bigtwo-table">
-        <!-- Top AI Player (P3) -->
-        <div style="grid-row:1;grid-column:2;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;">
-            🥕 北極萌蘿蔔 (<span id="p3-card-count">13</span>張)
+        <!-- Top AI Player (P3) 🎵 竹笛精靈 -->
+        <div class="player-slot player-slot-top">
+          <div class="character-avatar-card">
+            <div class="char-avatar-img" style="background-image:url('${CHARACTERS[2].img}');"></div>
+            <div class="char-info-name">
+              <span>${CHARACTERS[2].name}</span>
+              <span class="card-count-badge" id="p3-card-count">13張</span>
+            </div>
           </div>
+          <!-- Speech Bubble -->
+          <div class="speech-bubble bubble-top" id="bubble-p3"></div>
           <div id="p3-cards-row" style="display:flex;gap:1px;margin-top:2px;"></div>
         </div>
 
-        <!-- Left AI Player (P4) -->
-        <div style="grid-row:2;grid-column:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;transform:rotate(-90deg);">
-            🥕 西城白蘿蔔 (<span id="p4-card-count">13</span>張)
+        <!-- Left AI Player (P4) 🥬 生菜寶寶 -->
+        <div class="player-slot player-slot-left">
+          <div class="character-avatar-card">
+            <div class="char-avatar-img" style="background-image:url('${CHARACTERS[1].img}');"></div>
+            <div class="char-info-name">
+              <span>${CHARACTERS[1].name}</span>
+              <span class="card-count-badge" id="p4-card-count">13張</span>
+            </div>
           </div>
+          <!-- Speech Bubble -->
+          <div class="speech-bubble bubble-left" id="bubble-p4"></div>
         </div>
 
-        <!-- Right AI Player (P2) -->
-        <div style="grid-row:2;grid-column:3;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-          <div style="font-size:0.75rem;color:#1e293b;font-weight:800;background:rgba(255,255,255,0.9);padding:1px 8px;border-radius:10px;border:1px solid #f472b6;transform:rotate(90deg);">
-            🥕 東區胡蘿蔔 (<span id="p2-card-count">13</span>張)
+        <!-- Right AI Player (P2) 🧊 酷酷冰箱 -->
+        <div class="player-slot player-slot-right">
+          <div class="character-avatar-card">
+            <div class="char-avatar-img" style="background-image:url('${CHARACTERS[3].img}');"></div>
+            <div class="char-info-name">
+              <span>${CHARACTERS[3].name}</span>
+              <span class="card-count-badge" id="p2-card-count">13張</span>
+            </div>
           </div>
+          <!-- Speech Bubble -->
+          <div class="speech-bubble bubble-right" id="bubble-p2"></div>
         </div>
 
         <!-- Center Discard & Round Information -->
         <div class="bigtwo-center-area">
-          <div style="font-size:0.8rem;color:#db2777;font-weight:800;margin-bottom:4px;" id="bt-current-turn-label">
-            當前回合: 🥕 玩家 (你)
+          <div style="font-size:0.85rem;color:#db2777;font-weight:800;margin-bottom:4px;" id="bt-current-turn-label">
+            當前的回合: 🥕 蘿蔔寶貝 (你)
           </div>
 
           <!-- Last Played Combination -->
@@ -85,9 +121,17 @@ export async function renderBigTwo(container, params = {}) {
           </div>
         </div>
 
-        <!-- Bottom Player Hand Zone (P1 - Human) -->
+        <!-- Bottom Player Hand Zone (P1 - 🥕 蘿蔔寶貝) -->
         <div class="bigtwo-player-hand">
-          <!-- ♠ 主要手牌顯示區 (放在頂部醒目可按位置) -->
+          <div class="player-p1-avatar-bar">
+            <div class="char-avatar-img small" style="background-image:url('${CHARACTERS[0].img}');"></div>
+            <span style="font-weight:800;font-size:0.85rem;">${CHARACTERS[0].name} (你)</span>
+          </div>
+
+          <!-- Speech Bubble P1 -->
+          <div class="speech-bubble bubble-bottom" id="bubble-p1"></div>
+
+          <!-- ♠ 主要手牌區 -->
           <div class="cards-hand-row" id="p1-hand-cards"></div>
 
           <!-- 動作控制按鈕區 -->
@@ -98,7 +142,39 @@ export async function renderBigTwo(container, params = {}) {
         </div>
       </div>
 
-      <!-- Game Over Settlement Modal -->
+      <!-- 💬 神來也風格：可縮放收合聊天對話框與快捷發言視窗 (Collapsible Floating Chatbox) -->
+      <div class="godgame-chatbox ${isChatCollapsed ? 'collapsed' : ''}" id="godgame-chatbox">
+        <div class="chatbox-header" id="chatbox-header-bar">
+          <span>💬 對話頻道 & 快捷表情</span>
+          <button class="chatbox-toggle-btn" id="btn-toggle-chatbox" title="縮放對話框">
+            ${isChatCollapsed ? '➕ 展開' : '➖ 縮小'}
+          </button>
+        </div>
+
+        <div class="chatbox-body" id="chatbox-body-content">
+          <!-- 快捷台詞發言按鈕 -->
+          <div class="quick-phrases-grid">
+            ${QUICK_PHRASES.map(p => `
+              <button class="btn-quick-phrase" data-text="${p.text}" data-emotion="${p.emotion}">
+                ${p.text}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- 聊天紀錄歷史 -->
+          <div class="chat-logs-list" id="chat-logs-list">
+            <div style="color:#64748b;font-size:0.75rem;">歡迎來到神來也對決聊天室！點擊上方快捷話語直接發言。</div>
+          </div>
+
+          <!-- 自訂輸入文字 -->
+          <form class="chat-custom-form" id="chat-custom-form">
+            <input type="text" class="chat-custom-input" id="chat-custom-text" placeholder="輸入聊天內容..." maxlength="40" autocomplete="off" />
+            <button type="submit" class="btn btn-sm btn-primary">送出</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Settlement Modal -->
       <div id="bt-settlement-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.85);backdrop-filter:blur(10px);z-index:999;align-items:center;justify-content:center;">
         <div style="background:#ffffff;border:2.5px solid #f472b6;border-radius:24px;padding:24px;width:90%;max-width:440px;color:#1e293b;text-align:center;box-shadow:0 16px 40px rgba(244,114,182,0.5);">
           <h2 style="font-size:1.6rem;color:#db2777;margin-bottom:12px;" id="settle-title">👑 遊戲局終結算</h2>
@@ -114,9 +190,79 @@ export async function renderBigTwo(container, params = {}) {
     </div>
   `;
 
-  // Bind Controls
+  // Helper: Trigger Speech Bubble Animation
+  const triggerSpeechBubble = (playerIdx, text) => {
+    const bubbleId = `#bubble-p${playerIdx + 1}`;
+    const bubbleEl = container.querySelector(bubbleId);
+    if (!bubbleEl) return;
+
+    bubbleEl.textContent = text;
+    bubbleEl.classList.add('active');
+
+    setTimeout(() => {
+      bubbleEl.classList.remove('active');
+    }, 2800);
+  };
+
+  // Helper: Add Log to Chatbox
+  const addChatLog = (senderName, text) => {
+    const logsEl = container.querySelector('#chat-logs-list');
+    if (!logsEl) return;
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'chat-log-item';
+    msgDiv.innerHTML = `<strong style="color:#db2777;">${senderName}:</strong> ${text}`;
+    logsEl.appendChild(msgDiv);
+    logsEl.scrollTop = logsEl.scrollHeight;
+  };
+
+  // Bind Collapsible Chatbox Controls
+  const chatboxEl = container.querySelector('#godgame-chatbox');
+  const btnToggleChat = container.querySelector('#btn-toggle-chatbox');
+
+  if (btnToggleChat && chatboxEl) {
+    btnToggleChat.onclick = () => {
+      isChatCollapsed = !isChatCollapsed;
+      if (isChatCollapsed) {
+        chatboxEl.classList.add('collapsed');
+        btnToggleChat.textContent = '➕ 展開';
+      } else {
+        chatboxEl.classList.remove('collapsed');
+        btnToggleChat.textContent = '➖ 縮小';
+      }
+    };
+  }
+
+  // Quick Phrase Clicks
+  container.querySelectorAll('.btn-quick-phrase').forEach(btn => {
+    btn.onclick = () => {
+      const text = btn.dataset.text;
+      triggerSpeechBubble(0, text);
+      addChatLog('🥕 蘿蔔寶貝 (你)', text);
+    };
+  });
+
+  // Custom Chat Form Submit
+  const customForm = container.querySelector('#chat-custom-form');
+  if (customForm) {
+    customForm.onsubmit = (e) => {
+      e.preventDefault();
+      const input = container.querySelector('#chat-custom-text');
+      if (input && input.value.trim()) {
+        const text = input.value.trim();
+        triggerSpeechBubble(0, text);
+        addChatLog('🥕 蘿蔔寶貝 (你)', text);
+        input.value = '';
+      }
+    };
+  }
+
+  // Controls Binding
   container.querySelector('#btn-bt-back')?.addEventListener('click', () => navigate('/'));
-  
+  container.querySelector('#btn-close-bt-notice')?.addEventListener('click', () => {
+    const notice = container.querySelector('#bt-rotate-notice');
+    if (notice) notice.style.display = 'none';
+  });
+
   const selectMode = container.querySelector('#select-bt-mode');
   if (selectMode) {
     selectMode.value = currentMode;
@@ -129,15 +275,10 @@ export async function renderBigTwo(container, params = {}) {
     });
   }
 
-  container.querySelector('#btn-close-bt-notice')?.addEventListener('click', () => {
-    const notice = container.querySelector('#bt-rotate-notice');
-    if (notice) notice.style.display = 'none';
-  });
-
   container.querySelector('#btn-bt-restart')?.addEventListener('click', () => {
     engine.initGame(currentMode);
     selectedCards = [];
-    showToast('♠ 大老二重新發牌開局！', 'success');
+    showToast('♠ 大老二發牌開局！', 'success');
     renderUI();
   });
 
@@ -152,14 +293,14 @@ export async function renderBigTwo(container, params = {}) {
     const p2Count = container.querySelector('#p2-card-count');
     const p3Count = container.querySelector('#p3-card-count');
     const p4Count = container.querySelector('#p4-card-count');
-    if (p2Count) p2Count.textContent = p2.cardCount;
-    if (p3Count) p3Count.textContent = p3.cardCount;
-    if (p4Count) p4Count.textContent = p4.cardCount;
+    if (p2Count) p2Count.textContent = `${p2.cardCount}張`;
+    if (p3Count) p3Count.textContent = `${p3.cardCount}張`;
+    if (p4Count) p4Count.textContent = `${p4.cardCount}張`;
 
     // Current turn label
     const turnLabel = container.querySelector('#bt-current-turn-label');
     if (turnLabel) {
-      turnLabel.textContent = `當前的回合: ${state.players[state.currentTurn].name}`;
+      turnLabel.textContent = `當前的回合: ${CHARACTERS[state.currentTurn].name}`;
     }
 
     // Auto polling update during AI turns
@@ -219,7 +360,7 @@ export async function renderBigTwo(container, params = {}) {
       });
     }
 
-    // Action Buttons Event Listeners
+    // Action Buttons
     const btnPlay = container.querySelector('#btn-bt-play');
     const btnPass = container.querySelector('#btn-bt-pass');
 
@@ -238,6 +379,7 @@ export async function renderBigTwo(container, params = {}) {
         if (res && res.success) {
           selectedCards = [];
           showToast('♠ 出牌成功！', 'success');
+          triggerSpeechBubble(0, '出牌！看我的厲害！');
           renderUI();
           _checkSettlement();
         } else {
@@ -255,6 +397,7 @@ export async function renderBigTwo(container, params = {}) {
         if (engine.passTurn(0)) {
           selectedCards = [];
           showToast('❌ 選擇 PASS 過牌', 'info');
+          triggerSpeechBubble(0, '這牌太大了... PASS！');
           renderUI();
         } else {
           showToast('您是自由出牌手，無法 PASS！', 'warning');
