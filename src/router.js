@@ -73,12 +73,33 @@ function matchRoute(fullPath) {
   return null;
 }
 
+const ROUTE_SEO = {
+  '/': { title: 'Carrot Games — 免費線上多重對戰遊戲平台 | 台灣麻將、大老二、中國象棋', desc: '正宗台灣16張麻將、台灣大老二、中國象棋、德州撲克大賽與3D魔法對戰，即點即玩，支援 AI 陪練與好友線上連線開房！' },
+  '/mahjong': { title: '台灣 16 張麻將 (Taiwan Mahjong) — Carrot Games', desc: '正宗十六張台灣麻將！具備智慧 AI 聽牌分析提示、吃碰槓與經典台數自動結算。' },
+  '/big-two': { title: '台灣大老二 (Big Two 13 Cards) — Carrot Games', desc: '經典十三張大老二！支援快殺結束與全打完排名雙模式，業界標準爆張與持2雙倍計分。' },
+  '/xiangqi': { title: '中國象棋 (Xiangqi) — Carrot Games', desc: '楚河漢界戰術攻防！提供高智能 AI 陪練與線上好友連線對弈。' },
+  '/poker': { title: '德州撲克 (Texas Holdem Poker) — Carrot Games', desc: '心理博弈與籌碼決戰！支援可愛 AI 電腦對決與好友連線開房。' },
+  '/tetris': { title: '俄羅斯方塊對戰 (Tetris Battle 2P) — Carrot Games', desc: '經典 2 分鐘對決！考驗反應與消除技巧，支援 K.O. 擊倒與反制攻擊。' },
+  '/magic-fighter': { title: '魔法對戰 3D (Magic Fighter) — Carrot Games', desc: '重塑經典《坦克大戰》靈魂為魔法戰機 3D 空戰對決，保護蘿蔔水晶基地！' },
+  '/fruit-havoc': { title: '水果極限闖關 (Fruit Extreme) — Carrot Games', desc: '類似《超級雞馬》的派對平台對戰！支援單機同屏輪流擺放 20 種陷阱道具。' },
+  '/guide': { title: '遊戲玩法與規則教學手冊 — Carrot Games', desc: 'Carrot Games 全系列遊戲詳細規則、台數計算與技巧操作教學。' }
+};
+
+function updateRouteSEO(path) {
+  const baseKey = '/' + (path.split('/')[1] || '');
+  const seo = ROUTE_SEO[baseKey] || ROUTE_SEO['/'];
+  document.title = seo.title;
+  const descMeta = document.querySelector('meta[name="description"]');
+  if (descMeta) descMeta.setAttribute('content', seo.desc);
+}
+
 /**
  * Render the current route
  */
 async function renderRoute() {
   const path = getCurrentPath();
   const app = document.getElementById('app');
+  updateRouteSEO(path);
 
   // Clean up previous page
   if (currentCleanup) {
