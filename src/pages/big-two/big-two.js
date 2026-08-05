@@ -22,7 +22,7 @@ export async function renderBigTwo(container, params = {}) {
       <!-- 📱 手機直屏旋轉提醒 (Rotate Device Notice) -->
       <div class="orientation-rotate-notice-bt" id="bt-rotate-notice">
         <div class="rotate-icon-anim">📱🔄</div>
-        <h3 style="font-size:1.3rem;color:#fbcfe8;margin-bottom:8px;">吉伊提醒您旋轉手機！</h3>
+        <h3 style="font-size:1.3rem;color:#fbcfe8;margin-bottom:8px;">卡洛特建議您旋轉手機！</h3>
         <p style="font-size:0.95rem;color:#cbd5e1;line-height:1.5;margin-bottom:14px;">為了獲得最舒適的大老二牌桌與手牌視角<br/>請將手機轉為<strong style="color:#facc15;">「橫螢幕 (Landscape)」</strong>對局喔！</p>
         <button class="btn btn-sm" id="btn-close-bt-notice" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:14px;padding:6px 16px;">繼續以直畫面遊玩</button>
       </div>

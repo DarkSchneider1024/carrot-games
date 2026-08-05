@@ -216,3 +216,46 @@
     font-size: 0.8rem;
   }
 }
+
+/* 📱 手機橫螢幕 (Mobile Landscape) 極致不切割與滿屏適應 */
+@media (max-height: 520px) {
+  .topbar {
+    padding: 2px 12px !important;
+    min-height: 32px !important;
+  }
+  .topbar .badge {
+    display: none !important;
+  }
+  .game-name {
+    font-size: 0.85rem !important;
+  }
+  .bigtwo-table {
+    height: calc(100vh - 36px) !important;
+    width: 98vw !important;
+    margin: 0 auto !important;
+    border-width: 4px !important;
+    border-radius: 20px !important;
+    grid-template-rows: 35px 1fr 65px !important;
+    grid-template-columns: 75px 1fr 75px !important;
+    padding: 4px !important;
+  }
+  .last-play-combo-box {
+    min-height: 45px !important;
+    padding: 2px 8px !important;
+  }
+  .poker-card {
+    width: 22px !important;
+    height: 32px !important;
+    font-size: 0.78rem !important;
+    padding: 1px !important;
+    border-radius: 4px !important;
+  }
+  .bigtwo-actions-bar {
+    padding: 2px 8px !important;
+    gap: 4px !important;
+  }
+  .btn-bt-action {
+    padding: 3px 10px !important;
+    font-size: 0.75rem !important;
+  }
+}
