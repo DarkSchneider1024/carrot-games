@@ -10,7 +10,8 @@ import {
   playLaserSound,
   playHitImpactSound,
   playWallBreakSound,
-  playMonsterKillSound
+  playMonsterKillSound,
+  playBaseHitAlarmSound
 } from '../../utils/sound-effects.js';
 
 export const MAP_GRID_SIZE = 16; // 16x16 Grid
@@ -587,7 +588,8 @@ export class MagicFighterGame {
         if (!c.lastMeleeAttack || now - c.lastMeleeAttack > 1000) {
           c.lastMeleeAttack = now;
           this.playerBase.hp = Math.max(0, this.playerBase.hp - 10);
-          playHitImpactSound();
+          playBaseHitAlarmSound();
+          if (this.onBaseDamage) this.onBaseDamage(false, c.x + c.width / 2, c.y + c.height / 2);
         }
       } else {
         this._moveCreepSmart(c, 320, 540); // March toward Player Base HQ at Bottom Center (320, 540)
@@ -729,14 +731,16 @@ export class MagicFighterGame {
       if (b.isPlayer && this.mode === 'pvp' && this._rectOverlap(b, this.enemyBase)) {
         this.enemyBase.hp = Math.max(0, this.enemyBase.hp - 10);
         this.bullets.splice(i, 1);
-        playHitImpactSound();
+        playBaseHitAlarmSound();
+        if (this.onBaseDamage) this.onBaseDamage(true, b.x, b.y);
         continue;
       }
       
       if (this._rectOverlap(b, this.playerBase)) {
         this.playerBase.hp = Math.max(0, this.playerBase.hp - 10);
         this.bullets.splice(i, 1);
-        playHitImpactSound();
+        playBaseHitAlarmSound();
+        if (this.onBaseDamage) this.onBaseDamage(false, b.x, b.y);
         continue;
       }
 

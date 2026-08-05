@@ -1022,10 +1022,122 @@ export class FighterRenderer3D {
     // 6. POOLED BULLETS
     this._syncBulletsPooled(state.bullets);
 
-    // 7. POOLED POWERUPS
-    this._syncPowerupsPooled(state.powerups);
+    // 🏰 Update Base Red Flash & Camera Shake
+    [this.playerBaseGroup, this.enemyBaseGroup].forEach(castle => {
+      if (castle) {
+        if (castle.userData.flashEndTime && castle.userData.flashEndTime > now) {
+          if (castle.userData.crystalMesh && castle.userData.crystalMesh.material) {
+            castle.userData.crystalMesh.material.emissive.setHex(0xef4444);
+            castle.userData.crystalMesh.material.emissiveIntensity = 1.0;
+          }
+        } else {
+          if (castle.userData.crystalMesh && castle.userData.crystalMesh.material) {
+            const isEnemy = castle === this.enemyBaseGroup;
+            castle.userData.crystalMesh.material.emissive.setHex(isEnemy ? 0xef4444 : 0x06b6d4);
+            castle.userData.crystalMesh.material.emissiveIntensity = 0.5;
+          }
+        }
+      }
+    });
+
+    if (this.cameraShakeTime && this.cameraShakeTime > now) {
+      this.camera.position.x = 320 + (Math.random() - 0.5) * 8;
+      this.camera.position.z = 660 + (Math.random() - 0.5) * 8;
+    } else {
+      this.camera.position.x = 320;
+      this.camera.position.z = 660;
+    }
+
+    // 💨 Update Smoke & Sparks Base Effect Particles
+    if (this.baseEffectParticles && this.baseEffectParticles.length > 0) {
+      for (let i = this.baseEffectParticles.length - 1; i >= 0; i--) {
+        const p = this.baseEffectParticles[i];
+        const data = p.userData;
+
+        p.position.x += data.vx;
+        p.position.y += data.vy;
+        p.position.z += data.vz;
+
+        data.life -= data.decay;
+        p.material.opacity = Math.max(0, data.life);
+
+        if (data.life <= 0) {
+          this.scene.remove(p);
+          if (p.geometry) p.geometry.dispose();
+          if (p.material) p.material.dispose();
+          this.baseEffectParticles.splice(i, 1);
+        }
+      }
+    }
 
     this.renderer.render(this.scene, this.camera);
+  }
+
+  /**
+   * 🏰 專屬主塔受擊特效 (濃煙粒子升騰 + 四射火花暴射 + 主塔紅光與相機 Shake)
+   */
+  triggerBaseDamageEffect(isEnemy = false, hitWorldX = 320, hitWorldZ = 575) {
+    const castleGroup = isEnemy ? this.enemyBaseGroup : this.playerBaseGroup;
+    if (castleGroup) {
+      castleGroup.userData.flashEndTime = Date.now() + 380;
+      castleGroup.position.x = (isEnemy ? 320 : 320) + (Math.random() - 0.5) * 6;
+    }
+
+    this.cameraShakeTime = Date.now() + 250;
+
+    if (!this.baseEffectParticles) {
+      this.baseEffectParticles = [];
+    }
+
+    // 1. 💨 滾滾黑濃煙氣泡粒子 (Dark Smoke Clouds)
+    for (let i = 0; i < 14; i++) {
+      const size = 6 + Math.random() * 8;
+      const smokeGeo = new THREE.SphereGeometry(size, 8, 8);
+      const smokeMat = new THREE.MeshBasicMaterial({
+        color: Math.random() < 0.5 ? 0x334155 : 0x475569,
+        transparent: true,
+        opacity: 0.75
+      });
+      const smokeMesh = new THREE.Mesh(smokeGeo, smokeMat);
+      smokeMesh.position.set(
+        hitWorldX + (Math.random() - 0.5) * 50,
+        12 + Math.random() * 15,
+        hitWorldZ + (Math.random() - 0.5) * 35
+      );
+      smokeMesh.userData = {
+        vy: 1.2 + Math.random() * 1.6,
+        vx: (Math.random() - 0.5) * 1.5,
+        vz: (Math.random() - 0.5) * 1.5,
+        life: 1.0,
+        decay: 0.025 + Math.random() * 0.02
+      };
+      this.scene.add(smokeMesh);
+      this.baseEffectParticles.push(smokeMesh);
+    }
+
+    // 2. ✨ 四射熾熱火花粒子 (Fiery Sparks Burst)
+    for (let i = 0; i < 22; i++) {
+      const sparkGeo = new THREE.BoxGeometry(3.5, 3.5, 3.5);
+      const sparkMat = new THREE.MeshBasicMaterial({
+        color: Math.random() < 0.6 ? 0xff7544 : 0xfacc15,
+        transparent: true,
+        opacity: 1.0
+      });
+      const sparkMesh = new THREE.Mesh(sparkGeo, sparkMat);
+      sparkMesh.position.set(hitWorldX, 18, hitWorldZ);
+
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2.5 + Math.random() * 4.5;
+      sparkMesh.userData = {
+        vx: Math.cos(angle) * speed,
+        vy: 2.0 + Math.random() * 4.0,
+        vz: Math.sin(angle) * speed,
+        life: 1.0,
+        decay: 0.045 + Math.random() * 0.03
+      };
+      this.scene.add(sparkMesh);
+      this.baseEffectParticles.push(sparkMesh);
+    }
   }
 
   _syncCreepsMap(meshMap, list, isFriendly) {
@@ -1146,19 +1258,17 @@ export class FighterRenderer3D {
           wallGroup.position.set(x, 0, z);
           this.terrainGroup.add(wallGroup);
         } else if (tile === TILE_STEEL) {
-          const mesh = new THREE.Mesh(this.steelGeo, this.steelMat);
-          mesh.position.set(x, 17, z);
-          mesh.castShadow = true;
-          mesh.receiveShadow = true;
-          this.terrainGroup.add(mesh);
+          const steelGroup = this._createObsidianSteelBastion3D();
+          steelGroup.position.set(x, 0, z);
+          this.terrainGroup.add(steelGroup);
         } else if (tile === TILE_ICE) {
           const mesh = new THREE.Mesh(this.iceGeo, this.iceMat);
           mesh.position.set(x, 2, z);
           this.terrainGroup.add(mesh);
         } else if (tile === TILE_WATER) {
-          const mesh = new THREE.Mesh(this.waterGeo, this.waterMat);
-          mesh.position.set(x, 3, z);
-          this.terrainGroup.add(mesh);
+          const waterGroup = this._createManaWaterPool3D();
+          waterGroup.position.set(x, 0, z);
+          this.terrainGroup.add(waterGroup);
         } else if (tile === TILE_FOREST) {
           const treeGroup = this._createCathayTreeGroup();
           treeGroup.position.set(x, 0, z);
@@ -1166,6 +1276,117 @@ export class FighterRenderer3D {
         }
       }
     }
+  }
+
+  /**
+   * 🏰 打造 3D 黑曜石符文方尖碑地堡 (Obsidian Rune Obelisk Bastion - 替換原死板黑色塊)
+   */
+  _createObsidianSteelBastion3D() {
+    const obeliskGroup = new THREE.Group();
+    const tileSize = 40;
+
+    // 1. 黑曜石主體基座 (Octagonal Dark Obsidian Pillar)
+    const baseMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b, // Deep Obsidian Slate
+      metalness: 0.85,
+      roughness: 0.25
+    });
+    const baseGeo = new THREE.CylinderGeometry(17, 18.5, 28, 8);
+    const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+    baseMesh.position.y = 14;
+    baseMesh.castShadow = true;
+    baseMesh.receiveShadow = true;
+    obeliskGroup.add(baseMesh);
+
+    // 2. 四角鍍金鋼鐵護甲飾邊 (Golden Corner Armor Trim)
+    const trimMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b, // Warm Amber Gold Trim
+      metalness: 0.9,
+      roughness: 0.2
+    });
+    const trimGeo = new THREE.BoxGeometry(tileSize - 2, 4, tileSize - 2);
+    const trimMesh = new THREE.Mesh(trimGeo, trimMat);
+    trimMesh.position.y = 27;
+    trimMesh.castShadow = true;
+    obeliskGroup.add(trimMesh);
+
+    // 3. 頂部懸浮暗紫/電藍亮光符文魔晶 (Glowing Arcane Rune Crystal)
+    const crystalGeo = new THREE.OctahedronGeometry(7, 0);
+    const crystalMat = new THREE.MeshStandardMaterial({
+      color: 0x8b5cf6, // Arcane Purple Crystal
+      emissive: 0x7c3aed,
+      emissiveIntensity: 0.85,
+      roughness: 0.1
+    });
+    const crystalMesh = new THREE.Mesh(crystalGeo, crystalMat);
+    crystalMesh.position.y = 32;
+    crystalMesh.rotation.y = Math.PI / 4;
+    obeliskGroup.add(crystalMesh);
+
+    // 4. 水晶周圍護欄齒 (Battlement Teeth)
+    const toothGeo = new THREE.BoxGeometry(5, 6, 5);
+    const toothMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4 });
+    [[-13, -13], [13, -13], [-13, 13], [13, 13]].forEach(([xOff, zOff]) => {
+      const tooth = new THREE.Mesh(toothGeo, toothMat);
+      tooth.position.set(xOff, 30, zOff);
+      obeliskGroup.add(tooth);
+    });
+
+    return obeliskGroup;
+  }
+
+  /**
+   * 🌊 打造 3D 星光藍晶神水池 (Starlight Mana Water Oasis - 替換原死板藍色塊)
+   */
+  _createManaWaterPool3D() {
+    const waterGroup = new THREE.Group();
+    const tileSize = 40;
+
+    // 1. 池緣深藍晶石邊框 (Outer Crystal Stone Rim)
+    const rimMat = new THREE.MeshStandardMaterial({
+      color: 0x0284c7, // Sky Cyan Stone
+      roughness: 0.4,
+      metalness: 0.3
+    });
+    const rimGeo = new THREE.BoxGeometry(tileSize - 1, 4, tileSize - 1);
+    const rimMesh = new THREE.Mesh(rimGeo, rimMat);
+    rimMesh.position.y = 2;
+    waterGroup.add(rimMesh);
+
+    // 2. 沉降池水水面 (Sunken Luminous Mana Water)
+    const poolMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      emissive: 0x0284c7,
+      emissiveIntensity: 0.4,
+      transparent: true,
+      opacity: 0.85,
+      roughness: 0.05
+    });
+    const poolGeo = new THREE.BoxGeometry(tileSize - 5, 5, tileSize - 5);
+    const poolMesh = new THREE.Mesh(poolGeo, poolMat);
+    poolMesh.position.y = 3.5;
+    waterGroup.add(poolMesh);
+
+    // 3. 水池中央 3D 魔法睡蓮與水草花 (Floating Magic Water Lily)
+    const lilyLeafGeo = new THREE.CylinderGeometry(7, 7, 1.2, 12);
+    const lilyLeafMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.6 });
+    const lilyLeaf = new THREE.Mesh(lilyLeafGeo, lilyLeafMat);
+    lilyLeaf.position.set(0, 6.5, 0);
+    waterGroup.add(lilyLeaf);
+
+    const lotusBloomGeo = new THREE.SphereGeometry(3.5, 8, 8);
+    const lotusBloomMat = new THREE.MeshStandardMaterial({
+      color: 0xf472b6, // Pink Magic Water Lotus
+      emissive: 0xec4899,
+      emissiveIntensity: 0.6,
+      roughness: 0.2
+    });
+    const lotusBloom = new THREE.Mesh(lotusBloomGeo, lotusBloomMat);
+    lotusBloom.scale.set(1.0, 0.6, 1.0);
+    lotusBloom.position.set(0, 8.5, 0);
+    waterGroup.add(lotusBloom);
+
+    return waterGroup;
   }
 
   /**

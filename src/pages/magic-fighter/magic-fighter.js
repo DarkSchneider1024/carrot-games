@@ -213,6 +213,13 @@ export async function renderMagicFighter(container, params = {}) {
     }
   };
 
+  // Base Damage Visual & Audio Callback
+  game.onBaseDamage = (isEnemy, hitX, hitY) => {
+    if (renderer3D) {
+      renderer3D.triggerBaseDamageEffect(isEnemy, hitX, hitY);
+    }
+  };
+
   // Game Over Callback
   game.onGameOver = async ({ victory, score, reason }) => {
     const modal = container.querySelector('#game-over-modal');
