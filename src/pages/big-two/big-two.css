@@ -1,5 +1,6 @@
 /**
- * ♠ 大老二 (Taiwan Big Two / Deuces) — Casino Table & Poker Card Styles
+ * ♠ 大老二 (Big Two) — Sanrio & Chiikawa Kawaii Theme (三麗鷗吉伊卡哇軟萌 UIUX 風)
+ * Palette: Pastel Kuromi Purple Felt, Cream Pink Borders, Candy Buttons & Floating Cloud Badges
  */
 
 .bigtwo-page {
@@ -7,30 +8,65 @@
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background: radial-gradient(circle at center, #0f172a 0%, #020617 80%);
-  color: #f8fafc;
+  background: radial-gradient(circle at center, #fbcfe8 0%, #e9d5ff 50%, #c084fc 100%);
+  color: #1e293b;
   overflow: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   user-select: none;
+  position: relative;
 }
 
-/* 海藍色圓弧豪華撲克牌桌 */
+/* 📱 手機直屏轉向提醒遮罩 (Rotate Device Overlay) */
+.orientation-rotate-notice-bt {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: #fff;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .orientation-rotate-notice-bt {
+    display: flex;
+  }
+}
+
+.rotate-icon-anim {
+  font-size: 3.5rem;
+  animation: rotateSwing 1.8s infinite ease-in-out;
+  margin-bottom: 12px;
+}
+
+@keyframes rotateSwing {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(90deg); }
+}
+
+/* 🎀 夢幻三麗鷗酷洛米薰衣草紫圓弧撲克檯面 */
 .bigtwo-table {
   position: relative;
   flex: 1;
-  margin: 12px auto;
+  margin: 6px auto;
   width: min(96vw, 880px);
-  height: min(78vh, 660px);
-  background: #1e293b;
-  border-radius: 200px;
-  border: 14px solid #334155;
+  height: min(82vh, 640px);
+  background: #d8b4fe; /* 薰衣草馬卡龍紫絨布 */
+  border-radius: 28px;
+  border: 8px solid #fce7f3; /* 奶油牛奶粉紅邊框 */
   box-shadow: 
-    inset 0 0 50px rgba(0, 0, 0, 0.7),
-    0 16px 40px rgba(0, 0, 0, 0.6);
+    inset 0 0 45px rgba(168, 85, 247, 0.4),
+    0 16px 36px rgba(244, 114, 182, 0.4),
+    0 0 0 3px #f472b6;
   display: grid;
-  grid-template-rows: 100px 1fr 150px;
-  grid-template-columns: 120px 1fr 120px;
-  padding: 16px;
+  grid-template-rows: 80px 1fr 140px;
+  grid-template-columns: 85px 1fr 85px;
+  padding: 8px;
 }
 
 /* 中央桌面與出牌堆展現區 */
@@ -42,61 +78,67 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  background: rgba(15, 23, 42, 0.45);
-  border-radius: 24px;
-  border: 1.5px solid rgba(56, 189, 248, 0.25);
-  padding: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  border: 2px dashed #f472b6;
+  padding: 8px;
 }
 
 .last-play-combo-box {
   display: flex;
-  gap: 6px;
-  min-height: 80px;
+  gap: 4px;
+  min-height: 65px;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
-  background: rgba(30, 41, 59, 0.6);
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 16px;
-  border: 1px dashed #38bdf8;
+  border: 1.5px solid #f472b6;
+  box-shadow: 0 4px 12px rgba(244, 114, 182, 0.2);
+  max-width: 100%;
+  overflow-x: auto;
 }
 
-/* 🂠 立體精美撲克牌卡 */
+/* 🂠 三麗鷗吉伊卡哇軟萌立體撲克牌 */
 .poker-card {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  width: 44px;
-  height: 64px;
-  background: #ffffff;
+  width: 38px;
+  height: 56px;
+  background: linear-gradient(180deg, #ffffff 0%, #fff1f2 85%, #ffe4e6 100%);
   border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
-  font-size: 1.1rem;
-  font-weight: 800;
-  padding: 4px;
+  border: 1.5px solid #fda4af;
+  box-shadow: 2px 4px 8px rgba(244, 114, 182, 0.3);
+  font-size: 1.05rem;
+  font-weight: 900;
+  padding: 2px;
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.15s ease, box-shadow 0.15s ease;
   position: relative;
+  flex-shrink: 0;
 }
 
-.poker-card.red { color: #dc2626; }
-.poker-card.black { color: #0f172a; }
+.poker-card.red { color: #f43f5e; }
+.poker-card.black { color: #1e293b; }
 
 .poker-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   border-color: #38bdf8;
 }
 
 .poker-card.selected {
-  transform: translateY(-16px);
+  transform: translateY(-14px);
   border: 2.5px solid #facc15;
-  box-shadow: 0 0 16px #facc15;
+  box-shadow: 0 0 18px #facc15;
+  z-index: 10;
 }
 
 .poker-card.back {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  border: 1px solid #38bdf8;
+  background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+  border: 1.5px solid #c084fc;
 }
 
 /* 玩家手牌區 */
@@ -107,38 +149,70 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 4px;
 }
 
 .cards-hand-row {
   display: flex;
   gap: 2px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 4px 8px;
 }
 
-/* 動作操作按鈕 */
+/* 糖果馬卡龍動作操作按鈕 */
 .bigtwo-actions-bar {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
-  padding: 8px 18px;
+  padding: 4px 14px;
   border-radius: 30px;
-  border: 1.5px solid #38bdf8;
+  border: 2px solid #f472b6;
+  box-shadow: 0 6px 16px rgba(244, 114, 182, 0.3);
 }
 
 .btn-bt-action {
-  padding: 8px 18px;
+  padding: 5px 14px;
   border-radius: 20px;
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 0.9rem;
+  font-weight: 900;
   border: none;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.btn-bt-action:hover {
+  transform: scale(1.08);
 }
 
 .btn-bt-play { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
-.btn-bt-pass { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-.btn-bt-hint { background: linear-gradient(135deg, #a855f7, #9333ea); color: #fff; }
+.btn-bt-pass { background: linear-gradient(135deg, #f43f5e, #e11d48); color: #fff; }
+
+/* 📱 針對手機直向與小螢幕的極致排版與手牌縮放 */
+@media (max-width: 640px) {
+  .bigtwo-table {
+    border-radius: 20px;
+    grid-template-rows: 70px 1fr 125px;
+    grid-template-columns: 65px 1fr 65px;
+    padding: 4px;
+  }
+  .poker-card {
+    width: 24px;
+    height: 38px;
+    font-size: 0.85rem;
+    padding: 1px;
+    border-radius: 4px;
+  }
+  .cards-hand-row {
+    gap: -4px; /* 手牌緊湊疊加 */
+  }
+  .btn-bt-action {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+  }
+}
