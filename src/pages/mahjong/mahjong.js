@@ -139,7 +139,7 @@ export async function renderMahjong(container, params = {}) {
       p1HandBox.innerHTML = p1.hand.map((t, idx) => `
         <div class="mj-tile ${idx === selectedTileIdx ? 'selected' : ''}" data-idx="${idx}" data-tile="${t}">
           <span>${TILE_UNICODE[t] || t}</span>
-          <span style="font-size:0.6rem;margin-top:-2px;color:#64748b;">${TILE_NAMES[t] || t}</span>
+          <span style="font-size:0.8rem;font-weight:800;margin-top:-2px;color:#475569;">${TILE_NAMES[t] || t}</span>
         </div>
       `).join('');
 
