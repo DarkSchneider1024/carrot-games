@@ -56,6 +56,7 @@ export class MahjongEngine {
     this.lastDiscard = null;
     this.phase = 'PLAY';
     this.winningResult = null;
+    this.pendingClaims = [];
 
     this.wall = this._generateFullWall();
     this._shuffleWall();
@@ -159,11 +160,78 @@ export class MahjongEngine {
     const claims = this._checkPossibleClaims(playerIdx, tile);
     if (claims.length > 0) {
       this.phase = 'CLAIM';
+      this.pendingClaims = claims;
+
+      // 如果人類(0) 也在 Claims 裡，等待人類決定。
+      // 若人類不在 Claims 裡，直接讓 AI 自動決定。
+      if (!claims.some(c => c.playerIdx === 0)) {
+        setTimeout(() => this.processAiClaims(), 800);
+      }
       return { claims };
     }
 
     this._nextTurn();
     return { claims: [] };
+  }
+
+  processAiClaims() {
+    if (this.phase !== 'CLAIM' || !this.pendingClaims) return;
+    
+    // 簡單的 AI Claim 邏輯：有胡必胡，有碰/吃則 60% 機率執行，其餘 Pass
+    const winClaim = this.pendingClaims.find(c => c.type === 'WIN');
+    if (winClaim) {
+      this._triggerWin(winClaim.playerIdx, false);
+      return;
+    }
+
+    const pongClaim = this.pendingClaims.find(c => c.type === 'PONG');
+    if (pongClaim && Math.random() > 0.4) {
+      this.executePong(pongClaim.playerIdx);
+      this.pendingClaims = [];
+      setTimeout(() => this.processAiTurn(), 800);
+      return;
+    }
+
+    const chowClaim = this.pendingClaims.find(c => c.type === 'CHOW');
+    if (chowClaim && Math.random() > 0.5) {
+      this.executeChow(chowClaim.playerIdx, chowClaim.chows[0]);
+      this.pendingClaims = [];
+      setTimeout(() => this.processAiTurn(), 800);
+      return;
+    }
+
+    // AI 全都選擇 Pass
+    this.pendingClaims = [];
+    this._nextTurn();
+  }
+
+  executeHumanClaim() {
+    if (this.phase !== 'CLAIM' || !this.pendingClaims) return false;
+    const myClaim = this.pendingClaims.find(c => c.playerIdx === 0);
+    if (!myClaim) return false;
+
+    if (myClaim.type === 'WIN') {
+      this._triggerWin(0, false);
+    } else if (myClaim.type === 'PONG' || myClaim.type === 'KONG') {
+      this.executePong(0);
+    } else if (myClaim.type === 'CHOW') {
+      this.executeChow(0, myClaim.chows[0]);
+    }
+    this.pendingClaims = [];
+    return true;
+  }
+
+  passHumanClaim() {
+    if (this.phase !== 'CLAIM') return false;
+    // 如果人類 Pass，讓 AI 有機會判斷
+    this.pendingClaims = this.pendingClaims.filter(c => c.playerIdx !== 0);
+    if (this.pendingClaims.length > 0) {
+      this.processAiClaims();
+    } else {
+      this.pendingClaims = [];
+      this._nextTurn();
+    }
+    return true;
   }
 
   _nextTurn() {
@@ -426,6 +494,7 @@ export class MahjongEngine {
       consecutiveDealer: this.consecutiveDealer,
       phase: this.phase,
       lastDiscard: this.lastDiscard,
+      pendingClaims: this.pendingClaims,
       discards: this.discards.map(d => [...d]),
       players: this.players.map(p => ({
         id: p.id,

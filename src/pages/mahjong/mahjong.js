@@ -56,6 +56,9 @@ export async function renderMahjong(container, params = {}) {
           </div>
         </div>
         <div class="topbar-actions">
+          <button class="btn btn-ghost btn-sm" id="btn-mj-rules" style="color:#facc15;">
+            💡 規則說明
+          </button>
           <button class="btn btn-ghost btn-sm" id="btn-mj-restart" title="發牌">
             ${SVG_ICONS.refresh} 發牌
           </button>
@@ -87,6 +90,8 @@ export async function renderMahjong(container, params = {}) {
           </div>
           <!-- Speech Bubble -->
           <div class="speech-bubble bubble-left" id="bubble-p4"></div>
+          <div id="p4-flowers" style="display:flex;gap:2px;margin-top:2px;"></div>
+          <div id="p4-tiles" style="display:flex;flex-direction:column;gap:1px;margin-top:4px;"></div>
         </div>
 
         <!-- Right AI Player (P2) 🧊 酷酷冰箱 -->
@@ -99,6 +104,8 @@ export async function renderMahjong(container, params = {}) {
           </div>
           <!-- Speech Bubble -->
           <div class="speech-bubble bubble-right" id="bubble-p2"></div>
+          <div id="p2-flowers" style="display:flex;gap:2px;margin-top:2px;"></div>
+          <div id="p2-tiles" style="display:flex;flex-direction:column;gap:1px;margin-top:4px;"></div>
         </div>
 
         <!-- Center Table River Discards & Information -->
@@ -123,6 +130,9 @@ export async function renderMahjong(container, params = {}) {
           <!-- Speech Bubble P1 -->
           <div class="speech-bubble bubble-bottom" id="bubble-p1"></div>
 
+          <!-- P1 花牌顯示區 -->
+          <div id="p1-flowers" style="display:flex;gap:4px;margin-bottom:8px;"></div>
+
           <!-- 🀄 主要手牌顯示區 -->
           <div class="player-hand-tiles" id="p1-hand-tiles"></div>
 
@@ -131,6 +141,13 @@ export async function renderMahjong(container, params = {}) {
             <button class="btn-mj-action btn-mj-discard" id="btn-mj-discard">🀄 確定打牌</button>
             <button class="btn-mj-action btn-mj-ting" id="btn-mj-ting">💡 聽牌分析</button>
             <button class="btn-mj-action btn-mj-hu" id="btn-mj-hu" style="display:none;">🀄 自摸 / 胡牌</button>
+          </div>
+
+          <!-- 吃碰槓 提示面板 -->
+          <div class="mahjong-actions-bar" id="mj-claim-panel" style="display:none;background:rgba(239,68,68,0.9);border-color:#fca5a5;">
+            <span style="color:#fff;font-weight:900;margin-right:8px;">💥 可執行動作：</span>
+            <button class="btn-mj-action btn-mj-pong" id="btn-mj-do-claim">吃/碰/槓</button>
+            <button class="btn-mj-action btn-mj-pass" id="btn-mj-pass-claim">過 (Pass)</button>
           </div>
         </div>
       </div>
@@ -169,6 +186,24 @@ export async function renderMahjong(container, params = {}) {
 
       <!-- Ting Hint Popover -->
       <div class="ting-hint-box" id="ting-hint-box" style="display:none;position:absolute;bottom:110px;background:rgba(255,255,255,0.95);border:2px solid #f472b6;border-radius:16px;padding:12px;color:#1e293b;z-index:99;"></div>
+
+      <!-- Game Rules Modal (麻將教學) -->
+      <div class="game-over-modal" id="mj-rules-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.85);z-index:9999;backdrop-filter:blur(10px);align-items:center;justify-content:center;">
+        <div style="background:linear-gradient(135deg, #ffffff, #f1f5f9);padding:32px;border-radius:24px;border:3px solid #10b981;text-align:center;max-width:500px;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
+          <h2 style="font-size:1.8rem;color:#047857;font-weight:900;margin-bottom:16px;">🀄 台灣 16 張麻將 遊戲規則</h2>
+          <div style="text-align:left;font-size:0.95rem;color:#334155;line-height:1.6;margin-bottom:24px;max-height:60vh;overflow-y:auto;padding-right:12px;">
+            <p><strong>🔹 基本規則</strong></p>
+            <p>每人開局 16 張牌（莊家 17 張），遊戲目標是湊齊「5 副面子（順子或刻子）+ 1 對眼睛（雀頭）」，共計 17 張牌即為「胡牌」。</p>
+            <hr style="margin:12px 0;border:none;border-top:1px dashed #cbd5e1;"/>
+            <p><strong>🔹 動作說明</strong></p>
+            <p>• 吃牌 (Chow)：只能吃「上家」打出的牌，湊成順子 (例: 1萬,2萬,3萬)。<br/>• 碰牌 (Pong)：任何人打出，皆可碰，湊成三張一樣的牌。<br/>• 槓牌 (Kong)：湊齊四張一樣的牌。<br/>• 胡牌 (Win)：無論是別人打出的牌(放槍) 或是自己摸到(自摸)，只要能湊齊 17 張牌型即可胡牌！</p>
+            <hr style="margin:12px 0;border:none;border-top:1px dashed #cbd5e1;"/>
+            <p><strong>🔹 台灣麻將特殊算台 (Tai)</strong></p>
+            <p>• 莊家：1台，每連莊一次+2台。<br/>• 門清：1台 (沒有吃碰明槓)。<br/>• 自摸：1台。<br/>• 三元牌：中、發、白 刻子各 1台。<br/>• 圈風/門風：拿到東南西北對應風位的刻子 1台。<br/>• 花牌：拿到自己方位的花牌 1台。</p>
+          </div>
+          <button class="btn btn-primary btn-block" id="btn-close-mj-rules" style="background:#10b981;font-size:1.1rem;font-weight:800;border-radius:16px;padding:12px;">我了解了！</button>
+        </div>
+      </div>
     </div>
   `;
 
@@ -250,6 +285,15 @@ export async function renderMahjong(container, params = {}) {
     renderUI();
   });
 
+  // Rules Modal Controls
+  const rulesModal = container.querySelector('#mj-rules-modal');
+  container.querySelector('#btn-mj-rules')?.addEventListener('click', () => {
+    if (rulesModal) rulesModal.style.display = 'flex';
+  });
+  container.querySelector('#btn-close-mj-rules')?.addEventListener('click', () => {
+    if (rulesModal) rulesModal.style.display = 'none';
+  });
+
   const renderUI = () => {
     const state = engine.getState();
     const p1 = state.players[0];
@@ -267,11 +311,23 @@ export async function renderMahjong(container, params = {}) {
       ).join('');
     }
 
-    // Render P3 (Top Opponent) Concealed Back Tiles
-    const p3Box = container.querySelector('#p3-tiles');
-    if (p3Box) {
-      p3Box.innerHTML = Array(p3.handCount).fill(0).map(() => `<div class="mj-tile small back"></div>`).join('');
-    }
+    // Render Flowers
+    ['p1', 'p2', 'p3', 'p4'].forEach((pId, idx) => {
+      const fBox = container.querySelector(`#${pId}-flowers`);
+      if (fBox) {
+        fBox.innerHTML = state.players[idx].flowers.map(f => `<div class="mj-tile small" style="color:#db2777;">${TILE_UNICODE[f] || f}</div>`).join('');
+      }
+    });
+
+    // Render AI Concealed Back Tiles
+    ['p2', 'p3', 'p4'].forEach((pId, idx) => {
+      const pIdx = idx + 1; // 1: p2, 2: p3, 3: p4
+      const p = state.players[pIdx];
+      const box = container.querySelector(`#${pId}-tiles`);
+      if (box) {
+        box.innerHTML = Array(p.handCount).fill(0).map(() => `<div class="mj-tile small back"></div>`).join('');
+      }
+    });
 
     // Render P1 (Human) Hand Tiles
     const p1HandBox = container.querySelector('#p1-hand-tiles');
@@ -321,6 +377,38 @@ export async function renderMahjong(container, params = {}) {
         selectedTileIdx = -1;
         showToast(`🀄 打出 ${TILE_NAMES[tileToDiscard]}`, 'info');
         triggerSpeechBubble(0, `打出 ${TILE_NAMES[tileToDiscard]}！`);
+        renderUI();
+      };
+    }
+
+    // Claim Phase UI Logic
+    const claimPanel = container.querySelector('#mj-claim-panel');
+    const actionsBar = container.querySelector('#mj-actions-bar');
+    if (state.phase === 'CLAIM') {
+      const myClaim = engine.pendingClaims?.find(c => c.playerIdx === 0);
+      if (myClaim) {
+        if (actionsBar) actionsBar.style.display = 'none';
+        if (claimPanel) claimPanel.style.display = 'flex';
+      } else {
+        if (actionsBar) actionsBar.style.display = 'flex';
+        if (claimPanel) claimPanel.style.display = 'none';
+      }
+    } else {
+      if (actionsBar) actionsBar.style.display = 'flex';
+      if (claimPanel) claimPanel.style.display = 'none';
+    }
+
+    // Claim Actions
+    const btnDoClaim = container.querySelector('#btn-mj-do-claim');
+    const btnPassClaim = container.querySelector('#btn-mj-pass-claim');
+    if (btnDoClaim && btnPassClaim) {
+      btnDoClaim.onclick = () => {
+        engine.executeHumanClaim();
+        triggerSpeechBubble(0, `碰！吃！`);
+        renderUI();
+      };
+      btnPassClaim.onclick = () => {
+        engine.passHumanClaim();
         renderUI();
       };
     }

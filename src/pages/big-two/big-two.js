@@ -58,6 +58,9 @@ export async function renderBigTwo(container, params = {}) {
           </div>
         </div>
         <div class="topbar-actions" style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" id="btn-bt-rules" style="color:#38bdf8;">
+            💡 規則說明
+          </button>
           <select id="select-bt-mode" style="padding:4px 10px;border-radius:12px;background:#ffffff;border:1.5px solid #f472b6;color:#db2777;font-weight:800;font-size:0.8rem;">
             <option value="FIRST_OUT_WINS">⚡ 模式 1: 快殺結束</option>
             <option value="PLAY_ALL_OUT">👑 模式 2: 全打完排名</option>
@@ -177,6 +180,28 @@ export async function renderBigTwo(container, params = {}) {
           </button>
         </div>
       </div>
+
+      <!-- Game Rules Modal (大老二教學) -->
+      <div class="game-over-modal" id="bt-rules-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.85);z-index:9999;backdrop-filter:blur(10px);align-items:center;justify-content:center;">
+        <div style="background:linear-gradient(135deg, #ffffff, #f1f5f9);padding:32px;border-radius:24px;border:3px solid #38bdf8;text-align:center;max-width:500px;box-shadow:0 16px 40px rgba(0,0,0,0.5);">
+          <h2 style="font-size:1.8rem;color:#0369a1;font-weight:900;margin-bottom:16px;">♠ 台灣大老二 遊戲規則</h2>
+          <div style="text-align:left;font-size:0.95rem;color:#334155;line-height:1.6;margin-bottom:24px;max-height:60vh;overflow-y:auto;padding-right:12px;">
+            <p><strong>🔹 基本規則</strong></p>
+            <p>每人發 13 張牌，由持有「梅花 3 (♣3)」的玩家先出牌，該局必須打出包含梅花 3 的牌型。</p>
+            <hr style="margin:12px 0;border:none;border-top:1px dashed #cbd5e1;"/>
+            <p><strong>🔹 牌型與大小</strong></p>
+            <p>• 數字大小：2 > A > K > Q > J > 10 > 9 > 8 > 7 > 6 > 5 > 4 > 3</p>
+            <p>• 花色大小：黑桃(♠) > 紅心(♥) > 方塊(♦) > 梅花(♣)</p>
+            <p>• 單張、對子、三條：跟隨相同牌型出牌，數字大者為勝，數字相同比花色。</p>
+            <p>• 五張牌型階級：同花順 > 鐵支(四條) > 葫蘆 > 同花 > 順子 (只能用五張打五張)</p>
+            <hr style="margin:12px 0;border:none;border-top:1px dashed #cbd5e1;"/>
+            <p><strong>🔹 結算與罰金 (業界標準)</strong></p>
+            <p>當有人打完手牌時立即結算（快殺結束）：</p>
+            <p>• 剩餘 1~9 張：每張罰 100 分<br/>• 剩餘 10~12 張：每張罰 200 分 (雙倍)<br/>• 剩餘 13 張 (未出牌)：每張罰 300 分 (三倍)<br/>• 手中每留有一張「老二(2)」，該玩家總罰金再乘 2 倍！</p>
+          </div>
+          <button class="btn btn-primary btn-block" id="btn-close-bt-rules" style="font-size:1.1rem;font-weight:800;border-radius:16px;padding:12px;">我了解了！</button>
+        </div>
+      </div>
     </div>
   `;
 
@@ -266,6 +291,15 @@ export async function renderBigTwo(container, params = {}) {
     playerEmotions = ['joy', 'joy', 'joy', 'joy'];
     showToast('♠ 大老二發牌開局！', 'success');
     renderUI();
+  });
+
+  // Rules Modal Controls
+  const rulesModal = container.querySelector('#bt-rules-modal');
+  container.querySelector('#btn-bt-rules')?.addEventListener('click', () => {
+    if (rulesModal) rulesModal.style.display = 'flex';
+  });
+  container.querySelector('#btn-close-bt-rules')?.addEventListener('click', () => {
+    if (rulesModal) rulesModal.style.display = 'none';
   });
 
   const renderUI = () => {
