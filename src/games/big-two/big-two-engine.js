@@ -242,8 +242,7 @@ export class BigTwoEngine {
       this.rankings.push(p);
 
       if (this.mode === 'FIRST_OUT_WINS' || this.rankings.length === 3) {
-        this.gamePhase = 'GAME_OVER';
-        this._calculateSettlement();
+        this._endGame();
         return { success: true, finished: true };
       }
     }
@@ -287,29 +286,92 @@ export class BigTwoEngine {
     if (this.gamePhase !== 'PLAY') return;
     const ai = this.players[this.currentTurn];
 
-    // Simple Smart AI Card Choice
+    // Smart AI Card Choice
     if (!this.lastCombo) {
-      // Free play: Lead smallest single card
+      // Free play: try to play weak pairs or just lead lowest single
+      if (ai.hand.length === 5) {
+        const evalCombo = this.evaluateHandCombo(ai.hand);
+        if (evalCombo.type >= HAND_TYPES.STRAIGHT) {
+          this.playCards(this.currentTurn, ai.hand);
+          return;
+        }
+      }
+      
+      const pairs = this._getPossibleCombos(ai.hand, 2);
+      if (pairs.length > 0 && pairs[0][0].numVal < 8) {
+        this.playCards(this.currentTurn, pairs[0]);
+        return;
+      }
+      
       this.playCards(this.currentTurn, [ai.hand[0]]);
       return;
     }
 
-    // Try finding single or pair that beats lastCombo
     let played = false;
-    if (this.lastCombo.type === HAND_TYPES.SINGLE) {
-      for (let c of ai.hand) {
-        const combo = this.evaluateHandCombo([c]);
-        if (this.canBeat(combo)) {
-          this.playCards(this.currentTurn, [c]);
-          played = true;
-          break;
-        }
+    const neededLength = this.lastCombo.cards.length;
+    const possibleCombos = this._getPossibleCombos(ai.hand, neededLength);
+
+    for (let c of possibleCombos) {
+      const evalCombo = this.evaluateHandCombo(c);
+      if (this.canBeat(evalCombo)) {
+        this.playCards(this.currentTurn, c);
+        played = true;
+        break;
       }
     }
 
     if (!played) {
       this.passTurn(this.currentTurn);
     }
+  }
+
+  _getPossibleCombos(hand, length) {
+    const combos = [];
+    const getCombinations = (array, size) => {
+      const result = [];
+      const f = (prefix, arr) => {
+        for (let i = 0; i < arr.length; i++) {
+          if (prefix.length + 1 === size) {
+            result.push([...prefix, arr[i]]);
+          } else {
+            f([...prefix, arr[i]], arr.slice(i + 1));
+          }
+        }
+      };
+      f([], array);
+      return result;
+    };
+
+    if (length === 1) {
+      for (let c of hand) combos.push([c]);
+    } else if (length === 2 || length === 3) {
+      const all = getCombinations(hand, length);
+      for (let c of all) {
+        const evalCombo = this.evaluateHandCombo(c);
+        if (evalCombo.type === HAND_TYPES.PAIR || evalCombo.type === HAND_TYPES.TRIPLE) {
+          combos.push(c);
+        }
+      }
+    } else if (length === 5) {
+      const all5 = getCombinations(hand, 5);
+      for (let c5 of all5) {
+        const evalCombo = this.evaluateHandCombo(c5);
+        if (evalCombo.type >= HAND_TYPES.STRAIGHT) {
+          combos.push(c5);
+        }
+      }
+    }
+    
+    // Sort combos by strength so AI plays the weakest possible winning hand
+    combos.sort((a, b) => {
+      const evalA = this.evaluateHandCombo(a);
+      const evalB = this.evaluateHandCombo(b);
+      if (evalA.type !== evalB.type) return evalA.type - evalB.type;
+      if (evalA.keyVal !== evalB.keyVal) return evalA.keyVal - evalB.keyVal;
+      return evalA.keySuitVal - evalB.keySuitVal;
+    });
+
+    return combos;
   }
 
   /**
