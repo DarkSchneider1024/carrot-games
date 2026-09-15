@@ -174,7 +174,7 @@ export async function renderHome(container) {
       <div class="home-filter-section animate-fade-in-up">
         <div class="home-filter-title">
           <span>遊戲庫分類</span>
-          <span class="home-filter-count" id="filter-count">共 5 款遊戲</span>
+          <span class="home-filter-count" id="filter-count">共 6 款遊戲</span>
         </div>
         <div class="home-filter-pills" id="home-filter-pills">
           <button class="filter-pill active" data-filter="all">全部遊戲</button>
@@ -381,6 +381,35 @@ export async function renderHome(container) {
               </button>
               <button class="btn btn-cyan" id="btn-fruit-havoc-online">
                 ${SVG_ICONS.globe} 線上對戰
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saturn Bomberman Card -->
+        <div class="game-card animate-fade-in-up stagger-6" id="card-bomberman" data-category="strategy party">
+          <div class="game-card-banner">
+            <img src="./assets/images/icon_bomberman.png" alt="土星炸彈人" class="game-card-img" />
+            <div class="game-card-overlay"></div>
+            <span class="badge badge-category">戰略 / 派對</span>
+            <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ff7544,#e11d48);color:#fff;">Godot 4</span>
+          </div>
+          <div class="game-card-content">
+            <h3>土星炸彈人 (SATURN BOMBERMAN)</h3>
+            <p>經典 13x13 網格炸彈超人！獨家騎龍載具系統，支援 1-4 人同樂與單人故事模式關卡！</p>
+
+            <div class="game-card-tags">
+              <span class="tag">${SVG_ICONS.cpu} 1-4 人同樂</span>
+              <span class="tag">${SVG_ICONS.globe} 騎龍載具系統</span>
+              <span class="tag">${SVG_ICONS.smartphone} 5關卡+BOSS戰</span>
+            </div>
+
+            <div class="game-card-actions">
+              <button class="btn btn-primary" id="btn-bomberman-single">
+                ${SVG_ICONS.bot} 故事 / 試玩
+              </button>
+              <button class="btn btn-cyan" id="btn-bomberman-multi">
+                ${SVG_ICONS.user} 本地 2-4 人對戰
               </button>
             </div>
           </div>
@@ -662,6 +691,8 @@ export async function renderHome(container) {
   document.getElementById('btn-magic-fighter-online')?.addEventListener('click', () => navigate('/magic-fighter/online'));
   document.getElementById('btn-fruit-havoc-local')?.addEventListener('click', () => navigate('/fruit-havoc/local'));
   document.getElementById('btn-fruit-havoc-online')?.addEventListener('click', () => navigate('/fruit-havoc/online'));
+  document.getElementById('btn-bomberman-single')?.addEventListener('click', () => navigate('/bomberman/story'));
+  document.getElementById('btn-bomberman-multi')?.addEventListener('click', () => navigate('/bomberman/versus'));
 
   // Initialize storage badge
   try {

@@ -82,6 +82,7 @@ const ROUTE_SEO = {
   '/tetris': { title: '俄羅斯方塊對戰 (Tetris Battle 2P) — Carrot Games', desc: '經典 2 分鐘對決！考驗反應與消除技巧，支援 K.O. 擊倒與反制攻擊。' },
   '/magic-fighter': { title: '魔法對戰 3D (Magic Fighter) — Carrot Games', desc: '重塑經典《坦克大戰》靈魂為魔法戰機 3D 空戰對決，保護蘿蔔水晶基地！' },
   '/fruit-havoc': { title: '水果極限闖關 (Fruit Extreme) — Carrot Games', desc: '類似《超級雞馬》的派對平台對戰！支援單機同屏輪流擺放 20 種陷阱道具。' },
+  '/bomberman': { title: '土星炸彈人 (Saturn Bomberman) — Carrot Games', desc: '經典 13x13 網格炸彈超人！獨家騎龍載具系統，支援 1-4 人同樂與單人故事模式關卡！' },
   '/guide': { title: '遊戲玩法與規則教學手冊 — Carrot Games', desc: 'Carrot Games 全系列遊戲詳細規則、台數計算與技巧操作教學。' }
 };
 

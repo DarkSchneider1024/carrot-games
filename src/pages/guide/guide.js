@@ -45,6 +45,9 @@ export async function renderGameGuide(container, params = {}) {
         <button class="guide-tab-btn ${defaultTab === 'magicFighter' ? 'active' : ''}" data-tab="magicFighter">
           魔法對戰 3D
         </button>
+        <button class="guide-tab-btn ${defaultTab === 'bomberman' ? 'active' : ''}" data-tab="bomberman" style="background:linear-gradient(135deg,#ff7544,#e11d48);color:#fff;border:none;">
+          🐉 土星炸彈人
+        </button>
       </div>
 
       <!-- Main Content Area -->
@@ -430,6 +433,40 @@ export async function renderGameGuide(container, params = {}) {
               <li><strong>18. 🧲 蘋果極性磁鐵 (Apple Magnet)</strong>：強烈吸引或排斥周圍的水果玩家，改變飛行軌跡。</li>
               <li><strong>19. 🏃 履帶跑道 (Conveyor Belt Track)</strong>：滾動傳送帶，大幅提升 forward 加速度或倒退阻礙。</li>
               <li><strong>20. 🏆 草莓蛋糕終點旗 (Fruit Cake Goal Flag)</strong>：關卡最終終點站！率先成功抵達且通過陷阱考驗者獲得高分！</li>
+            </ul>
+          </section>
+        </article>
+
+        <!-- Saturn Bomberman Guide -->
+        <article class="guide-article ${defaultTab === 'bomberman' ? 'active' : ''}" id="guide-bomberman">
+          <h3>土星炸彈人 (SATURN BOMBERMAN) 玩法與道具對照手冊</h3>
+
+          <section class="guide-section">
+            <h4>1. 遊戲目標與勝負條件</h4>
+            <p>經典 13×13 網格炸彈超人！放置炸彈引爆破壞軟質木塊，消滅地圖上的怪獸敵人，炸出隱藏的「出口門」並順利走入即可通關！故事模式包含 5 大關卡與最後一關 BOSS 戰，具備星等評分機制。</p>
+          </section>
+
+          <section class="guide-section">
+            <h4>2. 🐉 獨家騎龍載具系統</h4>
+            <ul>
+              <li><strong>騎龍機制</strong>：破壞方塊後掉落「龍蛋」，踩上去自動騎上龍。</li>
+              <li><strong>龍能力增幅</strong>：移動速度提升 50%、騎乘瞬間獲得 2 秒無敵、碰撞敵人可進行踐踏傷害。</li>
+              <li><strong>防禦擋傷</strong>：被火焰爆炸波及時，龍會自動替玩家吸收一次致死傷害（龍消失，玩家存活並給予短暫無敵脫離火場）。</li>
+              <li><strong>自由放置炸彈</strong>：騎龍狀態下亦可正常放置炸彈攻擊！</li>
+              <li><strong>下龍與騎回</strong>：按下龍鍵（P1: Q / P2: Numpad .）可隨時下龍，龍會留在原地待命 20 秒，走回去即可再次騎乘。</li>
+            </ul>
+          </section>
+
+          <section class="guide-section">
+            <h4>3. 💣 道具與控制指令</h4>
+            <ul>
+              <li>💣 <strong>炸彈 +1</strong>：增加可同時放置的炸彈上限。</li>
+              <li>🔥 <strong>火力 +1</strong>：擴大爆炸十字延伸範圍。</li>
+              <li>💨 <strong>速度提升</strong>：增加步行移動速度。</li>
+              <li>🐉 <strong>龍蛋</strong>：獲得一條龍載具。</li>
+              <li>⚡ <strong>快速引爆</strong>：縮短炸彈倒計時。</li>
+              <li>🎯 <strong>遠程引爆</strong>：再按一次放彈鍵手動引爆。</li>
+              <li>🛡️ <strong>保險箱</strong>：一次獲得炸彈 +1、火力 +1 與速度。</li>
             </ul>
           </section>
         </article>
