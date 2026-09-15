@@ -1,37 +1,76 @@
 /**
  * Texas Hold'em Poker Game Page (德州撲克對局頁面)
  *
- * Happy Hues Fresh Cute Theme with Action Popovers, Turn Badges & Live Chat Battle Log
+ * Happy Hues Fresh Cute Theme with Action Popovers, Turn Badges, side-pot aware results,
+ * viewport-fitted table & Live Chat Battle Log. Rendering is driven by engine.onUpdate.
  */
 
 import { navigate } from '../../router.js';
 import { TexasHoldemEngine } from '../../games/poker/poker-engine.js';
-import { makeAIDecision } from '../../games/poker/poker-ai.js';
-import { RoomManager } from '../../network/room.js';
+import { makeAIDecision, AI_STYLES } from '../../games/poker/poker-ai.js';
 import { showToast } from '../../components/toast.js';
 import { showModal, closeModal } from '../../components/modal.js';
 import { SVG_ICONS } from '../../components/icons.js';
 import { initAuth, getUserProfile, updateUserChips, updateUserStats, getCurrentUser } from '../../network/auth-manager.js';
-import { showAuthModal } from '../../components/auth-modal.js';
+
+const STAGE_LABELS = {
+  PREFLOP: 'PRE-FLOP 翻牌前',
+  FLOP: 'FLOP 翻牌圈',
+  TURN: 'TURN 轉牌圈',
+  RIVER: 'RIVER 河牌圈',
+  SHOWDOWN: 'SHOWDOWN 攤牌'
+};
+const VAL_MAP = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
+
+const AI_SEATS = [
+  { idx: 1, cls: 'seat-top-left', img: 'avatar_rabbit.png', alt: '兔兔', id: 'p1', name: '兔兔 (AI)' },
+  { idx: 2, cls: 'seat-top-center', img: 'avatar_cat.png', alt: '貓咪', id: 'p2', name: '貓咪 (AI)' },
+  { idx: 3, cls: 'seat-top-right', img: 'avatar_bear.png', alt: '熊熊', id: 'p3', name: '熊熊 (AI)' }
+];
+
+const cardHtml = (card, extra = '') => {
+  const isRed = card.suit === '♥' || card.suit === '♦';
+  return `<div class="poker-card ${isRed ? 'red' : 'black'} ${extra}" data-card="${card.id}">
+    <span class="card-val">${VAL_MAP[card.value] || card.value}</span>
+    <span class="card-suit">${card.suit}</span>
+  </div>`;
+};
+const cardBackHtml = () => `<div class="poker-card card-back"><span>🥕</span></div>`;
 
 export async function renderPoker(container, params) {
-  const mode = params.mode || 'ai'; // 'ai' or 'online'
   const engine = new TexasHoldemEngine();
-  let room = null;
 
   initAuth();
   const user = getCurrentUser();
   const profile = getUserProfile();
+  const isMember = !!(user && !user.isAnonymous);
 
   // Auto Rescue check if user has <= 0 chips
   let initialUserChips = 1000;
-  if (user && !user.isAnonymous) {
-    if ((profile?.chips || 0) <= 0) {
-      initialUserChips = await updateUserChips(1000);
-    } else {
-      initialUserChips = profile.chips;
-    }
+  if (isMember) {
+    initialUserChips = (profile?.chips || 0) <= 0 ? await updateUserChips(1000) : profile.chips;
   }
+  let currentBuyIn = 1000;
+  let handStartChips = initialUserChips;
+  let recordedHand = 0;
+
+  const playerName = profile?.displayName ? `${profile.displayName} (你)` : '你 (玩家)';
+
+  const seatHtml = ({ idx, cls, img, alt, name, style }) => `
+    <div class="player-seat ${cls}" id="seat-${idx}">
+      <div class="action-bubble" id="bubble-${idx}"></div>
+      <div class="seat-badges" id="badges-${idx}"></div>
+      <div class="poker-avatar ${idx === 0 ? 'avatar-user' : ''}">
+        <img src="./assets/images/${img}" alt="${alt}" class="poker-avatar-img" />
+      </div>
+      <div class="seat-info">
+        <span class="seat-name">${name}</span>
+        ${style ? `<span class="seat-style">${style}</span>` : ''}
+        <span class="seat-chips" id="chips-${idx}">$1000</span>
+      </div>
+      <div class="hole-cards" id="cards-${idx}"></div>
+      <div class="seat-status" id="status-${idx}"></div>
+    </div>`;
 
   container.innerHTML = `
     <div class="poker-page show-mobile-game">
@@ -41,126 +80,35 @@ export async function renderPoker(container, params) {
           ${SVG_ICONS.back} <span>大廳</span>
         </button>
         <div class="poker-topbar-title">
-          <span class="mode-badge">
-            🂡 TEXAS HOLD'EM POKER 德州撲克
-          </span>
+          <span class="mode-badge">🂡 TEXAS HOLD'EM<span class="hide-narrow"> POKER 德州撲克</span></span>
         </div>
         <div class="poker-topbar-actions">
-          <button class="btn btn-ghost btn-sm" id="btn-pwa-help" title="PWA 安裝指南">
-            ${SVG_ICONS.smartphone}
-          </button>
-          <button class="btn btn-ghost btn-sm" id="btn-settings" title="SETTINGS">
-            ${SVG_ICONS.settings}
-          </button>
+          <button class="btn btn-ghost btn-sm" id="btn-pwa-help" title="PWA 安裝指南">${SVG_ICONS.smartphone}</button>
+          <button class="btn btn-ghost btn-sm" id="btn-settings" title="規則說明">${SVG_ICONS.settings}</button>
         </div>
       </div>
 
       <!-- Mobile Navigation Tabs -->
       <div class="game-mobile-tabs">
-        <button class="mobile-tab-btn" id="mtab-poker-setup">
-          盲注與戰報
-        </button>
-        <button class="mobile-tab-btn active" id="mtab-poker-game">
-          撲克檯面
-        </button>
+        <button class="mobile-tab-btn" id="mtab-poker-setup">盲注與戰報</button>
+        <button class="mobile-tab-btn active" id="mtab-poker-game">撲克檯面</button>
       </div>
 
-      <!-- Main Poker Table Stage -->
       <div class="poker-main">
+        <!-- Main Poker Table Stage -->
         <div class="poker-table-stage glass">
-          <!-- Community Cards & Pot HUD -->
           <div class="table-center">
-            <div class="pot-badge">
-              <span>POT:</span> <strong id="pot-amount">$0</strong>
-            </div>
-            <div class="community-cards" id="community-cards">
-              <div class="card-slot empty"></div>
-              <div class="card-slot empty"></div>
-              <div class="card-slot empty"></div>
-              <div class="card-slot empty"></div>
-              <div class="card-slot empty"></div>
-            </div>
+            <div class="pot-badge"><span>POT:</span> <strong id="pot-amount">$0</strong></div>
+            <div class="community-cards" id="community-cards"></div>
             <div class="stage-name" id="stage-name">PRE-FLOP</div>
           </div>
 
-          <!-- Opponent Seat 1 (Top Left) -->
-          <div class="player-seat seat-top-left" id="seat-1">
-            <div class="action-bubble" id="bubble-1"></div>
-            <div class="poker-avatar">
-              <img src="./assets/images/avatar_rabbit.png" alt="兔兔" class="poker-avatar-img" />
-            </div>
-            <div class="seat-info">
-              <span class="seat-name">兔兔 (AI)</span>
-              <span class="seat-chips" id="chips-1">$1000</span>
-            </div>
-            <div class="hole-cards" id="cards-1"></div>
-            <div class="seat-status" id="status-1"></div>
-          </div>
+          ${AI_SEATS.map(s => seatHtml({ ...s, style: AI_STYLES[s.id]?.label })).join('')}
+          ${seatHtml({ idx: 0, cls: 'seat-bottom', img: 'avatar_user.png', alt: '玩家', name: playerName })}
 
-          <!-- Opponent Seat 2 (Top Center) -->
-          <div class="player-seat seat-top-center" id="seat-2">
-            <div class="action-bubble" id="bubble-2"></div>
-            <div class="poker-avatar">
-              <img src="./assets/images/avatar_cat.png" alt="貓咪" class="poker-avatar-img" />
-            </div>
-            <div class="seat-info">
-              <span class="seat-name">貓咪 (AI)</span>
-              <span class="seat-chips" id="chips-2">$1000</span>
-            </div>
-            <div class="hole-cards" id="cards-2"></div>
-            <div class="seat-status" id="status-2"></div>
-          </div>
-
-          <!-- Opponent Seat 3 (Top Right) -->
-          <div class="player-seat seat-top-right" id="seat-3">
-            <div class="action-bubble" id="bubble-3"></div>
-            <div class="poker-avatar">
-              <img src="./assets/images/avatar_bear.png" alt="熊熊" class="poker-avatar-img" />
-            </div>
-            <div class="seat-info">
-              <span class="seat-name">熊熊 (AI)</span>
-              <span class="seat-chips" id="chips-3">$1000</span>
-            </div>
-            <div class="hole-cards" id="cards-3"></div>
-            <div class="seat-status" id="status-3"></div>
-          </div>
-
-          <!-- Main Local Player Seat (Bottom Center) -->
-          <div class="player-seat seat-bottom" id="seat-0">
-            <div class="action-bubble" id="bubble-0"></div>
-            <div class="poker-avatar avatar-user">
-              <img src="./assets/images/avatar_user.png" alt="玩家" class="poker-avatar-img" />
-            </div>
-            <div class="seat-info">
-              <span class="seat-name">你 (玩家)</span>
-              <span class="seat-chips" id="chips-0">$1000</span>
-            </div>
-            <div class="hole-cards" id="cards-0"></div>
-            <div class="seat-status" id="status-0"></div>
-          </div>
-
-          <!-- Winner Banner -->
+          <!-- Winner Ribbon (sits under the board, never covers seats or cards) -->
           <div class="winner-banner" id="winner-banner" style="display:none;">
             <span id="winner-text"></span>
-          </div>
-        </div>
-
-        <!-- Stakes Selector Bar -->
-        <div class="stakes-bar glass">
-          <span class="stakes-title">盲注層級 (STAKES):</span>
-          <div class="stakes-options">
-            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="5" data-bb="10" data-buyin="500" data-label="新手場">
-              新手 $5/$10
-            </button>
-            <button class="btn btn-primary btn-xs stakes-btn active" data-sb="10" data-bb="20" data-buyin="1000" data-label="標準場">
-              標準 $10/$20
-            </button>
-            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="50" data-bb="100" data-buyin="5000" data-label="高額場">
-              高額 $50/$100
-            </button>
-            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="100" data-bb="200" data-buyin="10000" data-label="豪客場">
-              豪客 $100/$200
-            </button>
           </div>
         </div>
 
@@ -171,114 +119,227 @@ export async function renderPoker(container, params) {
             <button class="btn btn-secondary action-btn" id="pbtn-check">過牌 (CHECK)</button>
             <button class="btn btn-cyan action-btn" id="pbtn-call">跟注 (CALL)</button>
             <button class="btn btn-primary action-btn" id="pbtn-raise">加注 (RAISE)</button>
+            <button class="btn btn-primary action-btn" id="pbtn-raise-pot">底池加注</button>
+            <button class="btn btn-primary action-btn btn-allin" id="pbtn-allin">ALL-IN</button>
             <button class="btn btn-primary action-btn" id="pbtn-next" style="display:none;">
               ${SVG_ICONS.refresh} 下一局 (NEXT HAND)
             </button>
           </div>
         </div>
 
-        <!-- Live Game Battle Action Log / Chat Box -->
-        <div class="poker-log-box glass">
-          <div class="log-header">
-            <span>對戰即時動態 (GAME LOG)</span>
+        <!-- Stakes Selector Bar -->
+        <div class="stakes-bar glass">
+          <span class="stakes-title">盲注層級 (STAKES):</span>
+          <div class="stakes-options">
+            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="5" data-bb="10" data-buyin="500" data-label="新手場">新手 $5/$10</button>
+            <button class="btn btn-primary btn-xs stakes-btn active" data-sb="10" data-bb="20" data-buyin="1000" data-label="標準場">標準 $10/$20</button>
+            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="50" data-bb="100" data-buyin="5000" data-label="高額場">高額 $50/$100</button>
+            <button class="btn btn-ghost btn-xs stakes-btn" data-sb="100" data-bb="200" data-buyin="10000" data-label="豪客場">豪客 $100/$200</button>
           </div>
+        </div>
+
+        <!-- Live Game Battle Action Log -->
+        <div class="poker-log-box glass">
+          <div class="log-header"><span>對戰即時動態 (GAME LOG)</span></div>
           <div class="log-content" id="poker-log-content"></div>
         </div>
       </div>
     </div>
   `;
 
-  // Attach Log Listener
+  const $ = (sel) => container.querySelector(sel);
+
   engine.onLog = (msg, type) => {
-    const logContent = document.getElementById('poker-log-content');
-    if (logContent) {
-      const entry = document.createElement('div');
-      entry.className = `log-entry ${type}`;
-      entry.textContent = `• ${msg}`;
-      logContent.appendChild(entry);
-      logContent.scrollTop = logContent.scrollHeight;
+    const logContent = $('#poker-log-content');
+    if (!logContent) return;
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    entry.textContent = `• ${msg}`;
+    logContent.appendChild(entry);
+    logContent.scrollTop = logContent.scrollHeight;
+  };
+
+  const onHandEnd = () => {
+    if (recordedHand === engine.handNumber) return;
+    recordedHand = engine.handNumber;
+    const me = engine.players[0];
+    Promise.resolve(updateUserStats('poker', { isWin: engine.winners.includes(0), netProfit: me.chips - handStartChips }))
+      .catch(err => console.warn('[Poker] stats sync skipped', err));
+    if (isMember) {
+      Promise.resolve(updateUserChips(me.chips)).catch(err => console.warn('[Poker] chip sync skipped', err));
     }
   };
 
+  const renderUI = () => {
+    const legal = engine.getLegalActions(0);
+    const me = engine.players[0];
+    const handOver = engine.gameOver;
+    const isShowdown = handOver && engine.roundStage === 'SHOWDOWN';
+
+    $('#pot-amount').textContent = `$${engine.pot}`;
+    const stageEl = $('#stage-name');
+    stageEl.textContent = STAGE_LABELS[engine.roundStage] || engine.roundStage;
+    stageEl.style.visibility = handOver ? 'hidden' : 'visible';
+
+    // Winning five cards highlight
+    const winIds = new Set();
+    if (isShowdown) {
+      engine.winners.forEach(i => engine.players[i].handEval?.cards.forEach(c => winIds.add(c.id)));
+    }
+
+    const board = [];
+    for (let i = 0; i < 5; i++) {
+      const card = engine.communityCards[i];
+      board.push(card ? cardHtml(card, winIds.has(card.id) ? 'win-card' : '') : '<div class="card-slot empty"></div>');
+    }
+    $('#community-cards').innerHTML = board.join('');
+
+    engine.players.forEach((p, idx) => {
+      const seatEl = $(`#seat-${idx}`);
+      const statusEl = $(`#status-${idx}`);
+      const bubbleEl = $(`#bubble-${idx}`);
+      $(`#chips-${idx}`).textContent = `$${p.chips}`;
+
+      const isTurn = engine.currentTurnIdx === idx && !handOver;
+      const isWinner = handOver && engine.winners.includes(idx);
+      seatEl.classList.toggle('turn-active', isTurn);
+      seatEl.classList.toggle('seat-winner', isWinner);
+      seatEl.classList.toggle('seat-folded', p.folded);
+
+      if (isTurn) {
+        statusEl.innerHTML = `<span class="badge badge-warning turn-tag">${idx === 0 ? '💭 輪到你了' : '⏳ 思考中...'}</span>`;
+      } else if (isShowdown && !p.folded && p.handEval) {
+        statusEl.innerHTML = `<span class="seat-hand-name ${isWinner ? 'win' : ''}">${p.handEval.name.split(' ')[0]}</span>`;
+      } else if (p.sittingOut) {
+        statusEl.innerHTML = `<span class="status-folded">💤 休息中</span>`;
+      } else if (p.folded) {
+        statusEl.innerHTML = `<span class="status-folded">❌ 棄牌</span>`;
+      } else if (p.isAllIn) {
+        statusEl.innerHTML = `<span class="status-allin">🔥 ALL-IN</span>`;
+      } else {
+        statusEl.textContent = p.bet > 0 ? `注: $${p.bet}` : '';
+      }
+
+      const badges = [];
+      if (idx === engine.dealerIdx) badges.push('<span class="pos-badge dealer">D</span>');
+      if (idx === engine.sbIdx) badges.push('<span class="pos-badge">SB</span>');
+      if (idx === engine.bbIdx) badges.push('<span class="pos-badge">BB</span>');
+      $(`#badges-${idx}`).innerHTML = badges.join('');
+
+      if (p.lastAction) {
+        bubbleEl.textContent = p.lastAction.label;
+        bubbleEl.className = `action-bubble active ${p.lastAction.type}`;
+      } else {
+        bubbleEl.className = 'action-bubble';
+      }
+
+      // Own cards always visible; opponents revealed only at a real showdown and only if still in the hand
+      const cardsEl = $(`#cards-${idx}`);
+      if (p.cards.length !== 2) {
+        cardsEl.innerHTML = '';
+      } else if (idx === 0 || (isShowdown && !p.folded)) {
+        cardsEl.innerHTML = p.cards.map(c => cardHtml(c, winIds.has(c.id) && isWinner ? 'win-card' : '')).join('');
+      } else if (p.folded) {
+        cardsEl.innerHTML = '';
+      } else {
+        cardsEl.innerHTML = cardBackHtml() + cardBackHtml();
+      }
+    });
+
+    // Action buttons
+    const show = (sel, visible) => { $(sel).style.display = visible ? 'inline-flex' : 'none'; };
+    const btnCall = $('#pbtn-call');
+    const btnRaise = $('#pbtn-raise');
+    const btnPot = $('#pbtn-raise-pot');
+    const btnAllIn = $('#pbtn-allin');
+
+    show('#pbtn-fold', !handOver);
+    show('#pbtn-check', !handOver && legal.toCall === 0);
+    show('#pbtn-call', !handOver && legal.toCall > 0);
+    show('#pbtn-raise', !handOver);
+    show('#pbtn-raise-pot', !handOver);
+    show('#pbtn-allin', !handOver);
+    show('#pbtn-next', handOver);
+
+    $('#pbtn-fold').disabled = !legal.canAct;
+    $('#pbtn-check').disabled = !legal.canCheck;
+    btnCall.disabled = !legal.canCall;
+    btnCall.textContent = legal.toCall > 0 ? `跟注 $${legal.callAmount} (CALL)` : '跟注 (CALL)';
+
+    const potTo = Math.min(legal.maxRaiseTo, Math.max(legal.minRaiseTo, engine.currentBet + engine.pot + legal.toCall));
+    btnRaise.disabled = !legal.canRaise;
+    btnRaise.textContent = legal.canRaise ? `${engine.currentBet === 0 ? '下注' : '加注到'} $${legal.minRaiseTo}` : '加注 (RAISE)';
+    btnPot.disabled = !legal.canRaise || potTo <= legal.minRaiseTo;
+    btnPot.textContent = legal.canRaise ? `底池 $${potTo}` : '底池加注';
+    btnAllIn.disabled = !legal.canAllIn;
+    btnAllIn.textContent = `ALL-IN $${me.chips}`;
+
+    const banner = $('#winner-banner');
+    if (handOver && engine.winnerMsg) {
+      $('#winner-text').textContent = engine.winnerMsg;
+      banner.style.display = 'flex';
+      onHandEnd();
+    } else {
+      banner.style.display = 'none';
+    }
+  };
+
+  engine.onUpdate = renderUI;
+  engine.aiDecider = makeAIDecision;
+
   // Initialize Match Data
-  const playerName = profile?.displayName ? `${profile.displayName} (你)` : '你 (玩家)';
-  const initialPlayers = [
+  engine.initMatch([
     { id: 'p0', name: playerName, isAI: false, chips: initialUserChips },
     { id: 'p1', name: '兔兔 (AI)', isAI: true, chips: 1000 },
     { id: 'p2', name: '貓咪 (AI)', isAI: true, chips: 1000 },
-    { id: 'p3', name: '熊熊 (AI)', isAI: true, chips: 1000 },
-  ];
-
-  engine.initMatch(initialPlayers);
-  _updatePokerUI(engine);
+    { id: 'p3', name: '熊熊 (AI)', isAI: true, chips: 1000 }
+  ]);
 
   // Mobile Viewport & Tab Switching System
-  const pageContainer = container.querySelector('.poker-page');
-  const mtabSetup = document.getElementById('mtab-poker-setup');
-  const mtabGame = document.getElementById('mtab-poker-game');
-
-  function switchMobileTab(tab) {
-    if (tab === 'setup') {
-      pageContainer.classList.add('show-mobile-setup');
-      pageContainer.classList.remove('show-mobile-game');
-      mtabSetup?.classList.add('active');
-      mtabGame?.classList.remove('active');
-    } else {
-      pageContainer.classList.add('show-mobile-game');
-      pageContainer.classList.remove('show-mobile-setup');
-      mtabGame?.classList.add('active');
-      mtabSetup?.classList.remove('active');
-    }
-  }
-
-  mtabSetup?.addEventListener('click', () => switchMobileTab('setup'));
-  mtabGame?.addEventListener('click', () => switchMobileTab('game'));
-  document.getElementById('btn-settings')?.addEventListener('click', () => switchMobileTab('setup'));
-
-  // Auto trigger AI turns if needed
-  _checkAITurn(engine);
+  const pageContainer = $('.poker-page');
+  const switchMobileTab = (tab) => {
+    const setup = tab === 'setup';
+    pageContainer.classList.toggle('show-mobile-setup', setup);
+    pageContainer.classList.toggle('show-mobile-game', !setup);
+    $('#mtab-poker-setup')?.classList.toggle('active', setup);
+    $('#mtab-poker-game')?.classList.toggle('active', !setup);
+  };
+  $('#mtab-poker-setup')?.addEventListener('click', () => switchMobileTab('setup'));
+  $('#mtab-poker-game')?.addEventListener('click', () => switchMobileTab('game'));
 
   // Bind Buttons
-  document.getElementById('pbtn-fold')?.addEventListener('click', () => {
-    if (engine.currentTurnIdx !== 0 || engine.gameOver) return;
-    engine.playerAction('FOLD');
-    _updatePokerUI(engine);
-    _checkAITurn(engine);
-  });
+  const act = (action, amount) => () => {
+    if (!engine.getLegalActions(0).canAct) return;
+    if (!engine.playerAction(action, amount?.())) showToast('此動作目前無法執行', 'warning');
+  };
+  $('#pbtn-fold').addEventListener('click', act('FOLD'));
+  $('#pbtn-check').addEventListener('click', act('CHECK'));
+  $('#pbtn-call').addEventListener('click', act('CALL'));
+  $('#pbtn-raise').addEventListener('click', act('RAISE', () => engine.getLegalActions(0).minRaiseTo));
+  $('#pbtn-raise-pot').addEventListener('click', act('RAISE', () => {
+    const l = engine.getLegalActions(0);
+    return engine.currentBet + engine.pot + l.toCall;
+  }));
+  $('#pbtn-allin').addEventListener('click', act('ALLIN'));
 
-  document.getElementById('pbtn-check')?.addEventListener('click', () => {
-    if (engine.currentTurnIdx !== 0 || engine.gameOver) return;
-    engine.playerAction('CHECK');
-    _updatePokerUI(engine);
-    _checkAITurn(engine);
-  });
-
-  document.getElementById('pbtn-call')?.addEventListener('click', () => {
-    if (engine.currentTurnIdx !== 0 || engine.gameOver) return;
-    engine.playerAction('CALL');
-    _updatePokerUI(engine);
-    _checkAITurn(engine);
-  });
-
-  document.getElementById('pbtn-raise')?.addEventListener('click', () => {
-    if (engine.currentTurnIdx !== 0 || engine.gameOver) return;
-    engine.playerAction('RAISE');
-    _updatePokerUI(engine);
-    _checkAITurn(engine);
-  });
-
-  document.getElementById('pbtn-next')?.addEventListener('click', () => {
+  $('#pbtn-next').addEventListener('click', async () => {
+    const me = engine.players[0];
+    if (me.chips <= 0) {
+      if (isMember) {
+        me.chips = await updateUserChips(0);
+      } else {
+        me.chips = currentBuyIn;
+        showToast(`💰 已發放救濟金 $${currentBuyIn}，繼續加油！`, 'info');
+      }
+    }
+    handStartChips = me.chips;
     engine.startNewHand();
-    document.getElementById('winner-banner').style.display = 'none';
-    document.getElementById('pbtn-next').style.display = 'none';
-    _updatePokerUI(engine);
-    _checkAITurn(engine);
   });
 
   // Stakes Selector Event Handlers
-  document.querySelectorAll('.stakes-btn').forEach(btn => {
+  container.querySelectorAll('.stakes-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.stakes-btn').forEach(b => {
+      container.querySelectorAll('.stakes-btn').forEach(b => {
         b.classList.remove('btn-primary', 'active');
         b.classList.add('btn-ghost');
       });
@@ -288,252 +349,40 @@ export async function renderPoker(container, params) {
       const sb = parseInt(btn.dataset.sb, 10);
       const bb = parseInt(btn.dataset.bb, 10);
       const label = btn.dataset.label;
+      currentBuyIn = parseInt(btn.dataset.buyin, 10) || currentBuyIn;
 
       const wasGameOver = engine.gameOver;
       engine.setStakes(sb, bb, label);
-
-      if (wasGameOver) {
-        showToast(`已切換盲注層級為【${label}】小盲 $${sb} / 大盲 $${bb}（籌碼金額延續）`, 'success');
-      } else {
-        showToast(`已預約於本局結束後切換至【${label}】小盲 $${sb} / 大盲 $${bb}（當前對局與籌碼不受影響）`, 'info');
-      }
-      _updatePokerUI(engine);
+      showToast(wasGameOver
+        ? `已切換盲注層級為【${label}】小盲 $${sb} / 大盲 $${bb}（籌碼金額延續）`
+        : `已預約於本局結束後切換至【${label}】小盲 $${sb} / 大盲 $${bb}（當前對局與籌碼不受影響）`,
+        wasGameOver ? 'success' : 'info');
+      renderUI();
     });
   });
 
-  document.getElementById('btn-back')?.addEventListener('click', () => navigate('/'));
-  document.getElementById('btn-pwa-help')?.addEventListener('click', () => navigate('/pwa-guide'));
-  document.getElementById('btn-settings')?.addEventListener('click', () => _showSettingsModal());
-
-  return () => {};
-}
-
-function _checkAITurn(engine) {
-  if (engine.gameOver) return;
-
-  const currentP = engine.players[engine.currentTurnIdx];
-  if (currentP && currentP.isAI && !currentP.folded && !currentP.isAllIn) {
-    setTimeout(() => {
-      makeAIDecision(engine, engine.currentTurnIdx);
-      _updatePokerUI(engine);
-      _checkAITurn(engine);
-    }, 750);
-  }
-}
-
-function _updatePokerUI(engine) {
-  // Update Pot & Stage
-  const potEl = document.getElementById('pot-amount');
-  const stageEl = document.getElementById('stage-name');
-  if (potEl) potEl.textContent = `$${engine.pot}`;
-  if (stageEl) stageEl.textContent = engine.roundStage;
-
-  // Render Community Cards
-  const communityEl = document.getElementById('community-cards');
-  if (communityEl) {
-    communityEl.innerHTML = '';
-    for (let i = 0; i < 5; i++) {
-      const card = engine.communityCards[i];
-      if (card) {
-        communityEl.appendChild(_createCardEl(card));
-      } else {
-        const emptySlot = document.createElement('div');
-        emptySlot.className = 'card-slot empty';
-        communityEl.appendChild(emptySlot);
-      }
-    }
-  }
-
-  // Local Player Turn Check
-  const isMyTurn = engine.currentTurnIdx === 0 && !engine.gameOver;
-  const localP = engine.players[0];
-  const toCall = engine.currentBet - localP.bet;
-
-  const btnFold = document.getElementById('pbtn-fold');
-  const btnCheck = document.getElementById('pbtn-check');
-  const btnCall = document.getElementById('pbtn-call');
-  const btnRaise = document.getElementById('pbtn-raise');
-
-  if (btnFold && btnCheck && btnCall && btnRaise) {
-    if (!isMyTurn || localP.folded || localP.isAllIn) {
-      btnFold.disabled = true;
-      btnCheck.disabled = true;
-      btnCall.disabled = true;
-      btnRaise.disabled = true;
-    } else {
-      btnFold.disabled = false;
-      btnRaise.disabled = false;
-
-      if (toCall <= 0) {
-        btnCheck.disabled = false;
-        btnCheck.style.display = 'inline-flex';
-        btnCall.style.display = 'none';
-      } else {
-        btnCheck.style.display = 'none';
-        btnCall.disabled = false;
-        btnCall.style.display = 'inline-flex';
-        btnCall.textContent = `跟注 $${toCall} (CALL)`;
-      }
-    }
-  }
-
-  // Render Players & Hole Cards
-  engine.players.forEach((p, idx) => {
-    const chipsEl = document.getElementById(`chips-${idx}`);
-    const statusEl = document.getElementById(`status-${idx}`);
-    const cardsEl = document.getElementById(`cards-${idx}`);
-    const seatEl = document.getElementById(`seat-${idx}`);
-    const bubbleEl = document.getElementById(`bubble-${idx}`);
-
-    if (chipsEl) chipsEl.textContent = `$${p.chips}`;
-
-    // Update Seat Status & Turn Indicator
-    if (seatEl) {
-      if (engine.currentTurnIdx === idx && !engine.gameOver) {
-        seatEl.classList.add('turn-active');
-        if (statusEl) {
-          statusEl.innerHTML = `<span class="badge badge-warning turn-tag">${idx === 0 ? '💭 輪到你了' : '⏳ 思考中...'}</span>`;
-        }
-      } else {
-        seatEl.classList.remove('turn-active');
-        if (statusEl) {
-          if (p.folded) statusEl.innerHTML = `<span class="status-folded">❌ 棄牌 (FOLD)</span>`;
-          else if (p.isAllIn) statusEl.innerHTML = `<span class="status-allin">🔥 ALL-IN</span>`;
-          else if (p.bet > 0) statusEl.textContent = `注: $${p.bet}`;
-          else statusEl.textContent = '';
-        }
-      }
-    }
-
-    // Update Action Bubble Popover
-    if (bubbleEl) {
-      if (p.lastAction) {
-        bubbleEl.textContent = p.lastAction.label;
-        bubbleEl.className = `action-bubble active ${p.lastAction.type}`;
-      } else {
-        bubbleEl.className = 'action-bubble';
-      }
-    }
-
-    if (cardsEl) {
-      cardsEl.innerHTML = '';
-      if (p.cards.length === 2) {
-        if (idx === 0 || engine.gameOver) {
-          cardsEl.appendChild(_createCardEl(p.cards[0]));
-          cardsEl.appendChild(_createCardEl(p.cards[1]));
-        } else {
-          cardsEl.appendChild(_createCardBackEl());
-          cardsEl.appendChild(_createCardBackEl());
-        }
-      }
-    }
+  $('#btn-back')?.addEventListener('click', () => navigate('/'));
+  $('#btn-pwa-help')?.addEventListener('click', () => navigate('/pwa-guide'));
+  $('#btn-settings')?.addEventListener('click', () => {
+    showModal({
+      title: '德州撲克對局規則',
+      content: `
+        <div style="font-size:0.875rem;display:flex;flex-direction:column;gap:0.5rem;">
+          <p><strong>玩法：</strong> 無限注德州撲克 (No-Limit Texas Hold'em)，支援邊池 (Side Pot) 結算</p>
+          <p><strong>盲注：</strong> 小盲注 $${engine.smallBlind} / 大盲注 $${engine.bigBlind}</p>
+          <p><strong>加注：</strong> 最小加注為上一次加注幅度（至少一個大盲），可選底池加注或 ALL-IN</p>
+          <p><strong>AI 對手：</strong> 兔兔（謹慎型）、貓咪（激進型）、熊熊（均衡型），依勝率模擬與底池賠率決策</p>
+        </div>
+      `,
+      actions: [{ text: '關閉', onClick: closeModal }],
+    });
   });
 
-  // Action Buttons State & Visibility Sync
-  const foldBtn = document.getElementById('pbtn-fold');
-  const checkBtn = document.getElementById('pbtn-check');
-  const callBtn = document.getElementById('pbtn-call');
-  const raiseBtn = document.getElementById('pbtn-raise');
-  const nextBtn = document.getElementById('pbtn-next');
+  // Dev-only hook for the Playwright QA bot (scripts/qa) — reads state, actions still go through the UI
+  if (import.meta.env.DEV) window.__carrotQA = { game: 'poker', engine: () => engine };
 
-  const isUserTurn = engine.currentTurnIdx === 0 && !engine.gameOver;
-
-  if (engine.gameOver) {
-    if (foldBtn) foldBtn.style.display = 'none';
-    if (checkBtn) checkBtn.style.display = 'none';
-    if (callBtn) callBtn.style.display = 'none';
-    if (raiseBtn) raiseBtn.style.display = 'none';
-
-    const banner = document.getElementById('winner-banner');
-    const winnerText = document.getElementById('winner-text');
-
-    if (banner && winnerText) {
-      winnerText.textContent = engine.winnerMsg;
-      banner.style.display = 'flex';
-    }
-    if (nextBtn) nextBtn.style.display = 'inline-flex';
-
-    // Record stats and sync chips
-    const userPlayer = engine.players[0];
-    if (userPlayer) {
-      const isWin = engine.winnerMsg.includes(userPlayer.name) || engine.winnerMsg.includes('你');
-      updateUserStats('poker', { isWin, netProfit: userPlayer.chips - initialUserChips });
-    }
-  } else {
-    const banner = document.getElementById('winner-banner');
-    if (banner) banner.style.display = 'none';
-
-    if (foldBtn) {
-      foldBtn.style.display = 'inline-flex';
-      foldBtn.disabled = !isUserTurn;
-    }
-    if (checkBtn) {
-      checkBtn.style.display = 'inline-flex';
-      checkBtn.disabled = !isUserTurn;
-    }
-    if (callBtn) {
-      callBtn.style.display = 'inline-flex';
-      callBtn.disabled = !isUserTurn;
-    }
-    if (raiseBtn) {
-      raiseBtn.style.display = 'inline-flex';
-      raiseBtn.disabled = !isUserTurn;
-    }
-    if (nextBtn) {
-      nextBtn.style.display = 'none';
-    }
-  }
-
-  // Sync current chips with logged-in account
-  const userPlayer = engine.players[0];
-  if (userPlayer) {
-    const user = getCurrentUser();
-    if (user && !user.isAnonymous) {
-      if (userPlayer.chips <= 0) {
-        updateUserChips(0).then(newChips => {
-          userPlayer.chips = newChips;
-          const userChipsEl = document.getElementById('chips-0');
-          if (userChipsEl) userChipsEl.textContent = `$${newChips}`;
-        });
-      } else {
-        updateUserChips(userPlayer.chips);
-      }
-    }
-  }
-}
-
-function _createCardEl(card) {
-  const el = document.createElement('div');
-  const isRed = card.suit === '♥' || card.suit === '♦';
-  el.className = `poker-card ${isRed ? 'red' : 'black'}`;
-
-  const valMap = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
-  const valStr = valMap[card.value] || card.value;
-
-  el.innerHTML = `
-    <span class="card-val">${valStr}</span>
-    <span class="card-suit">${card.suit}</span>
-  `;
-  return el;
-}
-
-function _createCardBackEl() {
-  const el = document.createElement('div');
-  el.className = 'poker-card card-back';
-  el.innerHTML = `<span>🥕</span>`;
-  return el;
-}
-
-function _showSettingsModal() {
-  showModal({
-    title: '德州撲克對局規則',
-    content: `
-      <div style="font-size:0.875rem;display:flex;flex-direction:column;gap:0.5rem;">
-        <p><strong>玩法：</strong> 無限注德州撲克 (Texas Hold'em)</p>
-        <p><strong>盲注：</strong> 小盲注 $10 / 大盲注 $20</p>
-        <p><strong>對戰：</strong> 支援可愛 AI 電腦對決與線上好友連線開房</p>
-      </div>
-    `,
-    actions: [{ text: '關閉', onClick: closeModal }],
-  });
+  return () => {
+    engine.destroy();
+    if (window.__carrotQA?.game === 'poker') delete window.__carrotQA;
+  };
 }

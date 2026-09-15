@@ -1,22 +1,91 @@
 /**
- * ♠ 台灣大老二 (Big Two) — GodGame Style 3D UIUX & Collapsible Floating Chatbox
+ * ♠ 台灣大老二 (Big Two) — GodGame Style 3D UIUX
+ * Scoped to .bigtwo-page (class names are shared with other card games) and fitted to the viewport:
+ * the whole table, hand and actions stay on screen from phone landscape to 4K without clipping.
  */
 
 .bigtwo-page {
+  --card-w: min(clamp(34px, calc((100vw - 60px) / 14.6), 66px), calc((100dvh - 150px) / 3.3));
+  --card-h: calc(var(--card-w) * 1.42);
+  --card-gap: clamp(2px, 0.45vw, 6px);
+  --lift: calc(var(--card-h) * 0.2);
+  --table-card-w: calc(var(--card-w) * 0.8);
+  --back-w: clamp(13px, 1.5vw, 20px);
+  --side-w: clamp(92px, 13vw, 170px);
+  --avatar: clamp(30px, 4.2vw, 50px);
+
+  position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  width: 100vw;
-  background: var(--color-bg-primary, linear-gradient(135deg, #faeee7 0%, #ffecda 50%, #f3d2c1 100%));
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--color-bg-primary, #faeee7);
   color: var(--color-text-primary, #272343);
-  overflow-x: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   user-select: none;
-  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 900px) {
+  .bigtwo-page .hide-narrow { display: none !important; }
+}
+
+/* ── Top bar ── */
+.bigtwo-page .topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  padding: calc(4px + env(safe-area-inset-top, 0px)) 12px 4px;
+}
+
+.bigtwo-page .topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.bigtwo-page .topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bigtwo-page .game-name {
+  font-size: clamp(0.95rem, 1.6vw, 1.25rem);
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bigtwo-page .topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.bigtwo-page .bt-mode-select {
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1.5px solid #f472b6;
+  color: #db2777;
+  font-weight: 800;
+  font-size: 0.78rem;
+  max-width: 128px;
 }
 
 /* 📱 手機直屏轉向提醒遮罩 */
-.orientation-rotate-notice-bt {
+.bigtwo-page .orientation-rotate-notice-bt {
   display: none;
   position: fixed;
   inset: 0;
@@ -31,296 +100,454 @@
   color: #fff;
 }
 
-@media (max-width: 768px) and (orientation: portrait) {
-  .orientation-rotate-notice-bt {
-    display: flex;
-  }
+.bigtwo-page .orientation-rotate-notice-bt h3 { font-size: 1.3rem; color: #fbcfe8; margin-bottom: 8px; }
+.bigtwo-page .orientation-rotate-notice-bt p { font-size: 0.95rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 14px; }
+.bigtwo-page .orientation-rotate-notice-bt strong { color: #facc15; }
+.bigtwo-page .orientation-rotate-notice-bt button {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 14px;
+  padding: 6px 16px;
 }
 
-.rotate-icon-anim {
+@media (max-width: 768px) and (orientation: portrait) {
+  .bigtwo-page .orientation-rotate-notice-bt { display: flex; }
+}
+
+.bigtwo-page .rotate-icon-anim {
   font-size: 3.5rem;
-  animation: rotateSwing 1.8s infinite ease-in-out;
+  animation: btRotateSwing 1.8s infinite ease-in-out;
   margin-bottom: 12px;
 }
 
-@keyframes rotateSwing {
+@keyframes btRotateSwing {
   0%, 100% { transform: rotate(0deg); }
   50% { transform: rotate(90deg); }
 }
 
 /* ♠ 海藍對決經典尊榮 3D 撲克檯面 */
-.bigtwo-table {
+.bigtwo-page .bigtwo-table {
   position: relative;
-  width: 100%;
-  max-width: 1040px;
-  height: clamp(540px, 78vh, 720px);
-  background: #1e293b;
-  border-radius: 36px;
-  border: 10px solid #334155;
-  box-shadow: 
-    inset 0 0 60px rgba(0, 0, 0, 0.8),
-    0 18px 45px rgba(0, 0, 0, 0.5);
+  flex: 1 1 auto;
+  min-height: 0;
+  width: calc(100% - 16px);
+  max-width: 1180px;
+  margin: 0 auto calc(6px + env(safe-area-inset-bottom, 0px));
   display: grid;
-  grid-template-rows: 95px 1fr 180px;
-  grid-template-columns: 130px 1fr 130px;
-  padding: 12px;
+  grid-template-columns: var(--side-w) minmax(0, 1fr) var(--side-w);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "top top top"
+    "left center right"
+    "hand hand hand";
+  gap: clamp(4px, 1vh, 10px) clamp(4px, 1vw, 12px);
+  padding: clamp(6px, 1.2vh, 14px) clamp(6px, 1.2vw, 16px);
+  background: radial-gradient(ellipse at 50% 45%, #2b3b57 0%, #1e293b 55%, #151e2e 100%);
+  border-radius: clamp(18px, 3vw, 36px);
+  border: clamp(4px, 0.8vw, 10px) solid #334155;
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.7),
+    0 14px 36px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;
-  margin: 4px auto;
-  perspective: 1000px;
 }
 
-/* ── 🎭 神來也 4 大角色頭像卡片與喜怒哀樂表情 (4 Emotion Avatar Sprites) ── */
-.player-slot {
+/* ── 🎭 神來也 4 大角色頭像卡片與喜怒哀樂表情 ── */
+.bigtwo-page .player-slot {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
 }
 
-.character-avatar-card {
+.bigtwo-page .player-slot-top { grid-area: top; flex-direction: row; gap: 10px; }
+.bigtwo-page .player-slot-left { grid-area: left; }
+.bigtwo-page .player-slot-right { grid-area: right; }
+
+.bigtwo-page .character-avatar-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.92);
-  padding: 4px 10px;
-  border-radius: 20px;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.93);
+  padding: 3px 10px 3px 4px;
+  border-radius: 999px;
   border: 1.5px solid #38bdf8;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.char-avatar-img {
-  width: 48px;
-  height: 48px;
+.bigtwo-page .player-slot-left .character-avatar-card,
+.bigtwo-page .player-slot-right .character-avatar-card {
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+.bigtwo-page .is-turn .character-avatar-card,
+.bigtwo-page .player-p1-avatar-bar.is-turn {
+  border-color: #facc15;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.45), 0 0 18px rgba(250, 204, 21, 0.6);
+}
+
+.bigtwo-page .char-avatar-img {
+  width: var(--avatar);
+  height: var(--avatar);
   border-radius: 50%;
-  background-size: 200% 200% !important;
-  border: 2.5px solid #38bdf8;
+  background-size: 200% 200%;
   background-color: #fff;
+  border: 2.5px solid #38bdf8;
   flex-shrink: 0;
-  transition: background-position 0.25s ease, transform 0.2s ease;
+  transition: background-position 0.25s ease;
 }
 
-.char-avatar-img.small {
-  width: 36px;
-  height: 36px;
+.bigtwo-page .char-avatar-img.small {
+  width: calc(var(--avatar) * 0.75);
+  height: calc(var(--avatar) * 0.75);
 }
 
 /* 🎭 4種喜怒哀樂表情切換 (Joy, Angry, Sad, Happy) */
-.char-avatar-img.joy { background-position: 0% 0% !important; }
-.char-avatar-img.angry { background-position: 100% 0% !important; }
-.char-avatar-img.sad { background-position: 0% 100% !important; }
-.char-avatar-img.happy { background-position: 100% 100% !important; }
+.bigtwo-page .char-avatar-img.joy { background-position: 0% 0%; }
+.bigtwo-page .char-avatar-img.angry { background-position: 100% 0%; }
+.bigtwo-page .char-avatar-img.sad { background-position: 0% 100%; }
+.bigtwo-page .char-avatar-img.happy { background-position: 100% 100%; }
 
-.char-info-name {
+.bigtwo-page .char-info-name {
   display: flex;
   flex-direction: column;
-  font-size: 0.75rem;
+  min-width: 0;
+  font-size: clamp(0.64rem, 1vw, 0.78rem);
   font-weight: 800;
+  line-height: 1.2;
   color: #0f172a;
 }
 
-.card-count-badge {
+.bigtwo-page .char-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bigtwo-page .card-count-badge {
   color: #db2777;
   font-weight: 900;
-  font-size: 0.7rem;
+  font-size: clamp(0.62rem, 0.95vw, 0.74rem);
+  white-space: nowrap;
+}
+
+.bigtwo-page .seat-action-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+}
+
+.bigtwo-page .seat-action-badge.show { opacity: 1; transform: scale(1); }
+
+/* Opponent card backs (fanned) */
+.bigtwo-page .opp-cards {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  padding-left: calc(var(--back-w) * 0.55);
+}
+
+.bigtwo-page .poker-card.back {
+  width: var(--back-w);
+  height: calc(var(--back-w) * 1.4);
+  margin-left: calc(var(--back-w) * -0.55);
+  padding: 0;
+  border-radius: 3px;
+  background: repeating-linear-gradient(45deg, #0369a1 0 3px, #0284c7 3px 6px);
+  border: 1.5px solid #bae6fd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  cursor: default;
 }
 
 /* 💭 氣泡對話框 (Speech Bubbles) */
-.speech-bubble {
+.bigtwo-page .speech-bubble {
   position: absolute;
+  z-index: 60;
+  width: max-content;
+  max-width: min(220px, 60vw);
+  padding: 5px 12px;
+  border-radius: 14px;
   background: #ffffff;
   color: #0f172a;
-  padding: 6px 14px;
-  border-radius: 16px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 800;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
   border: 2px solid #f472b6;
   opacity: 0;
   transform: scale(0.8);
   transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
-  z-index: 99;
+}
+
+.bigtwo-page .speech-bubble.active { opacity: 1; transform: scale(1); }
+.bigtwo-page .bubble-top { top: 100%; left: 50%; translate: -50% 4px; }
+.bigtwo-page .bubble-left { top: 15%; left: 100%; translate: 6px 0; }
+.bigtwo-page .bubble-right { top: 15%; right: 100%; translate: -6px 0; }
+.bigtwo-page .bubble-bottom { bottom: 100%; left: 50%; translate: -50% -4px; }
+
+/* 中央桌面 */
+.bigtwo-page .bigtwo-center-area {
+  grid-area: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+  padding: 6px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1.5px solid rgba(56, 189, 248, 0.25);
+}
+
+.bigtwo-page .bt-turn-label {
+  font-size: clamp(0.72rem, 1.1vw, 0.9rem);
+  font-weight: 800;
+  color: #38bdf8;
+  text-align: center;
+}
+
+.bigtwo-page .last-play-combo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  max-width: 100%;
+  min-width: min(100%, 220px);
+  min-height: calc(var(--table-card-w) * 1.42 + 10px);
+  padding: 4px 10px;
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1.5px dashed #38bdf8;
+}
+
+.bigtwo-page .free-play-hint {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #7dd3fc;
+  text-align: center;
+}
+
+.bigtwo-page .bt-last-caption {
+  min-height: 1em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+/* 🂠 Three3D 效果立體撲克牌 */
+.bigtwo-page .poker-card {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: calc(var(--card-w) * 0.14);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 80%, #e2e8f0 100%);
+  border: 1.5px solid #cbd5e1;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.35),
+    0 3px 0 #94a3b8,
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.9);
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.bigtwo-page .poker-card.red { color: #dc2626; }
+.bigtwo-page .poker-card.black { color: #0f172a; }
+.bigtwo-page .pc-rank { font-size: calc(var(--card-w) * 0.42); letter-spacing: -0.04em; }
+.bigtwo-page .pc-suit { font-size: calc(var(--card-w) * 0.38); margin-top: calc(var(--card-w) * 0.04); }
+
+.bigtwo-page .poker-card.table-card {
+  width: var(--table-card-w);
+  height: calc(var(--table-card-w) * 1.42);
+  border-radius: calc(var(--table-card-w) * 0.14);
+  cursor: default;
+}
+
+.bigtwo-page .poker-card.table-card .pc-rank { font-size: calc(var(--table-card-w) * 0.42); }
+.bigtwo-page .poker-card.table-card .pc-suit { font-size: calc(var(--table-card-w) * 0.38); }
+
+/* 玩家手牌區 */
+.bigtwo-page .bigtwo-player-hand {
+  grid-area: hand;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(2px, 0.8vh, 8px);
+  min-width: 0;
+}
+
+.bigtwo-page .cards-hand-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  max-width: 100%;
+  padding-top: var(--lift);
+}
+
+.bigtwo-page .cards-hand-row .poker-card + .poker-card { margin-left: var(--card-gap); }
+
+@media (hover: hover) {
+  .bigtwo-page .cards-hand-row .poker-card:hover {
+    transform: translateY(calc(var(--lift) * -0.35));
+    border-color: #38bdf8;
+  }
+}
+
+.bigtwo-page .cards-hand-row .poker-card.selected {
+  z-index: 5;
+  transform: translateY(calc(var(--lift) * -1));
+  border: 3px solid #facc15;
+  box-shadow:
+    0 0 20px rgba(250, 204, 21, 0.85),
+    0 10px 18px rgba(0, 0, 0, 0.35),
+    0 3px 0 #ca8a04;
+}
+
+.bigtwo-page .bt-hand-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.bigtwo-page .player-p1-avatar-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 10px 2px 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid #38bdf8;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.bigtwo-page .p1-name {
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: #0f172a;
   white-space: nowrap;
 }
 
-.speech-bubble.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.bubble-top { top: 65px; }
-.bubble-left { left: 110px; }
-.bubble-right { right: 110px; }
-.bubble-bottom { bottom: 120px; }
-
-/* 中央桌面 */
-.bigtwo-center-area {
-  grid-row: 2;
-  grid-column: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(8px);
-  border-radius: 24px;
-  border: 1.5px solid rgba(56, 189, 248, 0.25);
-  padding: 10px;
-  max-height: 180px;
-  margin: auto 0;
-}
-
-.last-play-combo-box {
-  display: flex;
-  gap: 6px;
-  min-height: 75px;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 14px;
-  background: rgba(30, 41, 59, 0.6);
-  border-radius: 18px;
-  border: 1.5px dashed #38bdf8;
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-/* 🂠 Three3D 效果超立體厚度實體撲克牌 (3D Thick Cards) */
-.poker-card {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  width: 54px;
-  height: 80px;
-  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 85%, #e2e8f0 100%);
-  border-radius: 8px;
-  border: 1.5px solid #cbd5e1;
-  /* 🧊 Three3D 實體厚度與光澤陰影 */
-  box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.35),
-    0 3px 0 #94a3b8,
-    0 5px 0 #64748b,
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.9);
-  font-size: 1.3rem;
-  font-weight: 900;
-  padding: 4px 5px;
-  cursor: pointer;
-  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  flex-shrink: 0;
-  transform-style: preserve-3d;
-}
-
-.poker-card.red { color: #dc2626; }
-.poker-card.black { color: #0f172a; }
-
-.poker-card:hover {
-  transform: translateY(-10px) rotateX(8deg);
-  border-color: #38bdf8;
-}
-
-.poker-card.selected {
-  transform: translateY(-24px) rotateX(12deg) !important;
-  border: 3.5px solid #facc15 !important;
-  box-shadow: 
-    0 0 28px #facc15,
-    0 12px 24px rgba(250, 204, 21, 0.6),
-    0 4px 0 #ca8a04 !important;
-  z-index: 99 !important;
-}
-
-.poker-card.back {
-  width: 20px;
-  height: 30px;
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  border: 1.5px solid #38bdf8;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3), 0 2px 0 #0284c7;
-}
-
-/* 玩家手牌區 */
-.bigtwo-player-hand {
-  grid-row: 3;
-  grid-column: 1 / span 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  padding-top: 32px;
-  margin-top: -24px;
-}
-
-.player-p1-avatar-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2px 12px;
-  border-radius: 16px;
-  border: 1.5px solid #38bdf8;
-}
-
-.cards-hand-row {
-  display: flex;
-  gap: 4px;
-  max-width: 100%;
-  overflow-x: auto;
-  overflow-y: visible;
-  padding: 60px 12px 16px 12px;
-  margin-top: -50px;
-}
-
 /* 動作按鈕區 */
-.bigtwo-actions-bar {
+.bigtwo-page .bigtwo-actions-bar {
   display: flex;
-  gap: 12px;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
   background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(10px);
-  padding: 6px 20px;
-  border-radius: 30px;
   border: 1.5px solid #38bdf8;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.btn-bt-action {
-  padding: 6px 20px;
-  border-radius: 20px;
-  font-size: 1rem;
-  font-weight: 900;
+.bigtwo-page .bigtwo-actions-bar.my-turn {
+  border-color: #facc15;
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.5);
+}
+
+.bigtwo-page .btn-bt-action {
+  padding: clamp(4px, 0.8vh, 7px) clamp(10px, 1.6vw, 20px);
+  border-radius: 999px;
   border: none;
+  color: #fff;
+  font-size: clamp(0.78rem, 1.2vw, 1rem);
+  font-weight: 900;
+  white-space: nowrap;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
 }
 
-.btn-bt-play { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
-.btn-bt-pass { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+.bigtwo-page .btn-bt-action:active { transform: scale(0.95); }
+.bigtwo-page .btn-bt-action.is-idle { opacity: 0.5; filter: grayscale(0.4); }
+.bigtwo-page .btn-bt-play { background: linear-gradient(135deg, #10b981, #059669); }
+.bigtwo-page .btn-bt-pass { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.bigtwo-page .btn-bt-hint { background: linear-gradient(135deg, #a855f7, #7c3aed); }
 
-/* 💬 可縮放對話框 */
-.godgame-chatbox {
+@media (max-width: 600px) {
+  .bigtwo-page .p1-name { display: none; }
+}
+
+/* Phone portrait: fan the hand instead of shrinking cards below a tappable size */
+@media (max-width: 600px) and (orientation: portrait) {
+  .bigtwo-page {
+    --card-gap: calc(var(--card-w) * -0.36);
+    --side-w: 84px;
+    --avatar: 30px;
+  }
+
+  .bigtwo-page .cards-hand-row .poker-card {
+    box-shadow: -2px 0 6px rgba(0, 0, 0, 0.25), 0 3px 0 #94a3b8;
+  }
+}
+
+/* Short landscape screens (phones) */
+@media (max-height: 480px) {
+  .bigtwo-page { --avatar: 28px; }
+  .bigtwo-page .topbar { min-height: 38px; padding-block: 2px; }
+  .bigtwo-page .bt-last-caption { display: none; }
+  .bigtwo-page .player-slot-left .char-name,
+  .bigtwo-page .player-slot-right .char-name { font-size: 0.6rem; }
+}
+
+/* 💬 可縮放對話框 (opens from the top bar; docked beside the table on very wide screens) */
+.bigtwo-page .godgame-chatbox {
   position: fixed;
-  bottom: 12px;
-  right: 16px;
-  width: 320px;
-  background: rgba(255, 255, 255, 0.95);
+  z-index: 500;
+  top: calc(52px + env(safe-area-inset-top, 0px));
+  right: 10px;
+  width: min(320px, calc(100vw - 20px));
+  max-height: calc(100dvh - 64px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
   border: 2px solid #f472b6;
-  border-radius: 20px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
-  z-index: 500;
-  overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
-.godgame-chatbox.collapsed {
-  height: 40px;
-  width: 220px;
+@media (min-width: 1880px) {
+  .bigtwo-page .godgame-chatbox { top: auto; bottom: 16px; right: 16px; }
 }
 
-.chatbox-header {
+.bigtwo-page .godgame-chatbox.collapsed { display: none; }
+
+.bigtwo-page .chatbox-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -331,77 +558,145 @@
   font-size: 0.85rem;
 }
 
-.chatbox-toggle-btn {
-  background: rgba(255,255,255,0.25);
+.bigtwo-page .chatbox-toggle-btn {
+  padding: 2px 8px;
   border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.25);
   color: #fff;
   font-size: 0.75rem;
   font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 12px;
   cursor: pointer;
 }
 
-.chatbox-body {
-  padding: 10px;
+.bigtwo-page .chatbox-body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 280px;
-}
-
-.quick-phrases-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  max-height: 110px;
+  padding: 10px;
   overflow-y: auto;
 }
 
-.btn-quick-phrase {
+.bigtwo-page .quick-phrases-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.bigtwo-page .btn-quick-phrase {
   padding: 4px 6px;
-  background: #f1f5f9;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
+  background: #f1f5f9;
+  color: #334155;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #334155;
-  cursor: pointer;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
   transition: background 0.15s ease;
 }
 
-.btn-quick-phrase:hover {
-  background: #fbcfe8;
-  color: #db2777;
-}
+.bigtwo-page .btn-quick-phrase:hover { background: #fbcfe8; color: #db2777; }
 
-.chat-logs-list {
+.bigtwo-page .chat-logs-list {
   height: 75px;
   overflow-y: auto;
-  background: #f8fafc;
-  border-radius: 12px;
   padding: 6px;
+  border-radius: 12px;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
   font-size: 0.75rem;
 }
 
-.chat-log-item {
-  margin-bottom: 2px;
-}
+.bigtwo-page .chat-log-welcome { color: #64748b; }
+.bigtwo-page .chat-log-item { margin-bottom: 2px; }
+.bigtwo-page .chat-log-item strong { color: #db2777; }
+.bigtwo-page .chat-custom-form { display: flex; gap: 4px; }
 
-.chat-custom-form {
-  display: flex;
-  gap: 4px;
-}
-
-.chat-custom-input {
+.bigtwo-page .chat-custom-input {
   flex: 1;
+  min-width: 0;
   padding: 4px 10px;
   border-radius: 12px;
   border: 1px solid #cbd5e1;
   font-size: 0.78rem;
 }
+
+/* Overlays: settlement & rules */
+.bigtwo-page .game-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.bigtwo-page .game-overlay-card {
+  width: min(460px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: clamp(14px, 3vh, 24px);
+  border-radius: 22px;
+  background: #ffffff;
+  color: #1e293b;
+  border: 2.5px solid #f472b6;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(244, 114, 182, 0.45);
+}
+
+.bigtwo-page .game-overlay-card h2 {
+  margin-bottom: 10px;
+  font-size: clamp(1.2rem, 3vh, 1.6rem);
+  font-weight: 900;
+  color: #db2777;
+}
+
+.bigtwo-page .settle-winner {
+  margin-bottom: 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0284c7;
+}
+
+.bigtwo-page .settle-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.bigtwo-page .settle-row { display: flex; justify-content: space-between; gap: 10px; }
+.bigtwo-page .settle-row.is-you { font-weight: 800; color: #be185d; }
+.bigtwo-page .settle-row .plus { color: #059669; }
+.bigtwo-page .settle-row .minus { color: #dc2626; }
+
+.bigtwo-page #btn-settle-restart {
+  background: linear-gradient(135deg, #f472b6, #c084fc);
+  border: none;
+}
+
+.bigtwo-page .rules-card { width: min(520px, 100%); border-color: #38bdf8; }
+.bigtwo-page .rules-card h2 { color: #0369a1; }
+
+.bigtwo-page .rules-body {
+  margin-bottom: 16px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #334155;
+  text-align: left;
+}
+
+.bigtwo-page .rules-body hr { margin: 10px 0; border: none; border-top: 1px dashed #cbd5e1; }

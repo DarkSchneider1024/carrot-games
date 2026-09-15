@@ -1,0 +1,999 @@
+{
+  "label": "After fixes",
+  "base": "http://localhost:5199/",
+  "startedAt": "2026-09-15T06:58:44.743Z",
+  "runs": [
+    {
+      "game": "big-two",
+      "viewport": "desktop-1920x1080",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [],
+        "durationMs": 5592
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "big-two/desktop-1920x1080/01-initial-deal.jpg",
+          "cardCount": 52,
+          "docH": 1080,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-1-t1",
+          "file": "big-two/desktop-1920x1080/02-human-selected-1-t1.jpg",
+          "cardCount": 52,
+          "docH": 1080,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "big-two",
+      "viewport": "laptop-1366x768",
+      "fullPlay": true,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "👑 獲勝者：🧊 酷酷冰箱 (+7,000 籌碼)"
+        ],
+        "durationMs": 19506
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "big-two/laptop-1366x768/01-initial-deal.jpg",
+          "cardCount": 52,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "chatbox-opened",
+          "file": "big-two/laptop-1366x768/02-chatbox-opened.jpg",
+          "cardCount": 52,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "ai-combo-on-table",
+          "file": "big-two/laptop-1366x768/03-ai-combo-on-table.jpg",
+          "cardCount": 47,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-1-t4",
+          "file": "big-two/laptop-1366x768/04-human-selected-1-t4.jpg",
+          "cardCount": 39,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "settlement-modal",
+          "file": "big-two/laptop-1366x768/05-settlement-modal.jpg",
+          "cardCount": 32,
+          "docH": 768,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "big-two",
+      "viewport": "tablet-1024x768",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [],
+        "durationMs": 5636
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "big-two/tablet-1024x768/01-initial-deal.jpg",
+          "cardCount": 52,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-5-t1",
+          "file": "big-two/tablet-1024x768/02-human-selected-5-t1.jpg",
+          "cardCount": 52,
+          "docH": 768,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "big-two",
+      "viewport": "phone-landscape-844x390",
+      "fullPlay": true,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "👑 獲勝者：🎵 竹笛精靈 (+1,300 籌碼)"
+        ],
+        "durationMs": 27631
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "big-two/phone-landscape-844x390/01-initial-deal.jpg",
+          "cardCount": 50,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "chatbox-opened",
+          "file": "big-two/phone-landscape-844x390/02-chatbox-opened.jpg",
+          "cardCount": 50,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-2-t1",
+          "file": "big-two/phone-landscape-844x390/03-human-selected-2-t1.jpg",
+          "cardCount": 50,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "ai-combo-on-table",
+          "file": "big-two/phone-landscape-844x390/04-ai-combo-on-table.jpg",
+          "cardCount": 46,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-1-t4",
+          "file": "big-two/phone-landscape-844x390/05-human-selected-1-t4.jpg",
+          "cardCount": 37,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "settlement-modal",
+          "file": "big-two/phone-landscape-844x390/06-settlement-modal.jpg",
+          "cardCount": 14,
+          "docH": 390,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "big-two",
+      "viewport": "phone-portrait-390x844",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [],
+        "durationMs": 6163
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "low",
+          "kind": "overlaps-other-card",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "4/5 pts under another card",
+          "occurrences": 1,
+          "checkpoints": [
+            "human-selected-1-t1"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "rotate-notice",
+          "file": "big-two/phone-portrait-390x844/01-rotate-notice.jpg",
+          "cardCount": 51,
+          "docH": 844,
+          "issueCount": 0
+        },
+        {
+          "label": "initial-deal",
+          "file": "big-two/phone-portrait-390x844/02-initial-deal.jpg",
+          "cardCount": 51,
+          "docH": 844,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-1-t1",
+          "file": "big-two/phone-portrait-390x844/03-human-selected-1-t1.jpg",
+          "cardCount": 50,
+          "docH": 844,
+          "issueCount": 1
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "desktop-1920x1080",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [],
+        "durationMs": 5182
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "mahjong/desktop-1920x1080/01-initial-deal.jpg",
+          "cardCount": 65,
+          "docH": 1080,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/desktop-1920x1080/02-human-selected-tile-t1.jpg",
+          "cardCount": 65,
+          "docH": 1080,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "laptop-1366x768",
+      "fullPlay": true,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "玩家 (你) 1台"
+        ],
+        "durationMs": 26056
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "mahjong/laptop-1366x768/01-initial-deal.jpg",
+          "cardCount": 66,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "chatbox-opened",
+          "file": "mahjong/laptop-1366x768/02-chatbox-opened.jpg",
+          "cardCount": 66,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/laptop-1366x768/03-human-selected-tile-t1.jpg",
+          "cardCount": 66,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "claim-panel-chow",
+          "file": "mahjong/laptop-1366x768/04-claim-panel-chow.jpg",
+          "cardCount": 74,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "ting-hint-popover",
+          "file": "mahjong/laptop-1366x768/05-ting-hint-popover.jpg",
+          "cardCount": 74,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-tile-t6",
+          "file": "mahjong/laptop-1366x768/06-human-selected-tile-t6.jpg",
+          "cardCount": 82,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "settlement-modal",
+          "file": "mahjong/laptop-1366x768/07-settlement-modal.jpg",
+          "cardCount": 113,
+          "docH": 768,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "tablet-1024x768",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [],
+        "durationMs": 5141
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "mahjong/tablet-1024x768/01-initial-deal.jpg",
+          "cardCount": 66,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/tablet-1024x768/02-human-selected-tile-t1.jpg",
+          "cardCount": 66,
+          "docH": 768,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "phone-landscape-844x390",
+      "fullPlay": true,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "東區小八 2台"
+        ],
+        "durationMs": 34697
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "mahjong/phone-landscape-844x390/01-initial-deal.jpg",
+          "cardCount": 66,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "chatbox-opened",
+          "file": "mahjong/phone-landscape-844x390/02-chatbox-opened.jpg",
+          "cardCount": 66,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/phone-landscape-844x390/03-human-selected-tile-t1.jpg",
+          "cardCount": 66,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "ting-hint-popover",
+          "file": "mahjong/phone-landscape-844x390/04-ting-hint-popover.jpg",
+          "cardCount": 73,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-tile-t6",
+          "file": "mahjong/phone-landscape-844x390/05-human-selected-tile-t6.jpg",
+          "cardCount": 84,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "claim-panel-pong-chow-chow-chow",
+          "file": "mahjong/phone-landscape-844x390/06-claim-panel-pong-chow-chow-chow.jpg",
+          "cardCount": 96,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-tile-t12",
+          "file": "mahjong/phone-landscape-844x390/07-human-selected-tile-t12.jpg",
+          "cardCount": 101,
+          "docH": 390,
+          "issueCount": 0
+        },
+        {
+          "label": "settlement-modal",
+          "file": "mahjong/phone-landscape-844x390/08-settlement-modal.jpg",
+          "cardCount": 130,
+          "docH": 390,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "phone-portrait-390x844",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [],
+        "durationMs": 5602
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "rotate-notice",
+          "file": "mahjong/phone-portrait-390x844/01-rotate-notice.jpg",
+          "cardCount": 67,
+          "docH": 844,
+          "issueCount": 0
+        },
+        {
+          "label": "initial-deal",
+          "file": "mahjong/phone-portrait-390x844/02-initial-deal.jpg",
+          "cardCount": 67,
+          "docH": 844,
+          "issueCount": 0
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/phone-portrait-390x844/03-human-selected-tile-t1.jpg",
+          "cardCount": 67,
+          "docH": 844,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "desktop-1920x1080",
+      "fullPlay": false,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "hand 1: 貓咪 (AI) 以 順子 (Straight) 贏得籌碼 $990"
+        ],
+        "durationMs": 12582
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/desktop-1920x1080/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 1080,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/desktop-1920x1080/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 1080,
+          "issueCount": 0
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/desktop-1920x1080/03-hand1-result.jpg",
+          "cardCount": 11,
+          "docH": 1080,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "laptop-1366x768",
+      "fullPlay": true,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [
+          "switched to 豪客場 $100/$200 to exercise all-in paths"
+        ],
+        "results": [
+          "hand 1: 快樂小鹿 #463 (你) 以 兩對 (Two Pair) 贏得籌碼 $1400",
+          "hand 2: 熊熊 (AI) 以 對子 (One Pair) 贏得籌碼 $40",
+          "hand 3: 快樂小鹿 #463 (你) 以 兩對 (Two Pair) 贏得籌碼 $120",
+          "hand 4: 貓咪 (AI) 以 兩對 (Two Pair) 贏得主池 $1960；熊熊 (AI) 以 兩對 (Two Pair) 贏得邊池 1 $210；快樂小鹿 #463 (你), 兔兔 (AI) 以 對子 (One Pair) 贏得邊池 2 $100",
+          "hand 5: 貓咪 (AI) 以 順子 (Straight) 贏得主池 $630；貓咪 (AI) 以 順子 (Straight) 贏得邊池 1 $1185"
+        ],
+        "durationMs": 57772
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/laptop-1366x768/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/laptop-1366x768/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h1",
+          "file": "poker/laptop-1366x768/03-my-turn-flop-h1.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h1",
+          "file": "poker/laptop-1366x768/04-my-turn-turn-h1.jpg",
+          "cardCount": 11,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-river-h1",
+          "file": "poker/laptop-1366x768/05-my-turn-river-h1.jpg",
+          "cardCount": 11,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/laptop-1366x768/06-hand1-result.jpg",
+          "cardCount": 11,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h2",
+          "file": "poker/laptop-1366x768/07-my-turn-preflop-h2.jpg",
+          "cardCount": 9,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h2",
+          "file": "poker/laptop-1366x768/08-my-turn-flop-h2.jpg",
+          "cardCount": 9,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h2",
+          "file": "poker/laptop-1366x768/09-my-turn-turn-h2.jpg",
+          "cardCount": 9,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-river-h2",
+          "file": "poker/laptop-1366x768/10-my-turn-river-h2.jpg",
+          "cardCount": 9,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "hand2-result",
+          "file": "poker/laptop-1366x768/11-hand2-result.jpg",
+          "cardCount": 9,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h3",
+          "file": "poker/laptop-1366x768/12-my-turn-preflop-h3.jpg",
+          "cardCount": 11,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h3",
+          "file": "poker/laptop-1366x768/13-my-turn-flop-h3.jpg",
+          "cardCount": 11,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h3",
+          "file": "poker/laptop-1366x768/14-my-turn-turn-h3.jpg",
+          "cardCount": 9,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-river-h3",
+          "file": "poker/laptop-1366x768/15-my-turn-river-h3.jpg",
+          "cardCount": 9,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "hand3-result",
+          "file": "poker/laptop-1366x768/16-hand3-result.jpg",
+          "cardCount": 9,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h4",
+          "file": "poker/laptop-1366x768/17-my-turn-preflop-h4.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h4",
+          "file": "poker/laptop-1366x768/18-my-turn-flop-h4.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h4",
+          "file": "poker/laptop-1366x768/19-my-turn-turn-h4.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-river-h4",
+          "file": "poker/laptop-1366x768/20-my-turn-river-h4.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "hand4-result",
+          "file": "poker/laptop-1366x768/21-hand4-result.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h5",
+          "file": "poker/laptop-1366x768/22-my-turn-preflop-h5.jpg",
+          "cardCount": 13,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h5",
+          "file": "poker/laptop-1366x768/23-my-turn-flop-h5.jpg",
+          "cardCount": 11,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h5",
+          "file": "poker/laptop-1366x768/24-my-turn-turn-h5.jpg",
+          "cardCount": 11,
+          "docH": 768,
+          "issueCount": 0
+        },
+        {
+          "label": "hand5-result",
+          "file": "poker/laptop-1366x768/25-hand5-result.jpg",
+          "cardCount": 11,
+          "docH": 768,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "tablet-1024x768",
+      "fullPlay": false,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "hand 1: 貓咪 (AI) 以 順子 (Straight) 贏得籌碼 $650"
+        ],
+        "durationMs": 13828
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/tablet-1024x768/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 970,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/tablet-1024x768/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 970,
+          "issueCount": 0
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/tablet-1024x768/03-hand1-result.jpg",
+          "cardCount": 11,
+          "docH": 968,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "phone-landscape-844x390",
+      "fullPlay": true,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [
+          "switched to 豪客場 $100/$200 to exercise all-in paths"
+        ],
+        "results": [
+          "hand 1: 熊熊 (AI) 以 兩對 (Two Pair) 贏得籌碼 $495",
+          "hand 2: 貓咪 (AI) 以 對子 (One Pair) 贏得籌碼 $755",
+          "hand 3: 幸運小鴨 #958 (你), 兔兔 (AI) 以 兩對 (Two Pair) 贏得籌碼 $40",
+          "hand 4: 兔兔 (AI) 以 對子 (One Pair) 贏得籌碼 $80",
+          "hand 5: 貓咪 (AI) 以 高牌 (High Card) 贏得籌碼 $400"
+        ],
+        "durationMs": 56162
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/phone-landscape-844x390/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/phone-landscape-844x390/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h1",
+          "file": "poker/phone-landscape-844x390/03-my-turn-flop-h1.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h1",
+          "file": "poker/phone-landscape-844x390/04-my-turn-turn-h1.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-river-h1",
+          "file": "poker/phone-landscape-844x390/05-my-turn-river-h1.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/phone-landscape-844x390/06-hand1-result.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h2",
+          "file": "poker/phone-landscape-844x390/07-my-turn-preflop-h2.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h2",
+          "file": "poker/phone-landscape-844x390/08-my-turn-flop-h2.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h2",
+          "file": "poker/phone-landscape-844x390/09-my-turn-turn-h2.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-river-h2",
+          "file": "poker/phone-landscape-844x390/10-my-turn-river-h2.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "hand2-result",
+          "file": "poker/phone-landscape-844x390/11-hand2-result.jpg",
+          "cardCount": 9,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h3",
+          "file": "poker/phone-landscape-844x390/12-my-turn-preflop-h3.jpg",
+          "cardCount": 9,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h3",
+          "file": "poker/phone-landscape-844x390/13-my-turn-flop-h3.jpg",
+          "cardCount": 9,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h3",
+          "file": "poker/phone-landscape-844x390/14-my-turn-turn-h3.jpg",
+          "cardCount": 9,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-river-h3",
+          "file": "poker/phone-landscape-844x390/15-my-turn-river-h3.jpg",
+          "cardCount": 9,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "hand3-result",
+          "file": "poker/phone-landscape-844x390/16-hand3-result.jpg",
+          "cardCount": 9,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h4",
+          "file": "poker/phone-landscape-844x390/17-my-turn-preflop-h4.jpg",
+          "cardCount": 13,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-flop-h4",
+          "file": "poker/phone-landscape-844x390/18-my-turn-flop-h4.jpg",
+          "cardCount": 13,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-turn-h4",
+          "file": "poker/phone-landscape-844x390/19-my-turn-turn-h4.jpg",
+          "cardCount": 13,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-river-h4",
+          "file": "poker/phone-landscape-844x390/20-my-turn-river-h4.jpg",
+          "cardCount": 13,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "hand4-result",
+          "file": "poker/phone-landscape-844x390/21-hand4-result.jpg",
+          "cardCount": 13,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h5",
+          "file": "poker/phone-landscape-844x390/22-my-turn-preflop-h5.jpg",
+          "cardCount": 13,
+          "docH": 601,
+          "issueCount": 0
+        },
+        {
+          "label": "hand5-result",
+          "file": "poker/phone-landscape-844x390/23-hand5-result.jpg",
+          "cardCount": 11,
+          "docH": 601,
+          "issueCount": 0
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "phone-portrait-390x844",
+      "fullPlay": false,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "hand 1: 兔兔 (AI), 貓咪 (AI) 以 葫蘆 (Full House) 贏得籌碼 $1630"
+        ],
+        "durationMs": 12467
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/phone-portrait-390x844/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 844,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/phone-portrait-390x844/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 844,
+          "issueCount": 0
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/phone-portrait-390x844/03-hand1-result.jpg",
+          "cardCount": 11,
+          "docH": 844,
+          "issueCount": 0
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-09-15T07:03:39.591Z"
+}

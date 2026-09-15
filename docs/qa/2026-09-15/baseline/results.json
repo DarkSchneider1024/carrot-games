@@ -1,0 +1,3532 @@
+{
+  "label": "Baseline (before fixes)",
+  "base": "http://localhost:5199/",
+  "startedAt": "2026-09-15T02:48:56.900Z",
+  "runs": [
+    {
+      "game": "big-two",
+      "viewport": "desktop-1920x1080",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [],
+        "durationMs": 8680
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "24% cut by div#p1-hand-cards.cards-hand-row axis y",
+          "occurrences": 13,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "2/5 pts covered by div.player-slot.player-slot-left < div.bigtwo-table",
+          "occurrences": 6,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-2-t1"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "big-two/desktop-1920x1080/01-initial-deal.jpg",
+          "cardCount": 26,
+          "docH": 1080,
+          "issueCount": 16
+        },
+        {
+          "label": "human-selected-2-t1",
+          "file": "big-two/desktop-1920x1080/02-human-selected-2-t1.jpg",
+          "cardCount": 26,
+          "docH": 1080,
+          "issueCount": 3
+        }
+      ]
+    },
+    {
+      "game": "big-two",
+      "viewport": "laptop-1366x768",
+      "fullPlay": true,
+      "play": {
+        "completed": false,
+        "stalls": [
+          "human cannot act (play and pass both rejected)"
+        ],
+        "errors": [
+          "human action rejected: PASS (last=4_C 4_D 2_D 2_H 2_S)"
+        ],
+        "notes": [],
+        "results": [],
+        "durationMs": 6627
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "24% cut by div#p1-hand-cards.cards-hand-row axis y",
+          "occurrences": 26,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "2/5 pts covered by div.player-slot.player-slot-left < div.bigtwo-table",
+          "occurrences": 20,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-5-t1",
+            "ai-combo-on-table",
+            "human-stuck"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "3/5 pts covered by div#godgame-chatbox.godgame-chatbox < div.bigtwo-page.animate-fade-in",
+          "occurrences": 1,
+          "checkpoints": [
+            "human-selected-5-t1"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "big-two/laptop-1366x768/01-initial-deal.jpg",
+          "cardCount": 26,
+          "docH": 768,
+          "issueCount": 17
+        },
+        {
+          "label": "chatbox-toggled",
+          "file": "big-two/laptop-1366x768/02-chatbox-toggled.jpg",
+          "cardCount": 26,
+          "docH": 768,
+          "issueCount": 17
+        },
+        {
+          "label": "human-selected-5-t1",
+          "file": "big-two/laptop-1366x768/03-human-selected-5-t1.jpg",
+          "cardCount": 26,
+          "docH": 768,
+          "issueCount": 5
+        },
+        {
+          "label": "ai-combo-on-table",
+          "file": "big-two/laptop-1366x768/04-ai-combo-on-table.jpg",
+          "cardCount": 26,
+          "docH": 768,
+          "issueCount": 4
+        },
+        {
+          "label": "human-stuck",
+          "file": "big-two/laptop-1366x768/05-human-stuck.jpg",
+          "cardCount": 26,
+          "docH": 768,
+          "issueCount": 4
+        }
+      ]
+    },
+    {
+      "game": "big-two",
+      "viewport": "tablet-1024x768",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [],
+        "durationMs": 5595
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "24% cut by div#p1-hand-cards.cards-hand-row axis y",
+          "occurrences": 13,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "2/5 pts covered by div.player-slot.player-slot-left < div.bigtwo-table",
+          "occurrences": 8,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-2-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "x -49..-29 of vw 1024",
+          "occurrences": 6,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-2-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "5/5 pts covered by div#chatbox-body-content.chatbox-body < div#godgame-chatbox.godgame-chatbox",
+          "occurrences": 3,
+          "checkpoints": [
+            "human-selected-2-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "2/5 pts covered by div#chatbox-header-bar.chatbox-header < div#godgame-chatbox.godgame-chatbox",
+          "occurrences": 1,
+          "checkpoints": [
+            "human-selected-2-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "by div.bigtwo-page.animate-fade-in axis x",
+          "occurrences": 4,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-2-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "35% cut by div.bigtwo-page.animate-fade-in axis x",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-2-t1"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "big-two/tablet-1024x768/01-initial-deal.jpg",
+          "cardCount": 28,
+          "docH": 768,
+          "issueCount": 23
+        },
+        {
+          "label": "human-selected-2-t1",
+          "file": "big-two/tablet-1024x768/02-human-selected-2-t1.jpg",
+          "cardCount": 28,
+          "docH": 768,
+          "issueCount": 14
+        }
+      ]
+    },
+    {
+      "game": "big-two",
+      "viewport": "phone-landscape-844x390",
+      "fullPlay": true,
+      "play": {
+        "completed": false,
+        "stalls": [
+          "state frozen 15s: {\"phase\":\"GAME_OVER\",\"turn\":2,\"hand\":1,\"counts\":\"1,2,0,3\",\"last\":\"9_S\",\"finished\":false}"
+        ],
+        "errors": [],
+        "notes": [
+          "click blocked on #p1-hand-cards [data-card-id=\"2_C\"]: locator.click: Timeout 4000ms exceeded."
+        ],
+        "results": [],
+        "durationMs": 55473
+      },
+      "pageErrors": [
+        "TypeError: Cannot read properties of undefined (reading 'name') |     at BigTwoEngine._endGame (http://localhost:5199/src/games/big-two/big-two-engine.js:414:43) |     at BigTwoEngine.playCards (http://localhost:5199/src/games/big-two/big-two-engine.js:245:14)"
+      ],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "24% cut by div#p1-hand-cards.cards-hand-row axis y",
+          "occurrences": 26,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "2/5 pts covered by div.player-slot.player-slot-left < div.bigtwo-table",
+          "occurrences": 18,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-2-t1",
+            "ai-combo-on-table",
+            "human-selected-1-t4"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "x -49..-29 of vw 844",
+          "occurrences": 13,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-2-t1",
+            "ai-combo-on-table",
+            "human-selected-1-t4"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "y 468..548 of vh 390",
+          "occurrences": 60,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-2-t1",
+            "ai-combo-on-table",
+            "human-selected-1-t4",
+            "human-selected-1-t12",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "by div.bigtwo-page.animate-fade-in axis x",
+          "occurrences": 8,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-2-t1",
+            "ai-combo-on-table"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#btn-bt-play.btn-bt-action.btn-bt-play",
+          "parent": "div.bigtwo-actions-bar",
+          "sample": "y 542..575 of vh 390",
+          "occurrences": 7,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-2-t1",
+            "ai-combo-on-table",
+            "human-selected-1-t4",
+            "human-selected-1-t12",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#btn-bt-pass.btn-bt-action.btn-bt-pass",
+          "parent": "div.bigtwo-actions-bar",
+          "sample": "y 542..575 of vh 390",
+          "occurrences": 7,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-2-t1",
+            "ai-combo-on-table",
+            "human-selected-1-t4",
+            "human-selected-1-t12",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "35% cut by div.bigtwo-page.animate-fade-in axis x",
+          "occurrences": 5,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-2-t1",
+            "ai-combo-on-table",
+            "human-selected-1-t4"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "big-two/phone-landscape-844x390/01-initial-deal.jpg",
+          "cardCount": 28,
+          "docH": 608,
+          "issueCount": 38
+        },
+        {
+          "label": "chatbox-toggled",
+          "file": "big-two/phone-landscape-844x390/02-chatbox-toggled.jpg",
+          "cardCount": 28,
+          "docH": 608,
+          "issueCount": 38
+        },
+        {
+          "label": "human-selected-2-t1",
+          "file": "big-two/phone-landscape-844x390/03-human-selected-2-t1.jpg",
+          "cardCount": 28,
+          "docH": 608,
+          "issueCount": 25
+        },
+        {
+          "label": "ai-combo-on-table",
+          "file": "big-two/phone-landscape-844x390/04-ai-combo-on-table.jpg",
+          "cardCount": 26,
+          "docH": 608,
+          "issueCount": 23
+        },
+        {
+          "label": "human-selected-1-t4",
+          "file": "big-two/phone-landscape-844x390/05-human-selected-1-t4.jpg",
+          "cardCount": 16,
+          "docH": 608,
+          "issueCount": 13
+        },
+        {
+          "label": "human-selected-1-t12",
+          "file": "big-two/phone-landscape-844x390/06-human-selected-1-t12.jpg",
+          "cardCount": 5,
+          "docH": 608,
+          "issueCount": 4
+        },
+        {
+          "label": "stall",
+          "file": "big-two/phone-landscape-844x390/07-stall.jpg",
+          "cardCount": 2,
+          "docH": 608,
+          "issueCount": 3
+        }
+      ]
+    },
+    {
+      "game": "big-two",
+      "viewport": "phone-portrait-390x844",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [],
+        "notes": [
+          "click blocked on #btn-bt-play: locator.click: Timeout 4000ms exceeded."
+        ],
+        "results": [],
+        "durationMs": 10573
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "x 382..436 of vw 390",
+          "occurrences": 21,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "24% cut by div#p1-hand-cards.cards-hand-row axis y",
+          "occurrences": 12,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "x -49..-29 of vw 390",
+          "occurrences": 10,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "5/5 pts covered by div#bt-rotate-notice.orientation-rotate-notice-bt < div.bigtwo-page.animate-fade-in",
+          "occurrences": 10,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "2/5 pts covered by div.character-avatar-card < div.player-slot.player-slot-left",
+          "occurrences": 8,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "5/5 pts covered by button.btn-quick-phrase < div.quick-phrases-grid",
+          "occurrences": 5,
+          "checkpoints": [
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "92% cut by div#p1-hand-cards.cards-hand-row axis xy",
+          "occurrences": 2,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "button#btn-bt-play.btn-bt-action.btn-bt-play",
+          "parent": "div.bigtwo-actions-bar",
+          "sample": "5/5 pts covered by div#chat-logs-list.chat-logs-list < div#chatbox-body-content.chatbox-body",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "button#btn-bt-pass.btn-bt-action.btn-bt-pass",
+          "parent": "div.bigtwo-actions-bar",
+          "sample": "5/5 pts covered by div#chat-logs-list.chat-logs-list < div#chatbox-body-content.chatbox-body",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#last-played-box.last-play-combo-box",
+          "sample": "5/5 pts covered by strong < p",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "button#btn-bt-play.btn-bt-action.btn-bt-play",
+          "parent": "div.bigtwo-actions-bar",
+          "sample": "5/5 pts covered by div#bt-rotate-notice.orientation-rotate-notice-bt < div.bigtwo-page.animate-fade-in",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "button#btn-bt-pass.btn-bt-action.btn-bt-pass",
+          "parent": "div.bigtwo-actions-bar",
+          "sample": "5/5 pts covered by div#bt-rotate-notice.orientation-rotate-notice-bt < div.bigtwo-page.animate-fade-in",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "by div#p1-hand-cards.cards-hand-row axis xy",
+          "occurrences": 12,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "by div.bigtwo-page.animate-fade-in axis x",
+          "occurrences": 7,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "by div#p1-hand-cards.cards-hand-row axis x",
+          "occurrences": 6,
+          "checkpoints": [
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.poker-card.back",
+          "parent": "div#p3-cards-row",
+          "sample": "35% cut by div.bigtwo-page.animate-fade-in axis x",
+          "occurrences": 3,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-1-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.poker-card",
+          "parent": "div#p1-hand-cards.cards-hand-row",
+          "sample": "67% cut by div#p1-hand-cards.cards-hand-row axis x",
+          "occurrences": 1,
+          "checkpoints": [
+            "human-selected-1-t1"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "rotate-notice",
+          "file": "big-two/phone-portrait-390x844/01-rotate-notice.jpg",
+          "cardCount": 27,
+          "docH": 844,
+          "issueCount": 39
+        },
+        {
+          "label": "initial-deal",
+          "file": "big-two/phone-portrait-390x844/02-initial-deal.jpg",
+          "cardCount": 27,
+          "docH": 844,
+          "issueCount": 32
+        },
+        {
+          "label": "human-selected-1-t1",
+          "file": "big-two/phone-portrait-390x844/03-human-selected-1-t1.jpg",
+          "cardCount": 27,
+          "docH": 844,
+          "issueCount": 33
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "desktop-1920x1080",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [
+          "UI not refreshed: engine awaits human discard but DOM is stale"
+        ],
+        "notes": [],
+        "results": [],
+        "durationMs": 9811
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "76% cut by div#p1-hand-tiles.player-hand-tiles axis y",
+          "occurrences": 18,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "doc top -81",
+          "occurrences": 14,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "5/5 pts covered by div.player-slot.player-slot-left < div.mahjong-table",
+          "occurrences": 10,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "63% cut by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 4,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by div.mahjong-center-box < div.mahjong-table",
+          "occurrences": 4,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small",
+          "parent": "div#p4-flowers",
+          "sample": "doc top -127",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by div.mahjong-dice-box < div.mahjong-center-box",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 10,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small",
+          "parent": "div#p4-flowers",
+          "sample": "by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "low",
+          "kind": "overlaps-other-card",
+          "el": "div.mj-tile.small",
+          "parent": "div#p1-flowers",
+          "sample": "3/5 pts under another card",
+          "occurrences": 1,
+          "checkpoints": [
+            "human-selected-tile-t1"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "mahjong/desktop-1920x1080/01-initial-deal.jpg",
+          "cardCount": 67,
+          "docH": 1080,
+          "issueCount": 41
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/desktop-1920x1080/02-human-selected-tile-t1.jpg",
+          "cardCount": 67,
+          "docH": 1080,
+          "issueCount": 26
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "laptop-1366x768",
+      "fullPlay": true,
+      "play": {
+        "completed": false,
+        "stalls": [
+          "state frozen 15s: {\"phase\":\"PLAY\",\"turn\":0,\"wall\":0,\"hand\":4,\"discards\":90,\"mine\":[],\"result\":null}"
+        ],
+        "errors": [
+          "UI not refreshed: engine awaits human discard but DOM is stale"
+        ],
+        "notes": [
+          "click blocked on #p1-hand-tiles .mj-tile[data-tile=\"C\"]: locator.click: Timeout 4000ms exceeded."
+        ],
+        "results": [],
+        "durationMs": 206903
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "doc top -102",
+          "occurrences": 52,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "claim-panel-chow",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "76% cut by div#p1-hand-tiles.player-hand-tiles axis y",
+          "occurrences": 40,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "claim-panel-chow",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "5/5 pts covered by div.player-slot.player-slot-left < div.mahjong-table",
+          "occurrences": 35,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "claim-panel-chow",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile.small",
+          "parent": "div#discard-river.discard-river-grid",
+          "sample": "14% cut by div#discard-river.discard-river-grid axis y",
+          "occurrences": 32,
+          "checkpoints": [
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "30% cut by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 16,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "claim-panel-chow",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "3/5 pts covered by div.mahjong-center-box < div.mahjong-table",
+          "occurrences": 11,
+          "checkpoints": [
+            "claim-panel-chow",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by div#discard-river.discard-river-grid < div.mahjong-center-box",
+          "occurrences": 10,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small",
+          "parent": "div#p4-flowers",
+          "sample": "doc top -127",
+          "occurrences": 9,
+          "checkpoints": [
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by strong#mj-dealer-name < span",
+          "occurrences": 6,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "claim-panel-chow",
+            "ting-hint-popover",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "5/5 pts covered by button.btn-quick-phrase < div.quick-phrases-grid",
+          "occurrences": 3,
+          "checkpoints": [
+            "human-selected-tile-t1",
+            "claim-panel-chow",
+            "ting-hint-popover"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by div.mahjong-dice-box < div.mahjong-center-box",
+          "occurrences": 3,
+          "checkpoints": [
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "3/5 pts covered by div#chatbox-body-content.chatbox-body < div#godgame-chatbox.godgame-chatbox",
+          "occurrences": 2,
+          "checkpoints": [
+            "human-selected-tile-t1",
+            "ting-hint-popover"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile.small",
+          "parent": "div#p2-flowers",
+          "sample": "81% cut by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 2,
+          "checkpoints": [
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small",
+          "parent": "div#discard-river.discard-river-grid",
+          "sample": "by div#discard-river.discard-river-grid axis y",
+          "occurrences": 131,
+          "checkpoints": [
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 36,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "claim-panel-chow",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "1/5 pts covered by div#discard-river.discard-river-grid < div.mahjong-center-box",
+          "occurrences": 16,
+          "checkpoints": [
+            "claim-panel-chow",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small",
+          "parent": "div#p4-flowers",
+          "sample": "by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 7,
+          "checkpoints": [
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "low",
+          "kind": "overlaps-other-card",
+          "el": "div.mj-tile.small",
+          "parent": "div#p1-flowers",
+          "sample": "3/5 pts under another card",
+          "occurrences": 3,
+          "checkpoints": [
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "mahjong/laptop-1366x768/01-initial-deal.jpg",
+          "cardCount": 66,
+          "docH": 768,
+          "issueCount": 40
+        },
+        {
+          "label": "chatbox-toggled",
+          "file": "mahjong/laptop-1366x768/02-chatbox-toggled.jpg",
+          "cardCount": 66,
+          "docH": 768,
+          "issueCount": 40
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/laptop-1366x768/03-human-selected-tile-t1.jpg",
+          "cardCount": 66,
+          "docH": 768,
+          "issueCount": 27
+        },
+        {
+          "label": "claim-panel-chow",
+          "file": "mahjong/laptop-1366x768/04-claim-panel-chow.jpg",
+          "cardCount": 72,
+          "docH": 768,
+          "issueCount": 24
+        },
+        {
+          "label": "ting-hint-popover",
+          "file": "mahjong/laptop-1366x768/05-ting-hint-popover.jpg",
+          "cardCount": 73,
+          "docH": 768,
+          "issueCount": 26
+        },
+        {
+          "label": "human-selected-tile-t6",
+          "file": "mahjong/laptop-1366x768/06-human-selected-tile-t6.jpg",
+          "cardCount": 86,
+          "docH": 768,
+          "issueCount": 34
+        },
+        {
+          "label": "human-selected-tile-t12",
+          "file": "mahjong/laptop-1366x768/07-human-selected-tile-t12.jpg",
+          "cardCount": 105,
+          "docH": 768,
+          "issueCount": 55
+        },
+        {
+          "label": "human-selected-tile-t18",
+          "file": "mahjong/laptop-1366x768/08-human-selected-tile-t18.jpg",
+          "cardCount": 121,
+          "docH": 768,
+          "issueCount": 79
+        },
+        {
+          "label": "stall",
+          "file": "mahjong/laptop-1366x768/09-stall.jpg",
+          "cardCount": 125,
+          "docH": 768,
+          "issueCount": 89
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "tablet-1024x768",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [
+          "UI not refreshed: engine awaits human discard but DOM is stale"
+        ],
+        "notes": [
+          "click blocked on #p1-hand-tiles .mj-tile[data-tile=\"E\"]: locator.click: Timeout 4000ms exceeded."
+        ],
+        "results": [],
+        "durationMs": 14808
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "76% cut by div#p1-hand-tiles.player-hand-tiles axis y",
+          "occurrences": 18,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "doc top -102",
+          "occurrences": 16,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "5/5 pts covered by div.player-slot.player-slot-left < div.mahjong-table",
+          "occurrences": 10,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "x -80..-60 of vw 1024",
+          "occurrences": 8,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "30% cut by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 4,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by strong#mj-dealer-name < span",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by div#discard-river.discard-river-grid < div.mahjong-center-box",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 12,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "by div.mahjong-page.animate-fade-in axis x",
+          "occurrences": 6,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "88% cut by div.mahjong-page.animate-fade-in axis x",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "low",
+          "kind": "overlaps-other-card",
+          "el": "div.mj-tile.small",
+          "parent": "div#p1-flowers",
+          "sample": "3/5 pts under another card",
+          "occurrences": 3,
+          "checkpoints": [
+            "human-selected-tile-t1"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "mahjong/tablet-1024x768/01-initial-deal.jpg",
+          "cardCount": 68,
+          "docH": 768,
+          "issueCount": 48
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/tablet-1024x768/02-human-selected-tile-t1.jpg",
+          "cardCount": 68,
+          "docH": 768,
+          "issueCount": 35
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "phone-landscape-844x390",
+      "fullPlay": true,
+      "play": {
+        "completed": false,
+        "stalls": [
+          "state frozen 15s: {\"phase\":\"PLAY\",\"turn\":0,\"wall\":0,\"hand\":10,\"discards\":81,\"mine\":[],\"result\":null}"
+        ],
+        "errors": [
+          "UI not refreshed: engine awaits human discard but DOM is stale"
+        ],
+        "notes": [
+          "click blocked on #p1-hand-tiles .mj-tile[data-tile=\"S\"]: locator.click: Timeout 4000ms exceeded.",
+          "click blocked on #p1-hand-tiles .mj-tile[data-tile=\"N\"]: locator.click: Timeout 4000ms exceeded."
+        ],
+        "results": [],
+        "durationMs": 198994
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "doc top -102",
+          "occurrences": 50,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "5/5 pts covered by div.player-slot.player-slot-left < div.mahjong-table",
+          "occurrences": 40,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "76% cut by div#p1-hand-tiles.player-hand-tiles axis y",
+          "occurrences": 36,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile.small",
+          "parent": "div#discard-river.discard-river-grid",
+          "sample": "14% cut by div#discard-river.discard-river-grid axis y",
+          "occurrences": 36,
+          "checkpoints": [
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "x -80..-60 of vw 844",
+          "occurrences": 31,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "30% cut by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 16,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small",
+          "parent": "div#p2-flowers",
+          "sample": "doc top -127",
+          "occurrences": 9,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "x 799..847 of vw 844",
+          "occurrences": 9,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "2/5 pts covered by div#chatbox-header-bar.chatbox-header < div#godgame-chatbox.godgame-chatbox.collapsed",
+          "occurrences": 8,
+          "checkpoints": [
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "5/5 pts covered by button#btn-toggle-chatbox.chatbox-toggle-btn < div#chatbox-header-bar.chatbox-header",
+          "occurrences": 8,
+          "checkpoints": [
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by div#discard-river.discard-river-grid < div.mahjong-center-box",
+          "occurrences": 6,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "human-selected-tile-t6"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "3/5 pts covered by div.mahjong-center-box < div.mahjong-table",
+          "occurrences": 6,
+          "checkpoints": [
+            "ting-hint-popover",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by span < div.mahjong-dice-box",
+          "occurrences": 4,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "human-selected-tile-t6"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by strong#mj-dealer-name < span",
+          "occurrences": 4,
+          "checkpoints": [
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "5/5 pts covered by div#chatbox-body-content.chatbox-body < div#godgame-chatbox.godgame-chatbox",
+          "occurrences": 3,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "88% cut by div#p1-hand-tiles.player-hand-tiles axis xy",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "5/5 pts covered by div#chatbox-header-bar.chatbox-header < div#godgame-chatbox.godgame-chatbox",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "5/5 pts covered by button.btn-quick-phrase < div.quick-phrases-grid",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "5/5 pts covered by div.quick-phrases-grid < div#chatbox-body-content.chatbox-body",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "5/5 pts covered by div < div#chat-logs-list.chat-logs-list",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "5/5 pts covered by div#chat-logs-list.chat-logs-list < div#chatbox-body-content.chatbox-body",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "5/5 pts covered by form#chat-custom-form.chat-custom-form < div#chatbox-body-content.chatbox-body",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by div.mahjong-dice-box < div.mahjong-center-box",
+          "occurrences": 1,
+          "checkpoints": [
+            "ting-hint-popover"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "div.mj-tile.small",
+          "parent": "div#p1-flowers",
+          "sample": "y 427..469 of vh 390",
+          "occurrences": 164,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "y 493..559 of vh 390",
+          "occurrences": 136,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small",
+          "parent": "div#discard-river.discard-river-grid",
+          "sample": "by div#discard-river.discard-river-grid axis y",
+          "occurrences": 133,
+          "checkpoints": [
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 34,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "by div.mahjong-page.animate-fade-in axis x",
+          "occurrences": 22,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "y 363..393 of vh 390",
+          "occurrences": 13,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "1/5 pts covered by div#discard-river.discard-river-grid < div.mahjong-center-box",
+          "occurrences": 13,
+          "checkpoints": [
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "88% cut by div.mahjong-page.animate-fade-in axis x",
+          "occurrences": 9,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small",
+          "parent": "div#p2-flowers",
+          "sample": "by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 9,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#btn-mj-discard.btn-mj-action.btn-mj-discard",
+          "parent": "div#mj-actions-bar.mahjong-actions-bar",
+          "sample": "y 522..555 of vh 390",
+          "occurrences": 8,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#btn-mj-ting.btn-mj-action.btn-mj-ting",
+          "parent": "div#mj-actions-bar.mahjong-actions-bar",
+          "sample": "y 522..555 of vh 390",
+          "occurrences": 8,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled",
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "human-selected-tile-t12",
+            "human-selected-tile-t18",
+            "stall"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "52% cut by div#p1-hand-tiles.player-hand-tiles axis x",
+          "occurrences": 4,
+          "checkpoints": [
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6",
+            "claim-panel-pong"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "by div#p1-hand-tiles.player-hand-tiles axis x",
+          "occurrences": 3,
+          "checkpoints": [
+            "human-selected-tile-t1",
+            "ting-hint-popover",
+            "human-selected-tile-t6"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "by div#p1-hand-tiles.player-hand-tiles axis xy",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "chatbox-toggled"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#btn-mj-do-claim.btn-mj-action.btn-mj-pong",
+          "parent": "div#mj-claim-panel.mahjong-actions-bar",
+          "sample": "y 523..555 of vh 390",
+          "occurrences": 1,
+          "checkpoints": [
+            "claim-panel-pong"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#btn-mj-pass-claim.btn-mj-action.btn-mj-pass",
+          "parent": "div#mj-claim-panel.mahjong-actions-bar",
+          "sample": "y 523..555 of vh 390",
+          "occurrences": 1,
+          "checkpoints": [
+            "claim-panel-pong"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "mahjong/phone-landscape-844x390/01-initial-deal.jpg",
+          "cardCount": 68,
+          "docH": 588,
+          "issueCount": 82
+        },
+        {
+          "label": "chatbox-toggled",
+          "file": "mahjong/phone-landscape-844x390/02-chatbox-toggled.jpg",
+          "cardCount": 68,
+          "docH": 588,
+          "issueCount": 75
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/phone-landscape-844x390/03-human-selected-tile-t1.jpg",
+          "cardCount": 68,
+          "docH": 588,
+          "issueCount": 61
+        },
+        {
+          "label": "ting-hint-popover",
+          "file": "mahjong/phone-landscape-844x390/04-ting-hint-popover.jpg",
+          "cardCount": 77,
+          "docH": 588,
+          "issueCount": 63
+        },
+        {
+          "label": "human-selected-tile-t6",
+          "file": "mahjong/phone-landscape-844x390/05-human-selected-tile-t6.jpg",
+          "cardCount": 87,
+          "docH": 588,
+          "issueCount": 68
+        },
+        {
+          "label": "claim-panel-pong",
+          "file": "mahjong/phone-landscape-844x390/06-claim-panel-pong.jpg",
+          "cardCount": 106,
+          "docH": 588,
+          "issueCount": 101
+        },
+        {
+          "label": "human-selected-tile-t12",
+          "file": "mahjong/phone-landscape-844x390/07-human-selected-tile-t12.jpg",
+          "cardCount": 104,
+          "docH": 588,
+          "issueCount": 98
+        },
+        {
+          "label": "human-selected-tile-t18",
+          "file": "mahjong/phone-landscape-844x390/08-human-selected-tile-t18.jpg",
+          "cardCount": 118,
+          "docH": 588,
+          "issueCount": 133
+        },
+        {
+          "label": "stall",
+          "file": "mahjong/phone-landscape-844x390/09-stall.jpg",
+          "cardCount": 128,
+          "docH": 588,
+          "issueCount": 154
+        }
+      ]
+    },
+    {
+      "game": "mahjong",
+      "viewport": "phone-portrait-390x844",
+      "fullPlay": false,
+      "play": {
+        "completed": "smoke",
+        "stalls": [],
+        "errors": [
+          "UI not refreshed: engine awaits human discard but DOM is stale"
+        ],
+        "notes": [
+          "click blocked on #p1-hand-tiles .mj-tile[data-tile=\"N\"]: locator.click: Timeout 4000ms exceeded."
+        ],
+        "results": [],
+        "durationMs": 15326
+      },
+      "pageErrors": [],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "5/5 pts covered by div#mj-rotate-notice.orientation-rotate-notice < div.mahjong-page.animate-fade-in",
+          "occurrences": 37,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "x 391..439 of vw 390",
+          "occurrences": 30,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "76% cut by div#p1-hand-tiles.player-hand-tiles axis y",
+          "occurrences": 17,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-x",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "x -80..-60 of vw 390",
+          "occurrences": 15,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "5/5 pts covered by div.player-slot.player-slot-left < div.mahjong-table",
+          "occurrences": 10,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small",
+          "parent": "div#p4-flowers",
+          "sample": "doc top -47",
+          "occurrences": 9,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by strong#mj-dealer-name < span",
+          "occurrences": 8,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by span < div.mahjong-dice-box",
+          "occurrences": 4,
+          "checkpoints": [
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by div.rotate-icon-anim < div#mj-rotate-notice.orientation-rotate-notice",
+          "occurrences": 3,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "viewport-clip-top",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "doc top -22",
+          "occurrences": 3,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "partially-clipped",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p2-tiles",
+          "sample": "73% cut by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 3,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by h3 < div#mj-rotate-notice.orientation-rotate-notice",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by p < div#mj-rotate-notice.orientation-rotate-notice",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p4-tiles",
+          "sample": "5/5 pts covered by strong < p",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small",
+          "parent": "div#p1-flowers",
+          "sample": "5/5 pts covered by div#mj-rotate-notice.orientation-rotate-notice < div.mahjong-page.animate-fade-in",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "button#btn-mj-discard.btn-mj-action.btn-mj-discard",
+          "parent": "div#mj-actions-bar.mahjong-actions-bar",
+          "sample": "5/5 pts covered by div#mj-rotate-notice.orientation-rotate-notice < div.mahjong-page.animate-fade-in",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "button#btn-mj-ting.btn-mj-action.btn-mj-ting",
+          "parent": "div#mj-actions-bar.mahjong-actions-bar",
+          "sample": "5/5 pts covered by div#mj-rotate-notice.orientation-rotate-notice < div.mahjong-page.animate-fade-in",
+          "occurrences": 1,
+          "checkpoints": [
+            "rotate-notice"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.mj-tile.small",
+          "parent": "div#p1-flowers",
+          "sample": "5/5 pts covered by button.btn-quick-phrase < div.quick-phrases-grid",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "button#btn-mj-discard.btn-mj-action.btn-mj-discard",
+          "parent": "div#mj-actions-bar.mahjong-actions-bar",
+          "sample": "5/5 pts covered by div < div#chat-logs-list.chat-logs-list",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "button#btn-mj-ting.btn-mj-action.btn-mj-ting",
+          "parent": "div#mj-actions-bar.mahjong-actions-bar",
+          "sample": "5/5 pts covered by div < div#chat-logs-list.chat-logs-list",
+          "occurrences": 1,
+          "checkpoints": [
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "by div#p1-hand-tiles.player-hand-tiles axis xy",
+          "occurrences": 18,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "by div.mahjong-page.animate-fade-in axis x",
+          "occurrences": 12,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile.small",
+          "parent": "div#p4-flowers",
+          "sample": "by div.mahjong-page.animate-fade-in axis y",
+          "occurrences": 9,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "hidden-in-scroll",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "by div#p1-hand-tiles.player-hand-tiles axis x",
+          "occurrences": 9,
+          "checkpoints": [
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.mj-tile.small.back",
+          "parent": "div#p3-tiles",
+          "sample": "88% cut by div.mahjong-page.animate-fade-in axis x",
+          "occurrences": 3,
+          "checkpoints": [
+            "rotate-notice",
+            "initial-deal",
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "scroll-edge-cut",
+          "el": "div.mj-tile",
+          "parent": "div#p1-hand-tiles.player-hand-tiles",
+          "sample": "56% cut by div.mahjong-page.animate-fade-in axis x",
+          "occurrences": 1,
+          "checkpoints": [
+            "human-selected-tile-t1"
+          ]
+        },
+        {
+          "severity": "low",
+          "kind": "overlaps-other-card",
+          "el": "div.mj-tile.small",
+          "parent": "div#p1-flowers",
+          "sample": "5/5 pts under another card",
+          "occurrences": 1,
+          "checkpoints": [
+            "human-selected-tile-t1"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "rotate-notice",
+          "file": "mahjong/phone-portrait-390x844/01-rotate-notice.jpg",
+          "cardCount": 69,
+          "docH": 844,
+          "issueCount": 89
+        },
+        {
+          "label": "initial-deal",
+          "file": "mahjong/phone-portrait-390x844/02-initial-deal.jpg",
+          "cardCount": 69,
+          "docH": 844,
+          "issueCount": 57
+        },
+        {
+          "label": "human-selected-tile-t1",
+          "file": "mahjong/phone-portrait-390x844/03-human-selected-tile-t1.jpg",
+          "cardCount": 69,
+          "docH": 844,
+          "issueCount": 55
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "desktop-1920x1080",
+      "fullPlay": false,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "hand 1: 貓咪 (AI) 贏得籌碼 $80 (同花 (Flush))"
+        ],
+        "durationMs": 13201
+      },
+      "pageErrors": [
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at http://localhost:5199/src/pages/poker/poker.js:321:7"
+      ],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#cards-1.hole-cards",
+          "sample": "5/5 pts covered by div#winner-banner.winner-banner < div.poker-table-stage.glass",
+          "occurrences": 6,
+          "checkpoints": [
+            "hand1-result"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#community-cards.community-cards",
+          "sample": "5/5 pts covered by span#winner-text < div#winner-banner.winner-banner",
+          "occurrences": 5,
+          "checkpoints": [
+            "hand1-result"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/desktop-1920x1080/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 1080,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/desktop-1920x1080/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 1080,
+          "issueCount": 0
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/desktop-1920x1080/03-hand1-result.jpg",
+          "cardCount": 13,
+          "docH": 1080,
+          "issueCount": 11
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "laptop-1366x768",
+      "fullPlay": true,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [
+          "switched to 豪客場 $100/$200 to exercise all-in paths"
+        ],
+        "results": [
+          "hand 1: 貓咪 (AI) 贏得籌碼 $240 (葫蘆 (Full House))",
+          "hand 2: 熊熊 (AI) 贏得籌碼 $80 (順子 (Straight))",
+          "hand 3: 兔兔 (AI) 贏得籌碼 $80 (三條 (Three of a Kind))",
+          "hand 4: 熊熊 (AI) 贏得籌碼 $80 (兩對 (Two Pair))",
+          "hand 5: 兔兔 (AI) 贏得籌碼 $800 (兩對 (Two Pair))"
+        ],
+        "durationMs": 74932
+      },
+      "pageErrors": [
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at HTMLButtonElement.<anonymous> (http://localhost:5199/src/pages/poker/poker.js:262:5)",
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at http://localhost:5199/src/pages/poker/poker.js:321:7",
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at HTMLButtonElement.<anonymous> (http://localhost:5199/src/pages/poker/poker.js:255:5)",
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at HTMLButtonElement.<anonymous> (http://localhost:5199/src/pages/poker/poker.js:303:7)"
+      ],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#cards-1.hole-cards",
+          "sample": "5/5 pts covered by div#winner-banner.winner-banner < div.poker-table-stage.glass",
+          "occurrences": 30,
+          "checkpoints": [
+            "hand1-result",
+            "hand2-result",
+            "hand3-result",
+            "hand4-result",
+            "hand5-result"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#community-cards.community-cards",
+          "sample": "5/5 pts covered by span#winner-text < div#winner-banner.winner-banner",
+          "occurrences": 25,
+          "checkpoints": [
+            "hand1-result",
+            "hand2-result",
+            "hand3-result",
+            "hand4-result",
+            "hand5-result"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-fold.btn.btn-secondary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 768",
+          "occurrences": 21,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-check.btn.btn-secondary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 768",
+          "occurrences": 21,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-call.btn.btn-cyan.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 768",
+          "occurrences": 21,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-raise.btn.btn-primary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 768",
+          "occurrences": 21,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-next.btn.btn-primary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..814 of vh 768",
+          "occurrences": 5,
+          "checkpoints": [
+            "hand1-result",
+            "hand2-result",
+            "hand3-result",
+            "hand4-result",
+            "hand5-result"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/laptop-1366x768/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/laptop-1366x768/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-flop-h1",
+          "file": "poker/laptop-1366x768/03-my-turn-flop-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-turn-h1",
+          "file": "poker/laptop-1366x768/04-my-turn-turn-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-river-h1",
+          "file": "poker/laptop-1366x768/05-my-turn-river-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/laptop-1366x768/06-hand1-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 12
+        },
+        {
+          "label": "my-turn-preflop-h2",
+          "file": "poker/laptop-1366x768/07-my-turn-preflop-h2.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-flop-h2",
+          "file": "poker/laptop-1366x768/08-my-turn-flop-h2.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-turn-h2",
+          "file": "poker/laptop-1366x768/09-my-turn-turn-h2.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-river-h2",
+          "file": "poker/laptop-1366x768/10-my-turn-river-h2.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "hand2-result",
+          "file": "poker/laptop-1366x768/11-hand2-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 12
+        },
+        {
+          "label": "my-turn-preflop-h3",
+          "file": "poker/laptop-1366x768/12-my-turn-preflop-h3.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-flop-h3",
+          "file": "poker/laptop-1366x768/13-my-turn-flop-h3.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-turn-h3",
+          "file": "poker/laptop-1366x768/14-my-turn-turn-h3.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-river-h3",
+          "file": "poker/laptop-1366x768/15-my-turn-river-h3.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "hand3-result",
+          "file": "poker/laptop-1366x768/16-hand3-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 12
+        },
+        {
+          "label": "my-turn-preflop-h4",
+          "file": "poker/laptop-1366x768/17-my-turn-preflop-h4.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-flop-h4",
+          "file": "poker/laptop-1366x768/18-my-turn-flop-h4.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-turn-h4",
+          "file": "poker/laptop-1366x768/19-my-turn-turn-h4.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-river-h4",
+          "file": "poker/laptop-1366x768/20-my-turn-river-h4.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "hand4-result",
+          "file": "poker/laptop-1366x768/21-hand4-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 12
+        },
+        {
+          "label": "my-turn-preflop-h5",
+          "file": "poker/laptop-1366x768/22-my-turn-preflop-h5.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-flop-h5",
+          "file": "poker/laptop-1366x768/23-my-turn-flop-h5.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-turn-h5",
+          "file": "poker/laptop-1366x768/24-my-turn-turn-h5.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-river-h5",
+          "file": "poker/laptop-1366x768/25-my-turn-river-h5.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "hand5-result",
+          "file": "poker/laptop-1366x768/26-hand5-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 12
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "tablet-1024x768",
+      "fullPlay": false,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "hand 1: 勇敏狐狸 #555 (你), 貓咪 (AI) 贏得籌碼 $80 (順子 (Straight))"
+        ],
+        "durationMs": 13345
+      },
+      "pageErrors": [
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at http://localhost:5199/src/pages/poker/poker.js:321:7"
+      ],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#cards-1.hole-cards",
+          "sample": "5/5 pts covered by div#winner-banner.winner-banner < div.poker-table-stage.glass",
+          "occurrences": 6,
+          "checkpoints": [
+            "hand1-result"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#community-cards.community-cards",
+          "sample": "5/5 pts covered by span#winner-text < div#winner-banner.winner-banner",
+          "occurrences": 5,
+          "checkpoints": [
+            "hand1-result"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-fold.btn.btn-secondary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 768",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-check.btn.btn-secondary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 768",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-call.btn.btn-cyan.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 768",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-raise.btn.btn-primary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 768",
+          "occurrences": 2,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-next.btn.btn-primary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..814 of vh 768",
+          "occurrences": 1,
+          "checkpoints": [
+            "hand1-result"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/tablet-1024x768/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/tablet-1024x768/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 4
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/tablet-1024x768/03-hand1-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 12
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "phone-landscape-844x390",
+      "fullPlay": true,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [
+          "switched to 豪客場 $100/$200 to exercise all-in paths"
+        ],
+        "results": [
+          "hand 1: 兔兔 (AI) 贏得籌碼 $80 (兩對 (Two Pair))",
+          "hand 2: 貓咪 (AI) 贏得籌碼 $80 (兩對 (Two Pair))",
+          "hand 3: 熊熊 (AI) 贏得籌碼 $80 (對子 (One Pair))",
+          "hand 4: 貓咪 (AI) 贏得籌碼 $80 (順子 (Straight))",
+          "hand 5: 熊熊 (AI) 贏得籌碼 $800 (對子 (One Pair))"
+        ],
+        "durationMs": 75501
+      },
+      "pageErrors": [
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at http://localhost:5199/src/pages/poker/poker.js:321:7",
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at HTMLButtonElement.<anonymous> (http://localhost:5199/src/pages/poker/poker.js:255:5)",
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at HTMLButtonElement.<anonymous> (http://localhost:5199/src/pages/poker/poker.js:303:7)"
+      ],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#cards-1.hole-cards",
+          "sample": "5/5 pts covered by div#winner-banner.winner-banner < div.poker-table-stage.glass",
+          "occurrences": 30,
+          "checkpoints": [
+            "hand1-result",
+            "hand2-result",
+            "hand3-result",
+            "hand4-result",
+            "hand5-result"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#community-cards.community-cards",
+          "sample": "3/3 pts covered by span#winner-text < div#winner-banner.winner-banner",
+          "occurrences": 25,
+          "checkpoints": [
+            "hand1-result",
+            "hand2-result",
+            "hand3-result",
+            "hand4-result",
+            "hand5-result"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "div.poker-card",
+          "parent": "div#cards-0.hole-cards",
+          "sample": "y 580..637 of vh 390",
+          "occurrences": 137,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "hand1-result",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "hand2-result",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "hand3-result",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "hand4-result",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5",
+            "hand5-result"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "div.card-slot.empty",
+          "parent": "div#community-cards.community-cards",
+          "sample": "y 350..420 of vh 390",
+          "occurrences": 45,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-fold.btn.btn-secondary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 390",
+          "occurrences": 21,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-check.btn.btn-secondary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 390",
+          "occurrences": 21,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-call.btn.btn-cyan.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 390",
+          "occurrences": 21,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-raise.btn.btn-primary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..816 of vh 390",
+          "occurrences": 21,
+          "checkpoints": [
+            "initial-deal",
+            "my-turn-preflop-h1",
+            "my-turn-flop-h1",
+            "my-turn-turn-h1",
+            "my-turn-river-h1",
+            "my-turn-preflop-h2",
+            "my-turn-flop-h2",
+            "my-turn-turn-h2",
+            "my-turn-river-h2",
+            "my-turn-preflop-h3",
+            "my-turn-flop-h3",
+            "my-turn-turn-h3",
+            "my-turn-river-h3",
+            "my-turn-preflop-h4",
+            "my-turn-flop-h4",
+            "my-turn-turn-h4",
+            "my-turn-river-h4",
+            "my-turn-preflop-h5",
+            "my-turn-flop-h5",
+            "my-turn-turn-h5",
+            "my-turn-river-h5"
+          ]
+        },
+        {
+          "severity": "medium",
+          "kind": "needs-page-scroll",
+          "el": "button#pbtn-next.btn.btn-primary.action-btn",
+          "parent": "div.poker-action-buttons",
+          "sample": "y 770..814 of vh 390",
+          "occurrences": 5,
+          "checkpoints": [
+            "hand1-result",
+            "hand2-result",
+            "hand3-result",
+            "hand4-result",
+            "hand5-result"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/phone-landscape-844x390/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/phone-landscape-844x390/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-flop-h1",
+          "file": "poker/phone-landscape-844x390/03-my-turn-flop-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-turn-h1",
+          "file": "poker/phone-landscape-844x390/04-my-turn-turn-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-river-h1",
+          "file": "poker/phone-landscape-844x390/05-my-turn-river-h1.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/phone-landscape-844x390/06-hand1-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 19
+        },
+        {
+          "label": "my-turn-preflop-h2",
+          "file": "poker/phone-landscape-844x390/07-my-turn-preflop-h2.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-flop-h2",
+          "file": "poker/phone-landscape-844x390/08-my-turn-flop-h2.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-turn-h2",
+          "file": "poker/phone-landscape-844x390/09-my-turn-turn-h2.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-river-h2",
+          "file": "poker/phone-landscape-844x390/10-my-turn-river-h2.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "hand2-result",
+          "file": "poker/phone-landscape-844x390/11-hand2-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 19
+        },
+        {
+          "label": "my-turn-preflop-h3",
+          "file": "poker/phone-landscape-844x390/12-my-turn-preflop-h3.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-flop-h3",
+          "file": "poker/phone-landscape-844x390/13-my-turn-flop-h3.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-turn-h3",
+          "file": "poker/phone-landscape-844x390/14-my-turn-turn-h3.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-river-h3",
+          "file": "poker/phone-landscape-844x390/15-my-turn-river-h3.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "hand3-result",
+          "file": "poker/phone-landscape-844x390/16-hand3-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 19
+        },
+        {
+          "label": "my-turn-preflop-h4",
+          "file": "poker/phone-landscape-844x390/17-my-turn-preflop-h4.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-flop-h4",
+          "file": "poker/phone-landscape-844x390/18-my-turn-flop-h4.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-turn-h4",
+          "file": "poker/phone-landscape-844x390/19-my-turn-turn-h4.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-river-h4",
+          "file": "poker/phone-landscape-844x390/20-my-turn-river-h4.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "hand4-result",
+          "file": "poker/phone-landscape-844x390/21-hand4-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 19
+        },
+        {
+          "label": "my-turn-preflop-h5",
+          "file": "poker/phone-landscape-844x390/22-my-turn-preflop-h5.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-flop-h5",
+          "file": "poker/phone-landscape-844x390/23-my-turn-flop-h5.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-turn-h5",
+          "file": "poker/phone-landscape-844x390/24-my-turn-turn-h5.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "my-turn-river-h5",
+          "file": "poker/phone-landscape-844x390/25-my-turn-river-h5.jpg",
+          "cardCount": 13,
+          "docH": 1015,
+          "issueCount": 11
+        },
+        {
+          "label": "hand5-result",
+          "file": "poker/phone-landscape-844x390/26-hand5-result.jpg",
+          "cardCount": 13,
+          "docH": 1013,
+          "issueCount": 19
+        }
+      ]
+    },
+    {
+      "game": "poker",
+      "viewport": "phone-portrait-390x844",
+      "fullPlay": false,
+      "play": {
+        "completed": true,
+        "stalls": [],
+        "errors": [],
+        "notes": [],
+        "results": [
+          "hand 1: 熊熊 (AI) 贏得籌碼 $80 (對子 (One Pair))"
+        ],
+        "durationMs": 13001
+      },
+      "pageErrors": [
+        "ReferenceError: initialUserChips is not defined |     at _updatePokerUI (http://localhost:5199/src/pages/poker/poker.js:463:71) |     at http://localhost:5199/src/pages/poker/poker.js:321:7"
+      ],
+      "console": [],
+      "issueGroups": [
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#cards-1.hole-cards",
+          "sample": "5/5 pts covered by div#winner-banner.winner-banner < div.poker-table-stage.glass",
+          "occurrences": 8,
+          "checkpoints": [
+            "hand1-result"
+          ]
+        },
+        {
+          "severity": "high",
+          "kind": "occluded",
+          "el": "div.poker-card",
+          "parent": "div#community-cards.community-cards",
+          "sample": "5/5 pts covered by span#winner-text < div#winner-banner.winner-banner",
+          "occurrences": 5,
+          "checkpoints": [
+            "hand1-result"
+          ]
+        }
+      ],
+      "checkpoints": [
+        {
+          "label": "initial-deal",
+          "file": "poker/phone-portrait-390x844/01-initial-deal.jpg",
+          "cardCount": 13,
+          "docH": 844,
+          "issueCount": 0
+        },
+        {
+          "label": "my-turn-preflop-h1",
+          "file": "poker/phone-portrait-390x844/02-my-turn-preflop-h1.jpg",
+          "cardCount": 13,
+          "docH": 844,
+          "issueCount": 0
+        },
+        {
+          "label": "hand1-result",
+          "file": "poker/phone-portrait-390x844/03-hand1-result.jpg",
+          "cardCount": 13,
+          "docH": 844,
+          "issueCount": 13
+        }
+      ]
+    }
+  ],
+  "finishedAt": "2026-09-15T03:01:00.497Z"
+}
