@@ -15,19 +15,19 @@ const CHAR_DIR = './assets/images/characters/';
 
 // Engine seat order: 0 = you (bottom), 1 = right, 2 = top, 3 = left
 const SEATS = [
-  { slot: 'bottom', name: '🥕 蘿蔔寶貝', img: 'char_carrot.png' },
-  { slot: 'right', name: '🧊 酷酷冰箱', img: 'char_fridge.png' },
-  { slot: 'top', name: '🎵 竹笛精靈', img: 'char_flute.png' },
-  { slot: 'left', name: '🥬 生菜寶寶', img: 'char_veggie.png' }
+  { slot: 'bottom', name: '魔法師卡洛特', img: 'mr_carrot_mage.webp' },
+  { slot: 'right', name: '琳達喵', img: 'linda_nyan.webp' },
+  { slot: 'top', name: '科學家卡洛特', img: 'mr_carrot_sci.webp' },
+  { slot: 'left', name: '兔子波波', img: 'bobo_v3.webp' }
 ];
 
 const QUICK_PHRASES = [
-  { text: '打快一點啦~ 等到都發芽了！' },
-  { text: '碰！這張我要啦！' },
-  { text: '吃！正好湊成順子！' },
-  { text: '慘了慘了... 這次牌真難打' },
-  { text: '胡！單吊自摸大三元！' },
-  { text: '承讓承讓！這局贏麻了~' }
+  { text: '出牌節奏跟上，等得胡蘿蔔都要發芽了！' },
+  { text: '碰！這張牌我就收下啦！' },
+  { text: '吃！正好湊成一組順子！' },
+  { text: '這次的手牌真是不好安排...' },
+  { text: '聽牌了！這局準備自摸！' },
+  { text: '承讓承讓，今天牌運正好！' }
 ];
 
 const NUMERALS = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -85,10 +85,10 @@ export async function renderMahjong(container, params = {}) {
 
   container.innerHTML = `
     <div class="mahjong-page animate-fade-in">
-      <!-- 📱 手機直屏旋轉提醒 (Rotate Device Notice) -->
+      <!-- 手機直屏旋轉提醒 (Rotate Device Notice) -->
       <div class="orientation-rotate-notice" id="mj-rotate-notice">
-        <div class="rotate-icon-anim">📱🔄</div>
-        <h3>卡洛特建議您旋轉手機！</h3>
+        <div class="rotate-icon-anim">${SVG_ICONS.smartphone}</div>
+        <h3>卡洛特建議您旋轉手機</h3>
         <p>為了獲得最佳 4 人麻將對局與手牌視野<br/>請將手機轉為<strong>「橫螢幕 (Landscape)」</strong>體驗喔！</p>
         <button class="btn btn-sm" id="btn-close-mj-notice">繼續以直畫面遊玩</button>
       </div>
@@ -100,20 +100,20 @@ export async function renderMahjong(container, params = {}) {
             ${SVG_ICONS.back} <span class="hide-narrow">大廳</span>
           </button>
           <div class="topbar-title">
-            <span class="game-name">🀄 台灣 16 張麻將<span class="hide-narrow"> (MAHJONG 16)</span></span>
-            <span class="badge badge-warning hide-narrow">神來也對決風</span>
+            <span class="game-name">台灣 16 張麻將<span class="hide-narrow"> (MAHJONG 16)</span></span>
+            <span class="badge badge-warning hide-narrow">小鎮牌桌版</span>
           </div>
         </div>
         <div class="topbar-actions">
-          <button class="btn btn-ghost btn-sm" id="btn-mj-rules" title="規則說明">💡<span class="hide-narrow"> 規則說明</span></button>
-          <button class="btn btn-ghost btn-sm" id="btn-chat-open" title="對話頻道">💬</button>
+          <button class="btn btn-ghost btn-sm" id="btn-mj-rules" title="規則說明"><span class="hide-narrow">規則說明</span></button>
+          <button class="btn btn-ghost btn-sm" id="btn-chat-open" title="對話頻道">對話</button>
           <button class="btn btn-ghost btn-sm" id="btn-mj-restart" title="重新開局">
             ${SVG_ICONS.refresh}<span class="hide-narrow"> 發牌</span>
           </button>
         </div>
       </div>
 
-      <!-- 🌿 Emerald Green Felt Mahjong Table -->
+      <!-- Emerald Green Felt Mahjong Table -->
       <div class="mahjong-table">
         ${oppSeatHtml(2)}
         ${oppSeatHtml(3)}
@@ -130,7 +130,7 @@ export async function renderMahjong(container, params = {}) {
           </div>
         </div>
 
-        <!-- Bottom Player Zone (P1 - 🥕 蘿蔔寶貝) -->
+        <!-- Bottom Player Zone (P1 - 魔法師卡洛特) -->
         <div class="player-bottom-zone">
           <div class="speech-bubble bubble-bottom" id="bubble-p1"></div>
           <div class="ting-hint-box game-popover" id="ting-hint-box" style="display:none;"></div>
@@ -150,12 +150,12 @@ export async function renderMahjong(container, params = {}) {
 
             <!-- 動作控制按鈕區 -->
             <div class="mahjong-actions-bar" id="mj-actions-bar">
-              <button class="btn-mj-action btn-mj-hu" id="btn-mj-hu" style="display:none;">🀄 自摸胡</button>
+              <button class="btn-mj-action btn-mj-hu" id="btn-mj-hu" style="display:none;">自摸胡</button>
               <button class="btn-mj-action btn-mj-pong" id="btn-mj-kong" style="display:none;">槓</button>
-              <button class="btn-mj-action btn-mj-discard" id="btn-mj-discard">🀄 打牌</button>
-              <button class="btn-mj-action btn-mj-chow" id="btn-mj-hint" title="AI 建議打牌">💡 提示</button>
-              <button class="btn-mj-action btn-mj-ting" id="btn-mj-ting">🔍 聽牌</button>
-              <button class="btn-mj-action btn-mj-hu" id="btn-mj-next-inline" style="display:none;">▶ 下一局</button>
+              <button class="btn-mj-action btn-mj-discard" id="btn-mj-discard">打牌</button>
+              <button class="btn-mj-action btn-mj-chow" id="btn-mj-hint" title="AI 建議打牌">提示</button>
+              <button class="btn-mj-action btn-mj-ting" id="btn-mj-ting">聽牌</button>
+              <button class="btn-mj-action btn-mj-hu" id="btn-mj-next-inline" style="display:none;">下一局</button>
             </div>
 
             <!-- 吃碰槓胡 提示面板 -->

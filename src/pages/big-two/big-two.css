@@ -201,11 +201,14 @@
   width: var(--avatar);
   height: var(--avatar);
   border-radius: 50%;
-  background-size: 200% 200%;
-  background-color: #fff;
-  border: 2.5px solid #38bdf8;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: #1e1b4b;
+  border: 2.5px solid #f59e0b;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
-  transition: background-position 0.25s ease;
+  transition: transform 0.25s ease, filter 0.25s ease;
 }
 
 .bigtwo-page .char-avatar-img.small {
@@ -213,11 +216,31 @@
   height: calc(var(--avatar) * 0.75);
 }
 
-/* 🎭 4種喜怒哀樂表情切換 (Joy, Angry, Sad, Happy) */
-.bigtwo-page .char-avatar-img.joy { background-position: 0% 0%; }
-.bigtwo-page .char-avatar-img.angry { background-position: 100% 0%; }
-.bigtwo-page .char-avatar-img.sad { background-position: 0% 100%; }
-.bigtwo-page .char-avatar-img.happy { background-position: 100% 100%; }
+/* 角色喜怒哀樂互動反饋 (Carrot Town 質感動畫) */
+.bigtwo-page .char-avatar-img.joy {
+  filter: brightness(1.05);
+}
+.bigtwo-page .char-avatar-img.angry {
+  filter: contrast(1.15) hue-rotate(-15deg);
+  animation: char-rumble 0.3s ease-in-out infinite alternate;
+}
+.bigtwo-page .char-avatar-img.sad {
+  filter: grayscale(35%) brightness(0.85);
+}
+.bigtwo-page .char-avatar-img.happy {
+  filter: brightness(1.1);
+  animation: char-bounce 0.4s ease-in-out;
+}
+
+@keyframes char-rumble {
+  0% { transform: rotate(-2deg); }
+  100% { transform: rotate(2deg); }
+}
+
+@keyframes char-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
 
 .bigtwo-page .char-info-name {
   display: flex;

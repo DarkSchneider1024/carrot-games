@@ -15,19 +15,19 @@ const CHAR_DIR = './assets/images/characters/';
 
 // Engine seat order: 0 = you (bottom), 1 = right, 2 = top, 3 = left
 const SEATS = [
-  { slot: 'bottom', name: '🥕 蘿蔔寶貝', img: 'char_carrot.png' },
-  { slot: 'right', name: '🧊 酷酷冰箱', img: 'char_fridge.png' },
-  { slot: 'top', name: '🎵 竹笛精靈', img: 'char_flute.png' },
-  { slot: 'left', name: '🥬 生菜寶寶', img: 'char_veggie.png' }
+  { slot: 'bottom', name: '魔法師卡洛特', img: 'mr_carrot_mage.webp' },
+  { slot: 'right', name: '兔子波波', img: 'bobo_v3.webp' },
+  { slot: 'top', name: '科學家卡洛特', img: 'mr_carrot_sci.webp' },
+  { slot: 'left', name: '卡洛兒姐姐', img: 'carol_v3.webp' }
 ];
 
 const QUICK_PHRASES = [
-  { text: '打快一點啦~ 等到都發芽了！', emotion: 'angry' },
-  { text: '吃！看我的厲害！', emotion: 'joy' },
-  { text: '別走！我們決戰到天亮！', emotion: 'happy' },
-  { text: '慘了慘了... 這次手牌好爛哭哭', emotion: 'sad' },
-  { text: '哼！誰都別想壓過我的大牌！', emotion: 'angry' },
-  { text: '承讓承讓！這局是我贏啦~', emotion: 'happy' }
+  { text: '打快一點，等得胡蘿蔔都要發芽了！', emotion: 'angry' },
+  { text: '出牌！看我的厲害！', emotion: 'joy' },
+  { text: '這局可不會輕易認輸！', emotion: 'happy' },
+  { text: '這次摸到的手牌真是不順...', emotion: 'sad' },
+  { text: '誰都別想壓過這張大牌！', emotion: 'angry' },
+  { text: '承讓承讓，今天手氣正好！', emotion: 'happy' }
 ];
 
 const cardHtml = (c, extraClass = '') => {
@@ -67,10 +67,10 @@ export async function renderBigTwo(container, params = {}) {
 
   container.innerHTML = `
     <div class="bigtwo-page animate-fade-in">
-      <!-- 📱 手機直屏旋轉提醒 (Rotate Device Notice) -->
+      <!-- 手機直屏旋轉提醒 (Rotate Device Notice) -->
       <div class="orientation-rotate-notice-bt" id="bt-rotate-notice">
-        <div class="rotate-icon-anim">📱🔄</div>
-        <h3>卡洛特建議您旋轉手機！</h3>
+        <div class="rotate-icon-anim">${SVG_ICONS.smartphone}</div>
+        <h3>卡洛特建議您旋轉手機</h3>
         <p>為了獲得最舒適的大老二牌桌與手牌視角<br/>請將手機轉為<strong>「橫螢幕 (Landscape)」</strong>對局喔！</p>
         <button class="btn btn-sm" id="btn-close-bt-notice">繼續以直畫面遊玩</button>
       </div>
@@ -82,24 +82,24 @@ export async function renderBigTwo(container, params = {}) {
             ${SVG_ICONS.back} <span class="hide-narrow">大廳</span>
           </button>
           <div class="topbar-title">
-            <span class="game-name">♠ 台灣大老二<span class="hide-narrow"> (BIG TWO 3D)</span></span>
-            <span class="badge badge-warning hide-narrow">神來也3D對決風</span>
+            <span class="game-name">台灣大老二<span class="hide-narrow"> (BIG TWO)</span></span>
+            <span class="badge badge-warning hide-narrow">小鎮牌桌版</span>
           </div>
         </div>
         <div class="topbar-actions">
-          <button class="btn btn-ghost btn-sm" id="btn-bt-rules" title="規則說明">💡<span class="hide-narrow"> 規則說明</span></button>
+          <button class="btn btn-ghost btn-sm" id="btn-bt-rules" title="規則說明"><span class="hide-narrow">規則說明</span></button>
           <select id="select-bt-mode" class="bt-mode-select" title="遊戲模式">
-            <option value="FIRST_OUT_WINS">⚡ 快殺結束</option>
-            <option value="PLAY_ALL_OUT">👑 全打完排名</option>
+            <option value="FIRST_OUT_WINS">快殺模式</option>
+            <option value="PLAY_ALL_OUT">全名次結算</option>
           </select>
-          <button class="btn btn-ghost btn-sm" id="btn-chat-open" title="對話頻道">💬</button>
+          <button class="btn btn-ghost btn-sm" id="btn-chat-open" title="對話頻道">對話</button>
           <button class="btn btn-ghost btn-sm" id="btn-bt-restart" title="重新發牌">
             ${SVG_ICONS.refresh}<span class="hide-narrow"> 發牌</span>
           </button>
         </div>
       </div>
 
-      <!-- ♠ Casino Navy Table (GodGame 4-Player Character Layout) -->
+      <!-- Casino Navy Table (GodGame 4-Player Character Layout) -->
       <div class="bigtwo-table">
         ${seatHtml(2)}
         ${seatHtml(3)}
@@ -112,7 +112,7 @@ export async function renderBigTwo(container, params = {}) {
           <div class="bt-last-caption" id="bt-last-caption"></div>
         </div>
 
-        <!-- Bottom Player Hand Zone (P1 - 🥕 蘿蔔寶貝) -->
+        <!-- Bottom Player Hand Zone (P1 - 魔法師卡洛特) -->
         <div class="bigtwo-player-hand">
           <div class="speech-bubble bubble-bottom" id="bubble-p1"></div>
           <div class="cards-hand-row" id="p1-hand-cards"></div>
@@ -123,26 +123,26 @@ export async function renderBigTwo(container, params = {}) {
               <span class="card-count-badge" id="p1-card-count">13張</span>
             </div>
             <div class="bigtwo-actions-bar">
-              <button class="btn-bt-action btn-bt-hint" id="btn-bt-hint" title="AI 建議出牌">💡 提示</button>
-              <button class="btn-bt-action btn-bt-play" id="btn-bt-play">♠ 出牌</button>
-              <button class="btn-bt-action btn-bt-pass" id="btn-bt-pass">❌ PASS</button>
+              <button class="btn-bt-action btn-bt-hint" id="btn-bt-hint" title="AI 建議出牌">提示</button>
+              <button class="btn-bt-action btn-bt-play" id="btn-bt-play">出牌</button>
+              <button class="btn-bt-action btn-bt-pass" id="btn-bt-pass">過牌 (PASS)</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 💬 神來也風格：可縮放對話框 -->
+      <!-- 神來也風格：可縮放對話框 -->
       <div class="godgame-chatbox ${startExpanded ? '' : 'collapsed'}" id="godgame-chatbox">
         <div class="chatbox-header">
-          <span>💬 對話頻道 & 喜怒哀樂貼圖</span>
-          <button class="chatbox-toggle-btn" id="btn-toggle-chatbox" title="收合對話框">➖ 縮小</button>
+          <span>對話頻道與角色互動</span>
+          <button class="chatbox-toggle-btn" id="btn-toggle-chatbox" title="收合對話框">收合</button>
         </div>
         <div class="chatbox-body">
           <div class="quick-phrases-grid">
             ${QUICK_PHRASES.map(p => `<button class="btn-quick-phrase" data-text="${p.text}" data-emotion="${p.emotion}">${p.text}</button>`).join('')}
           </div>
           <div class="chat-logs-list" id="chat-logs-list">
-            <div class="chat-log-welcome">歡迎來到神來也對決聊天室！點擊快捷話語切換人物喜怒哀樂。</div>
+            <div class="chat-log-welcome">歡迎來到卡洛特對話頻道。點擊快捷話語可發送發言。</div>
           </div>
           <form class="chat-custom-form" id="chat-custom-form">
             <input type="text" class="chat-custom-input" id="chat-custom-text" placeholder="輸入聊天內容..." maxlength="40" autocomplete="off" />
@@ -154,7 +154,7 @@ export async function renderBigTwo(container, params = {}) {
       <!-- Settlement Modal -->
       <div class="game-overlay" id="bt-settlement-modal" style="display:none;">
         <div class="game-overlay-card settle-card">
-          <h2 id="settle-title">👑 遊戲局終結算</h2>
+          <h2 id="settle-title">對局結算</h2>
           <div class="settle-winner" id="settle-winner-name">獲勝者: 玩家</div>
           <div class="settle-details" id="settle-details-box"></div>
           <button class="btn btn-primary btn-block" id="btn-settle-restart">${SVG_ICONS.refresh} 進入下一局</button>

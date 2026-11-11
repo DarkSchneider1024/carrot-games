@@ -130,13 +130,22 @@ export async function renderHome(container) {
             </button>
 
             <button class="drawer-menu-item" id="drawer-btn-game-guide">
-              <span class="drawer-item-icon" style="color:#ea580c;">📖</span>
+              <span class="drawer-item-icon" style="color:#ea580c;">${SVG_ICONS.storage}</span>
               <div class="drawer-item-text">
                 <strong>遊戲玩法說明全書</strong>
-                <small>3D 角色技能與寶箱說明</small>
+                <small>角色技能與規則說明</small>
               </div>
               <span class="drawer-chevron">›</span>
             </button>
+
+            <a href="https://vtuber.carrot-atelier.online/town/" target="_blank" rel="noopener noreferrer" class="drawer-menu-item" style="text-decoration:none;">
+              <span class="drawer-item-icon" style="color:#f59e0b;">${SVG_ICONS.globe}</span>
+              <div class="drawer-item-text">
+                <strong>卡洛特小鎮 (Carrot Town)</strong>
+                <small>原創餐廳經營模擬遊戲 ↗</small>
+              </div>
+              <span class="drawer-chevron">›</span>
+            </a>
 
             <button class="drawer-menu-item" id="drawer-btn-pwa-guide">
               <span class="drawer-item-icon">${SVG_ICONS.smartphone}</span>
@@ -163,7 +172,7 @@ export async function renderHome(container) {
           <span class="badge badge-warning">免下載 點擊即玩</span>
         </div>
         <h2 class="home-hero-title">
-          蘿蔔大亂鬥 <span class="gradient-text">隨時開戰</span>
+          卡洛特小鎮 <span class="gradient-text">線上對戰大廳</span>
         </h2>
         <p class="home-hero-desc">
           無需安裝任何 App，開啟網頁即可享受流暢對戰、智慧 AI 陪練與好友跨平台連線！
@@ -174,19 +183,46 @@ export async function renderHome(container) {
       <div class="home-filter-section animate-fade-in-up">
         <div class="home-filter-title">
           <span>遊戲庫分類</span>
-          <span class="home-filter-count" id="filter-count">共 6 款遊戲</span>
+          <span class="home-filter-count" id="filter-count">共 7 款遊戲</span>
         </div>
         <div class="home-filter-pills" id="home-filter-pills">
           <button class="filter-pill active" data-filter="all">全部遊戲</button>
-          <button class="filter-pill" data-filter="board">🎴 棋牌對戰</button>
-          <button class="filter-pill" data-filter="strategy">⚔️ 戰略遊戲</button>
-          <button class="filter-pill" data-filter="party">🥳 派對遊戲</button>
-          <button class="filter-pill" data-filter="mahjong">🀄 麻將</button>
+          <button class="filter-pill" data-filter="town">小鎮原創</button>
+          <button class="filter-pill" data-filter="board">棋牌對戰</button>
+          <button class="filter-pill" data-filter="strategy">戰略遊戲</button>
+          <button class="filter-pill" data-filter="party">派對遊戲</button>
+          <button class="filter-pill" data-filter="mahjong">麻將館</button>
         </div>
       </div>
 
       <!-- Games Showcase Grid -->
       <section class="home-games" id="home-games-grid">
+        <!-- Carrot Town Flagship Sim Card -->
+        <div class="game-card animate-fade-in-up stagger-1" id="card-carrot-town" data-category="town strategy party simulation">
+          <div class="game-card-banner">
+            <img src="./assets/images/town/town.webp" alt="卡洛特小鎮" class="game-card-img" />
+            <div class="game-card-overlay"></div>
+            <span class="badge badge-category">經營模擬 / 冒險</span>
+            <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#f59e0b,#ea580c);color:#fff;">小鎮旗艦</span>
+          </div>
+          <div class="game-card-content">
+            <h3>卡洛特小鎮 (CARROT TOWN)</h3>
+            <p>原創餐廳經營模擬！排班、菜單、研發、招募來自異世界的夥伴，用客人的笑容穩住異界之門！</p>
+            
+            <div class="game-card-tags">
+              <span class="tag">${SVG_ICONS.cpu} Godot 4.7 引擎</span>
+              <span class="tag">${SVG_ICONS.globe} 餐廳經營模擬</span>
+              <span class="tag">${SVG_ICONS.user} 異界夥伴招募</span>
+            </div>
+
+            <div class="game-card-actions">
+              <a href="https://vtuber.carrot-atelier.online/town/" target="_blank" rel="noopener noreferrer" class="btn btn-primary" id="btn-carrot-town-play" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;">
+                ${SVG_ICONS.globe} 進入小鎮遊玩 ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
         <!-- Big Two 13 Cards Card -->
         <div class="game-card animate-fade-in-up stagger-1" id="card-big-two" data-category="board">
           <div class="game-card-banner">

@@ -23,9 +23,9 @@ const STAGE_LABELS = {
 const VAL_MAP = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
 
 const AI_SEATS = [
-  { idx: 1, cls: 'seat-top-left', img: 'avatar_rabbit.png', alt: '兔兔', id: 'p1', name: '兔兔 (AI)' },
-  { idx: 2, cls: 'seat-top-center', img: 'avatar_cat.png', alt: '貓咪', id: 'p2', name: '貓咪 (AI)' },
-  { idx: 3, cls: 'seat-top-right', img: 'avatar_bear.png', alt: '熊熊', id: 'p3', name: '熊熊 (AI)' }
+  { idx: 1, cls: 'seat-top-left', img: 'bobo_v3.webp', alt: '波波', id: 'p1', name: '兔子波波 (AI)' },
+  { idx: 2, cls: 'seat-top-center', img: 'linda_nyan.webp', alt: '琳達喵', id: 'p2', name: '琳達喵 (AI)' },
+  { idx: 3, cls: 'seat-top-right', img: 'mr_carrot_sci.webp', alt: '卡洛特', id: 'p3', name: '科學家卡洛特 (AI)' }
 ];
 
 const cardHtml = (card, extra = '') => {
@@ -35,7 +35,7 @@ const cardHtml = (card, extra = '') => {
     <span class="card-suit">${card.suit}</span>
   </div>`;
 };
-const cardBackHtml = () => `<div class="poker-card card-back"><span>🥕</span></div>`;
+const cardBackHtml = () => `<div class="poker-card card-back"><div class="card-back-pattern"></div></div>`;
 
 export async function renderPoker(container, params) {
   const engine = new TexasHoldemEngine();
@@ -61,7 +61,7 @@ export async function renderPoker(container, params) {
       <div class="action-bubble" id="bubble-${idx}"></div>
       <div class="seat-badges" id="badges-${idx}"></div>
       <div class="poker-avatar ${idx === 0 ? 'avatar-user' : ''}">
-        <img src="./assets/images/${img}" alt="${alt}" class="poker-avatar-img" />
+        <img src="./assets/images/characters/${img}" alt="${alt}" class="poker-avatar-img" />
       </div>
       <div class="seat-info">
         <span class="seat-name">${name}</span>
@@ -80,7 +80,7 @@ export async function renderPoker(container, params) {
           ${SVG_ICONS.back} <span>大廳</span>
         </button>
         <div class="poker-topbar-title">
-          <span class="mode-badge">🂡 TEXAS HOLD'EM<span class="hide-narrow"> POKER 德州撲克</span></span>
+          <span class="mode-badge">TEXAS HOLD'EM<span class="hide-narrow"> POKER 德州撲克</span></span>
         </div>
         <div class="poker-topbar-actions">
           <button class="btn btn-ghost btn-sm" id="btn-pwa-help" title="PWA 安裝指南">${SVG_ICONS.smartphone}</button>
@@ -104,7 +104,7 @@ export async function renderPoker(container, params) {
           </div>
 
           ${AI_SEATS.map(s => seatHtml({ ...s, style: AI_STYLES[s.id]?.label })).join('')}
-          ${seatHtml({ idx: 0, cls: 'seat-bottom', img: 'avatar_user.png', alt: '玩家', name: playerName })}
+          ${seatHtml({ idx: 0, cls: 'seat-bottom', img: 'carol_v3.webp', alt: '玩家', name: playerName })}
 
           <!-- Winner Ribbon (sits under the board, never covers seats or cards) -->
           <div class="winner-banner" id="winner-banner" style="display:none;">
