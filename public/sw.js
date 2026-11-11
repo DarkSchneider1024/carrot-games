@@ -54,21 +54,36 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event: Network-first for HTML & JS, Stale-while-revalidate for assets
+// Fetch Event: Network-first for HTML, JS & CSS to prevent stale cache lock
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Never cache sw.js or html strictly
-  if (url.pathname.endsWith('sw.js') || url.pathname.endsWith('index.html')) {
+  // Never stale-cache HTML, JS, CSS, or sw.js
+  const isCodeAsset = url.pathname.endsWith('/') || 
+                      url.pathname.endsWith('.html') || 
+                      url.pathname.endsWith('.js') || 
+                      url.pathname.endsWith('.css') || 
+                      url.pathname.endsWith('sw.js');
+
+  if (isCodeAsset) {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
     );
     return;
   }
 
+  // Assets (images, fonts, audio) can use Cache-first with background revalidate
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
