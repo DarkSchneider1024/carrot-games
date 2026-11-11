@@ -428,11 +428,11 @@ export async function renderHome(container) {
             <img src="./assets/images/cards/card_bomberman.png" alt="土星炸彈人" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">戰略 / 派對</span>
-            <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ff7544,#e11d48);color:#fff;">Godot 4</span>
+            <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ff7544,#e11d48);color:#fff;">小鎮實驗室</span>
           </div>
           <div class="game-card-content">
-            <h3>土星炸彈人 (SATURN BOMBERMAN)</h3>
-            <p>經典 13x13 網格炸彈超人！獨家騎龍載具系統，支援 1-4 人同樂與單人故事模式關卡！</p>
+            <h3>卡洛特炸彈人大作戰 (CARROT BOMBERMAN)</h3>
+            <p>小鎮實驗室經典網格炸彈！科學家卡洛特與陶藝師的機關爆破，支援 1-4 人同樂與坐騎系統！</p>
 
             <div class="game-card-tags">
               <span class="tag">${SVG_ICONS.cpu} 1-4 人同樂</span>

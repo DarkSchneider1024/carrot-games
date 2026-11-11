@@ -969,11 +969,11 @@ export async function renderFruitHavoc(container, params = {}) {
   };
 
   const bgFairylandImg = new Image();
-  bgFairylandImg.src = './assets/images/kenney_sky_bg.png';
+  bgFairylandImg.src = './assets/images/town/town.webp';
   const goalCastleImg = new Image();
-  goalCastleImg.src = './assets/images/asset_goal_castle.png';
+  goalCastleImg.src = './assets/images/characters/mr_carrot_mage.webp';
   const kenneyPlatformImg = new Image();
-  kenneyPlatformImg.src = './assets/images/kenney_platform_grass.png';
+  kenneyPlatformImg.src = './assets/images/town/interior.webp';
 
   const draw2DStage = () => {
     if (!ctx) return;

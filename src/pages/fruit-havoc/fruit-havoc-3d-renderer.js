@@ -88,21 +88,21 @@ export class FruitHavoc3DRenderer {
   _loadTexturesAndBackground(w, h) {
     const loader = new THREE.TextureLoader();
 
-    // 1. Kenney Sky Background Image
-    loader.load('./assets/images/kenney_sky_bg.png', (tex) => {
+    // 1. Carrot Town Painted Background
+    loader.load('./assets/images/town/town.webp', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       this.stageBackgroundTex = tex;
       this.scene.background = tex;
     });
 
-    // 2. Kenney Platform Grass Tile Texture
-    loader.load('./assets/images/kenney_platform_grass.png', (tex) => {
+    // 2. Carrot Town Ground Tile Texture
+    loader.load('./assets/images/town/interior.webp', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       this.grassTileTex = tex;
     });
 
-    // 3. Goal Trophy Asset
-    loader.load('./assets/images/asset_goal_castle.png', (tex) => {
+    // 3. Goal Asset
+    loader.load('./assets/images/characters/mr_carrot_mage.webp', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       this.goalTex = tex;
     });

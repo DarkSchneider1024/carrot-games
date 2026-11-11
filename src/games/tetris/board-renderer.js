@@ -82,7 +82,7 @@ export class TetrisBoardRenderer {
     const playerY = 65;
 
     // Player Board
-    this._drawBoard(ctx, playerX, playerY, playerEngine.board, playerEngine, 'YOU (RED TEAM)', gameState.playerKOs, gameState.playerLinesSent, this.cellSize);
+    this._drawBoard(ctx, playerX, playerY, playerEngine.board, playerEngine, '兔子波波 (YOU)', gameState.playerKOs, gameState.playerLinesSent, this.cellSize);
 
     // Garbage Gauge (Player)
     this._drawGarbageMeter(ctx, playerX - 14, playerY, gameState.pendingGarbage, this.cellSize);
@@ -96,7 +96,7 @@ export class TetrisBoardRenderer {
     // Opponent Board
     const oppX = Math.floor(rect.width * 0.68);
     const oppY = playerY;
-    this._drawOpponentBoard(ctx, oppX, oppY, opponentBoard, 'OPPONENT (BLUE TEAM)', gameState.opponentKOs, gameState.opponentLinesSent, this.cellSize);
+    this._drawOpponentBoard(ctx, oppX, oppY, opponentBoard, '卡洛兒姐姐 (OPPONENT)', gameState.opponentKOs, gameState.opponentLinesSent, this.cellSize);
 
     // Garbage Gauge (Opponent)
     this._drawGarbageMeter(ctx, oppX - 14, oppY, gameState.opponentPendingGarbage, this.cellSize);
@@ -119,7 +119,7 @@ export class TetrisBoardRenderer {
     const playerY = 40;
 
     // 1. Large Player Board
-    this._drawBoard(ctx, playerX, playerY, playerEngine.board, playerEngine, 'YOU', gameState.playerKOs, gameState.playerLinesSent, this.cellSize);
+    this._drawBoard(ctx, playerX, playerY, playerEngine.board, playerEngine, '兔子波波', gameState.playerKOs, gameState.playerLinesSent, this.cellSize);
 
     // 2. Player Garbage Meter
     this._drawGarbageMeter(ctx, playerX - 10, playerY, gameState.pendingGarbage, this.cellSize);
@@ -272,7 +272,7 @@ export class TetrisBoardRenderer {
     ctx.fillStyle = '#4361ee';
     ctx.font = 'bold 10px "Russo One", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`OPP KO:${kos}`, startX + w / 2, startY - 7);
+    ctx.fillText(`卡洛兒:${kos}`, startX + w / 2, startY - 7);
 
     // Mini Frame
     ctx.fillStyle = '#ffffff';

@@ -220,6 +220,62 @@
   border: 1.5px solid var(--color-border);
 }
 
+.tetris-character-matchup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.tetris-char-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tetris-char-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid var(--color-accent-primary);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.tetris-char-card.opponent .tetris-char-avatar {
+  border-color: #3b82f6;
+}
+
+.tetris-char-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tetris-char-name {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.tetris-char-tag {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+
+.tetris-matchup-vs {
+  font-weight: 900;
+  font-size: var(--font-size-xs);
+  color: #ea580c;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: rgba(234, 88, 12, 0.1);
+}
+
 .match-stats {
   display: flex;
   flex-direction: column;

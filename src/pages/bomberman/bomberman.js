@@ -18,8 +18,8 @@ export async function renderBomberman(container, params = {}) {
             ${SVG_ICONS.back} <span>大廳</span>
           </button>
           <div class="topbar-title">
-            <span class="game-name">土星炸彈人 (SATURN BOMBERMAN)</span>
-            <span class="badge badge-warning">Godot 4 引擎 · 1-4 人同樂 / 騎龍載具</span>
+            <span class="game-name">卡洛特小鎮 · 炸彈人大作戰 (CARROT BOMBERMAN)</span>
+            <span class="badge badge-warning">卡洛特小鎮實驗室 · 1-4 人同樂 / 坐騎系統</span>
           </div>
         </div>
         <div class="topbar-actions">
@@ -95,30 +95,30 @@ export async function renderBomberman(container, params = {}) {
   if (btnGuide) {
     btnGuide.addEventListener('click', () => {
       showModal({
-        title: '🐉 土星炸彈人 (Saturn Bomberman) 玩法說明',
+        title: '卡洛特炸彈人大作戰 玩法說明',
         content: `
           <div style="line-height:1.7;color:var(--color-text-primary);">
-            <h4 style="margin-bottom:0.5rem;color:#ea580c;">🎯 核心目標</h4>
-            <p>炸開石塊、消滅所有敵方怪獸，尋找隱藏於方塊底下的出口門並成功逃脫過關！</p>
+            <h4 style="margin-bottom:0.5rem;color:#ea580c;">核心目標</h4>
+            <p>與科學家卡洛特和陶藝師一同進入迷宮實驗室！炸開石塊、消滅所有敵方機關怪獸，尋找隱藏於方塊底下的傳送出口並成功逃脫過關！</p>
 
-            <h4 style="margin-top:1rem;margin-bottom:0.5rem;color:#ea580c;">🐉 龍載具系統（本作特色）</h4>
+            <h4 style="margin-top:1rem;margin-bottom:0.5rem;color:#ea580c;">小鎮守護坐騎系統（特色）</h4>
             <ul style="padding-left:1.2rem;margin-bottom:1rem;">
-              <li><strong>騎龍方式</strong>：炸開可破壞方塊後掉落「龍蛋」，踩上去自動騎上龍。</li>
-              <li><strong>騎龍能力</strong>：移動速度 +50%、騎乘瞬間 2 秒無敵、碰撞敵方可直接踐踏傷害。</li>
-              <li><strong>防禦抵擋</strong>：受到火焰爆炸時，龍會自動幫你抵擋一次傷害（龍消失，玩家存活）。</li>
-              <li><strong>放置炸彈</strong>：騎龍狀態下亦可正常放置炸彈攻擊！</li>
-              <li><strong>下龍與重騎</strong>：按下龍鍵（P1: Q / P2: Numpad .）可下龍，龍會留在原地待命，隨時可重新走回騎乘。</li>
+              <li><strong>騎乘方式</strong>：炸開可破壞方塊後掉落「守護蛋」，踩上去自動騎上守護坐騎。</li>
+              <li><strong>騎乘能力</strong>：移動速度 +50%、騎乘瞬間 2 秒無敵、碰撞敵方可直接踐踏傷害。</li>
+              <li><strong>防禦抵擋</strong>：受到火焰爆炸時，坐騎會自動幫你抵擋一次傷害。</li>
+              <li><strong>放置炸彈</strong>：騎乘狀態下亦可正常放置炸彈攻擊！</li>
+              <li><strong>下坐騎與重騎</strong>：按下鍵（P1: Q / P2: Numpad .）可暫時下坐騎，隨時可重新走回騎乘。</li>
             </ul>
 
-            <h4 style="margin-top:1rem;margin-bottom:0.5rem;color:#ea580c;">💣 道具系統</h4>
+            <h4 style="margin-top:1rem;margin-bottom:0.5rem;color:#ea580c;">實驗室道具系統</h4>
             <ul style="padding-left:1.2rem;">
-              <li>💣 <strong>炸彈 +1</strong>：增加可同時放置的炸彈上限。</li>
-              <li>🔥 <strong>火力 +1</strong>：擴大爆炸延伸範圍。</li>
-              <li>💨 <strong>速度提升</strong>：增加步行移動速度。</li>
-              <li>🐉 <strong>龍蛋</strong>：獲得一條龍載具。</li>
-              <li>⚡ <strong>快速引爆</strong>：縮短炸彈倒計時。</li>
-              <li>🎯 <strong>遠程引爆</strong>：再按一次放彈鍵手動引爆。</li>
-              <li>🛡️ <strong>保險箱</strong>：一次獲得炸彈 +1、火力 +1 與速度。</li>
+              <li><strong>炸彈 +1</strong>：增加可同時放置的炸彈上限。</li>
+              <li><strong>火力 +1</strong>：擴大爆炸延伸範圍。</li>
+              <li><strong>速度提升</strong>：增加步行移動速度。</li>
+              <li><strong>守護蛋</strong>：獲得一隻小鎮守護坐騎。</li>
+              <li><strong>快速引爆</strong>：縮短炸彈倒計時。</li>
+              <li><strong>遠程引爆</strong>：再按一次放彈鍵手動引爆。</li>
+              <li><strong>補給箱</strong>：一次獲得炸彈 +1、火力 +1 與速度。</li>
             </ul>
           </div>
         `

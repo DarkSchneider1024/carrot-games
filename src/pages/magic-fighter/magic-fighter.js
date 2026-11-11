@@ -117,20 +117,20 @@ export async function renderMagicFighter(container, params = {}) {
 
           <!-- Quick Summon Action Bar Overlay on 3D Stage (Bottom Center) -->
           <div class="quick-summon-bar glass">
-            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-bat" title="召喚吸血鬼伯爵 ($50)">
-              🧛 吸血鬼 ($50)
+            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-bat" title="召喚小鎮守衛 ($50)">
+              守衛 ($50)
             </button>
-            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-griffin" title="召喚疾風鷹獅 ($100)">
-              🦅 鷹獅 ($100)
+            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-griffin" title="召喚皇家園丁 ($100)">
+              園丁 ($100)
             </button>
-            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-dragon" title="召喚烈焰飛龍 ($200)">
-              🐲 烈焰龍 ($200)
+            <button class="btn btn-xs btn-ghost qsummon-btn" id="qbtn-dragon" title="召喚齊天大聖 ($200)">
+              大聖 ($200)
             </button>
-            <button class="btn btn-xs btn-cyan qsummon-btn" id="qbtn-star" title="升級戰機火力 ($150)">
-              ⭐️ 升級火力 ($150)
+            <button class="btn btn-xs btn-cyan qsummon-btn" id="qbtn-star" title="升級卡洛特法杖火力 ($150)">
+              升級法術 ($150)
             </button>
-            <button class="btn btn-xs btn-primary qsummon-btn" id="qbtn-fortify-base" title="修復主塔並加固鋼牆 ($150)">
-              🏰 加固主塔 ($150)
+            <button class="btn btn-xs btn-primary qsummon-btn" id="qbtn-fortify-base" title="修復並加固小鎮水晶基地 ($150)">
+              加固基地 ($150)
             </button>
           </div>
 
@@ -284,13 +284,13 @@ export async function renderMagicFighter(container, params = {}) {
     }
   };
 
-  container.querySelector('#qbtn-bat')?.addEventListener('click', () => handleSummon('bat', '吸血鬼伯爵', 50));
-  container.querySelector('#qbtn-griffin')?.addEventListener('click', () => handleSummon('griffin', '疾風鷹獅', 100));
-  container.querySelector('#qbtn-dragon')?.addEventListener('click', () => handleSummon('dragon', '烈焰飛龍', 200));
+  container.querySelector('#qbtn-bat')?.addEventListener('click', () => handleSummon('bat', '小鎮守衛', 50));
+  container.querySelector('#qbtn-griffin')?.addEventListener('click', () => handleSummon('griffin', '皇家園丁', 100));
+  container.querySelector('#qbtn-dragon')?.addEventListener('click', () => handleSummon('dragon', '齊天大聖', 200));
 
   container.querySelector('#qbtn-star')?.addEventListener('click', () => {
     if (game.upgradePlayerFighter()) {
-      showToast('戰機火力成功升級！(-$150 Mana)', 'success');
+      showToast('魔法師卡洛特法杖火力成功升級！(-$150 Mana)', 'success');
     } else {
       showToast('Mana 不足或已達最高火力等級！', 'warning');
     }
@@ -298,9 +298,9 @@ export async function renderMagicFighter(container, params = {}) {
 
   container.querySelector('#qbtn-fortify-base')?.addEventListener('click', () => {
     if (game.fortifyPlayerBase()) {
-      showToast('主塔血量修復並建構鋼牆護盾 15 秒！(-$150 Mana)', 'success');
+      showToast('小鎮水晶基地修復完畢，外圍鋼牆加固！(-$150 Mana)', 'success');
     } else {
-      showToast('Mana 不足 $150，無法加固主塔！', 'warning');
+      showToast('Mana 不足 $150，無法加固小鎮水晶基地！', 'warning');
     }
   });
 

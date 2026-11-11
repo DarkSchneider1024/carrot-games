@@ -419,7 +419,25 @@ function _bindTouchControls(game) {
 function _renderAIPanel() {
   return `
     <div class="action-panel glass">
-      <h4 class="action-title">AI 對戰設定</h4>
+      <div class="tetris-character-matchup">
+        <div class="tetris-char-card player">
+          <img src="./assets/images/characters/bobo_v3.webp" alt="兔子波波" class="tetris-char-avatar" />
+          <div class="tetris-char-info">
+            <span class="tetris-char-name">兔子波波 (你)</span>
+            <span class="tetris-char-tag">敏捷消除</span>
+          </div>
+        </div>
+        <div class="tetris-matchup-vs">VS</div>
+        <div class="tetris-char-card opponent">
+          <img src="./assets/images/characters/carol_v3.webp" alt="卡洛兒姐姐" class="tetris-char-avatar" />
+          <div class="tetris-char-info">
+            <span class="tetris-char-name">卡洛兒姐姐 (AI)</span>
+            <span class="tetris-char-tag">冷靜策略</span>
+          </div>
+        </div>
+      </div>
+
+      <h4 class="action-title" style="margin-top:8px;">AI 對戰設定</h4>
 
       <div class="action-group">
         <label class="action-label">AI 難度</label>
@@ -437,8 +455,8 @@ function _renderAIPanel() {
       </div>
 
       <div class="match-stats glass">
-        <div class="stat-row"><span>PLAYER K.O.</span><strong id="stat-player-ko">0</strong></div>
-        <div class="stat-row"><span>OPPONENT K.O.</span><strong id="stat-opp-ko">0</strong></div>
+        <div class="stat-row"><span>兔子波波 (你) K.O.</span><strong id="stat-player-ko">0</strong></div>
+        <div class="stat-row"><span>卡洛兒姐姐 (AI) K.O.</span><strong id="stat-opp-ko">0</strong></div>
         <div class="stat-row"><span>LINES SENT</span><strong id="stat-sent">0</strong></div>
       </div>
     </div>
@@ -448,7 +466,25 @@ function _renderAIPanel() {
 function _renderOnlinePanel() {
   return `
     <div class="action-panel glass">
-      <h4 class="action-title">即時對戰房間</h4>
+      <div class="tetris-character-matchup">
+        <div class="tetris-char-card player">
+          <img src="./assets/images/characters/bobo_v3.webp" alt="兔子波波" class="tetris-char-avatar" />
+          <div class="tetris-char-info">
+            <span class="tetris-char-name">兔子波波 (你)</span>
+            <span class="tetris-char-tag">HOST</span>
+          </div>
+        </div>
+        <div class="tetris-matchup-vs">VS</div>
+        <div class="tetris-char-card opponent">
+          <img src="./assets/images/characters/carol_v3.webp" alt="卡洛兒姐姐" class="tetris-char-avatar" />
+          <div class="tetris-char-info">
+            <span class="tetris-char-name">卡洛特小鎮對手</span>
+            <span class="tetris-char-tag">GUEST</span>
+          </div>
+        </div>
+      </div>
+
+      <h4 class="action-title" style="margin-top:8px;">即時對戰房間</h4>
 
       <div class="connection-area" id="connection-area">
         <button class="btn btn-primary" id="btn-create-room">
@@ -471,8 +507,8 @@ function _renderOnlinePanel() {
       </div>
 
       <div class="match-stats glass" style="margin-top:12px;">
-        <div class="stat-row"><span>PLAYER K.O.</span><strong id="stat-player-ko">0</strong></div>
-        <div class="stat-row"><span>OPPONENT K.O.</span><strong id="stat-opp-ko">0</strong></div>
+        <div class="stat-row"><span>兔子波波 (你) K.O.</span><strong id="stat-player-ko">0</strong></div>
+        <div class="stat-row"><span>小鎮對手 K.O.</span><strong id="stat-opp-ko">0</strong></div>
         <div class="stat-row"><span>LINES SENT</span><strong id="stat-sent">0</strong></div>
       </div>
     </div>

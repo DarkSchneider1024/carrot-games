@@ -73,3 +73,4 @@ for (const target of targetFiles) {
 
 fs.unlinkSync(tmpHtml);
 console.log('Bobo logo successfully generated!');
+
