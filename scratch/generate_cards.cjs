@@ -253,3 +253,4 @@ for (const c of CARDS) {
 }
 
 console.log('All cards successfully rendered!');
+
