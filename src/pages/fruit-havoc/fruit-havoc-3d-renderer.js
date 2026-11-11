@@ -107,13 +107,13 @@ export class FruitHavoc3DRenderer {
       this.goalTex = tex;
     });
 
-    // 4. Kenney Jumper Bunny Character & Avatars
+    // 4. Carrot Town Characters & Avatars
     const chars = [
-      { id: 'strawberry', url: './assets/images/kenney_jumper_hero.png' },
-      { id: 'banana', url: './assets/images/char_banana_usagi.png' },
-      { id: 'melon', url: './assets/images/char_melon_hachi.png' },
-      { id: 'peach', url: './assets/images/char_peach_kuriman.png' },
-      { id: 'grape', url: './assets/images/char_grape_momonga.png' }
+      { id: 'strawberry', url: './assets/images/characters/mr_carrot_mage.webp' },
+      { id: 'banana', url: './assets/images/characters/bobo_v3.webp' },
+      { id: 'melon', url: './assets/images/characters/carol_v3.webp' },
+      { id: 'peach', url: './assets/images/characters/mr_carrot_sci.webp' },
+      { id: 'grape', url: './assets/images/characters/linda_nyan.webp' }
     ];
     chars.forEach(c => {
       loader.load(c.url, (tex) => {

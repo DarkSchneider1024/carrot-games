@@ -53,9 +53,11 @@ export async function renderXiangqi(container, params) {
         <div class="xiangqi-panel xiangqi-panel-left">
           <!-- Opponent Player Card -->
           <div class="player-info glass" id="player-top">
-            <div class="player-avatar avatar-black">將</div>
+            <div class="player-avatar avatar-black" id="avatar-top" style="background-image:url('./assets/images/characters/mr_carrot_sci.webp');background-size:cover;background-position:center;">
+              <span class="avatar-piece-badge">將</span>
+            </div>
             <div class="player-details">
-              <span class="player-name" id="player-top-name">黑方 (BLACK)</span>
+              <span class="player-name" id="player-top-name">科學家卡洛特 (將)</span>
               <span class="player-timer" id="timer-top">10:00</span>
             </div>
             <div class="player-turn-indicator" id="turn-top"></div>
@@ -72,9 +74,11 @@ export async function renderXiangqi(container, params) {
 
           <!-- Local Player Card -->
           <div class="player-info glass" id="player-bottom">
-            <div class="player-avatar avatar-red">帥</div>
+            <div class="player-avatar avatar-red" id="avatar-bottom" style="background-image:url('./assets/images/characters/mr_carrot_mage.webp');background-size:cover;background-position:center;">
+              <span class="avatar-piece-badge">帥</span>
+            </div>
             <div class="player-details">
-              <span class="player-name" id="player-bottom-name">紅方 (RED)</span>
+              <span class="player-name" id="player-bottom-name">魔法師卡洛特 (你 ‧ 帥)</span>
               <span class="player-timer" id="timer-bottom">10:00</span>
             </div>
             <div class="player-turn-indicator active" id="turn-bottom"></div>
@@ -540,19 +544,26 @@ function _updateUI(state, game) {
   const turnBottom = document.getElementById('turn-bottom');
   const moveCountBadge = document.getElementById('move-count-badge');
 
+  const avatarTop = document.getElementById('avatar-top');
+  const avatarBottom = document.getElementById('avatar-bottom');
+
   if (topTimer && bottomTimer) {
     if (topIsBlack) {
       topTimer.textContent = formatTime(state.blackTime);
       bottomTimer.textContent = formatTime(state.redTime);
-      topName.textContent = state.mode === GAME_MODE.VS_AI ? 'AI (黑方)' : '黑方 (OPPONENT)';
-      bottomName.textContent = '你 (紅方)';
+      topName.textContent = state.mode === GAME_MODE.VS_AI ? '科學家卡洛特 (AI ‧ 將)' : '科學家卡洛特 (將)';
+      bottomName.textContent = '魔法師卡洛特 (你 ‧ 帥)';
+      if (avatarTop) avatarTop.style.backgroundImage = "url('./assets/images/characters/mr_carrot_sci.webp')";
+      if (avatarBottom) avatarBottom.style.backgroundImage = "url('./assets/images/characters/mr_carrot_mage.webp')";
       turnTop.className = `player-turn-indicator ${state.currentTurn === BLACK ? 'active' : ''}`;
       turnBottom.className = `player-turn-indicator ${state.currentTurn === RED ? 'active' : ''}`;
     } else {
       topTimer.textContent = formatTime(state.redTime);
       bottomTimer.textContent = formatTime(state.blackTime);
-      topName.textContent = state.mode === GAME_MODE.VS_AI ? 'AI (紅方)' : '紅方 (OPPONENT)';
-      bottomName.textContent = '你 (黑方)';
+      topName.textContent = state.mode === GAME_MODE.VS_AI ? '魔法師卡洛特 (AI ‧ 帥)' : '魔法師卡洛特 (帥)';
+      bottomName.textContent = '科學家卡洛特 (你 ‧ 將)';
+      if (avatarTop) avatarTop.style.backgroundImage = "url('./assets/images/characters/mr_carrot_mage.webp')";
+      if (avatarBottom) avatarBottom.style.backgroundImage = "url('./assets/images/characters/mr_carrot_sci.webp')";
       turnTop.className = `player-turn-indicator ${state.currentTurn === RED ? 'active' : ''}`;
       turnBottom.className = `player-turn-indicator ${state.currentTurn === BLACK ? 'active' : ''}`;
     }

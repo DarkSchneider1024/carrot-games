@@ -157,97 +157,76 @@ export async function renderGameGuide(container, params = {}) {
 
           <!-- 3D 角色與技能特刊 (3D Character & Skill Showcase) -->
           <section class="guide-section">
-            <h4>2. 3D 戰機角色與單位技能說明特刊</h4>
+            <h4>2. 3D 魔法角色與敵對陣營說明特刊</h4>
             <div class="guide-character-grid">
-              <!-- Card 1: Saiyan Jet -->
+              <!-- Card 1: 魔法師卡洛特 -->
               <div class="character-card">
                 <div class="character-img-wrapper">
-                  <img src="./assets/images/fighter_hero_jet.png" alt="賽亞戰機" class="character-img" />
-                  <span class="character-tag">玩家主控戰機</span>
+                  <img src="./assets/images/characters/mr_carrot_mage.webp" alt="魔法師卡洛特" class="character-img" />
+                  <span class="character-tag">玩家主控英雄</span>
                 </div>
                 <div class="character-info">
                   <div class="character-header">
-                    <h5 class="character-name">超級賽亞戰機 (Saiyan Jet)</h5>
+                    <h5 class="character-name">魔法師卡洛特 (Carrot Mage)</h5>
                   </div>
                   <div class="character-stats-row">
                     <span>速度: <strong>6.5</strong></span>
                     <span>血量: <strong>5 HP</strong></span>
-                    <span>出發: <strong>左側城牆</strong></span>
+                    <span>出發: <strong>水晶基地</strong></span>
                   </div>
-                  <p class="character-desc">競速橘身配曜石黑護翼。具備靈活空中平移與極速發射能力，一開始於基地左側安全空域平穩升空。</p>
+                  <p class="character-desc">身披星空法袍，手握星光法杖。具備靈活法術平移與連發奧術飛彈能力，誓死捍衛小鎮總部水晶。</p>
                   <div class="character-skill-box">
-                    <span class="skill-title">⚡ 專屬技能：賽亞變身 (SSJ Transformation)</span>
-                    <p class="skill-desc">吃到星星即觸發金黃色賽亞氣場光罩！LV.1 升級雙發雷射，LV.3 解鎖【破鋼貫穿能量彈】，可一擊粉碎堅硬鋼鐵牆防線！</p>
+                    <span class="skill-title">專屬技能：奧術共鳴升級 (Arcane Burst)</span>
+                    <p class="skill-desc">拾取星星即可激發金黃奧術氣場！LV.1 升級雙發法術彈，LV.3 解鎖【貫穿奧術彈】，可一擊粉碎堅硬障礙！</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Card 2: Purple Bat -->
+              <!-- Card 2: 兔子波波 / 守衛 -->
               <div class="character-card">
                 <div class="character-img-wrapper">
-                  <img src="./assets/images/fighter_purple_bat.png" alt="小紫蝠偵察機" class="character-img" />
-                  <span class="character-tag">敵方蜂擁單位</span>
+                  <img src="./assets/images/characters/guard.webp" alt="小鎮守衛" class="character-img" />
+                  <span class="character-tag">友方防衛先鋒</span>
                 </div>
                 <div class="character-info">
                   <div class="character-header">
-                    <h5 class="character-name">小紫蝠偵察機 (Purple Bat)</h5>
-                  </div>
-                  <div class="character-stats-row">
-                    <span>速度: <strong>3.2</strong></span>
-                    <span>血量: <strong>2 HP</strong></span>
-                    <span>生成: <strong>頂部空地</strong></span>
-                  </div>
-                  <p class="character-desc">紫色機翼機械偵察蝠。數值輕巧但數量龐大，會自動避開障礙物並於空中進行邊移動邊射擊。</p>
-                  <div class="character-skill-box">
-                    <span class="skill-title">🎯 專屬技能：自動過牆襲擊 (Smart Navigation)</span>
-                    <p class="skill-desc">具備動態尋路 AI，自動繞過城牆與鋼鐵堡壘。撞擊基地後不會消失，而是持續進行近戰咬擊！</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 3: Griffin -->
-              <div class="character-card">
-                <div class="character-img-wrapper">
-                  <img src="./assets/images/fighter_griffin.png" alt="金翅皇家獅鷲" class="character-img" />
-                  <span class="character-tag">中型召喚獸 / 精英</span>
-                </div>
-                <div class="character-info">
-                  <div class="character-header">
-                    <h5 class="character-name">金翅皇家獅鷲 (Royal Griffin)</h5>
+                    <h5 class="character-name">小鎮鋼鐵守衛 (Town Guard)</h5>
                   </div>
                   <div class="character-stats-row">
                     <span>速度: <strong>4.0</strong></span>
                     <span>血量: <strong>4 HP</strong></span>
                     <span>消耗: <strong>100 Mana</strong></span>
                   </div>
-                  <p class="character-desc">金黃羽翼高空神獸。玩家可消耗 100 瑪那魔力召喚空戰獅鷲，向北方敵陣展開推進！</p>
+                  <p class="character-desc">全副武裝的皇家守衛，手持長盾防禦線。玩家可消耗 100 瑪那魔力召喚出陣，向敵陣正面衝鋒。</p>
                   <div class="character-skill-box">
-                    <span class="skill-title">🦅 專屬技能：高空疾飛風暴 (Dive Storm)</span>
-                    <p class="skill-desc">高頻率揮翅拍擊，具備 2 倍速度的高頻發射彈幕，提供強大的中距離火力壓制與護衛效果！</p>
+                    <span class="skill-title">專屬技能：盾牌結陣推進 (Shield March)</span>
+                    <p class="skill-desc">高頻率揮盾射擊，具備強大的中距離火力壓制與護衛水晶效果！</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Card 4: Shadow Dragon -->
+              <!-- Card 3: 黑森林魔狼王 -->
               <div class="character-card">
                 <div class="character-img-wrapper">
-                  <img src="./assets/images/fighter_dragon.png" alt="紫黑暗影魔龍" class="character-img" />
-                  <span class="character-tag">重裝 BOSS / 巨獸</span>
+                  <img src="./assets/images/characters/journey_magic_wolf.webp" alt="黑森林魔狼王" class="character-img" />
+                  <span class="character-tag">重裝 BOSS</span>
                 </div>
                 <div class="character-info">
                   <div class="character-header">
-                    <h5 class="character-name">紫黑暗影魔龍 (Shadow Dragon)</h5>
+                    <h5 class="character-name">黑森林魔狼王 (Magic Wolf King)</h5>
                   </div>
                   <div class="character-stats-row">
-                    <span>速度: <strong>2.0</strong></span>
+                    <span>速度: <strong>2.2</strong></span>
                     <span>血量: <strong>10 HP</strong></span>
-                    <span>消耗: <strong>200 Mana</strong></span>
+                    <span>生成: <strong>北方法陣</strong></span>
                   </div>
-                  <p class="character-desc">身披重型暗影龍鱗裝甲的巨型龍族霸主。具備全場最高的生存血量與毀滅撞擊力。</p>
+                  <p class="character-desc">率領群狼來犯的黑森林巨獸領袖。具備極高的生存血量與破壞衝撞力。</p>
                   <div class="character-skill-box">
-                    <span class="skill-title">🔥 專屬技能：毀滅火焰龍息 (Dragon Breath)</span>
-                    <p class="skill-desc">10 HP 超高防禦力。近距離靠近基地可造成高額近戰傷害，遠距離持續吐出灼熱龍息火球！</p>
+                    <span class="skill-title">專屬技能：暗影咆哮連彈 (Shadow Roar)</span>
+                    <p class="skill-desc">10 HP 超高防禦。近身對水晶基地造成毀滅傷害，遠距離持續釋放暗影魔球！</p>
                   </div>
+                </div>
+              </div>
                 </div>
               </div>
             </div>
@@ -288,111 +267,124 @@ export async function renderGameGuide(container, params = {}) {
             <strong>得分規則</strong>：如果所有人通通順利抵達終點，或所有人通通陣亡，則該輪「沒有人得分」；唯有<strong>成功穿越自己或朋友設置的危險陷阱到達終點</strong>，才能獲得勝場積分！</p>
           </section>
 
-          <!-- 5 大水果角色圖鑑 -->
+          <!-- 5 大小鎮冒險角色圖鑑 -->
           <section class="guide-section">
-            <h4>2. 5 大水果角色圖鑑</h4>
+            <h4>2. 5 大小鎮冒險角色圖鑑</h4>
             <div class="guide-character-grid">
-              <!-- Card 1: 草莓吉伊 -->
+              <!-- Card 1: 魔法師卡洛特 -->
               <div class="character-card">
                 <div class="character-img-wrapper">
-                  <img src="./assets/images/char_strawberry_berry.png" alt="草莓吉伊" class="character-img" />
-                  <span class="character-tag">速度型 🍓</span>
+                  <img src="./assets/images/characters/mr_carrot_mage.webp" alt="魔法師卡洛特" class="character-img" />
+                  <span class="character-tag">魔法型</span>
                 </div>
                 <div class="character-info">
                   <div class="character-header">
-                    <h5 class="character-name">草莓吉伊 (Strawberry Berry)</h5>
+                    <h5 class="character-name">魔法師卡洛特 (Carrot Mage)</h5>
                   </div>
                   <div class="character-stats-row">
-                    <span>速度: <strong>7.5</strong></span>
-                    <span>跳躍: <strong>6.5</strong></span>
-                    <span>性格: <strong>愛哭包</strong></span>
+                    <span>速度: <strong>5.2</strong></span>
+                    <span>跳躍: <strong>13.0</strong></span>
+                    <span>性格: <strong>睿智沈穩</strong></span>
                   </div>
-                  <p class="character-desc">圓滾滾水靈靈的粉嫩草莓，帶著水汪汪大眼睛與小綠葉帽子。雖然膽小愛哭，但奔跑反應非常敏捷！</p>
+                  <p class="character-desc">身披星空法袍的卡洛特魔法師，手持魔杖守護小鎮。具備瞬發奧術與輕盈的跳躍步伐。</p>
                   <div class="character-skill-box">
-                    <span class="skill-title">🌸 專屬天賦：淚流滿面閃避 (Tear Dash)</span>
-                    <p class="skill-desc">受到驚嚇或觸發陷阱瞬間有 25% 機率觸發淚水衝刺，無敵平移 0.5 秒避開致命傷害！</p>
+                    <span class="skill-title">專屬天賦：奧術星辰跳躍 (Star Dash)</span>
+                    <p class="skill-desc">觸發陷阱瞬間有一定機率展開星光護盾，短暫平移避開致命傷害。</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Card 2: 香蕉烏薩奇 -->
+              <!-- Card 2: 兔子波波 -->
               <div class="character-card">
                 <div class="character-img-wrapper">
-                  <img src="./assets/images/char_banana_usagi.png" alt="香蕉烏薩奇" class="character-img" />
-                  <span class="character-tag">高跳型 🍌</span>
+                  <img src="./assets/images/characters/bobo_v3.webp" alt="兔子波波" class="character-img" />
+                  <span class="character-tag">敏捷型</span>
                 </div>
                 <div class="character-info">
                   <div class="character-header">
-                    <h5 class="character-name">香蕉烏薩奇 (Banana Usagi)</h5>
+                    <h5 class="character-name">兔子波波 (Bobo the Rabbit)</h5>
                   </div>
                   <div class="character-stats-row">
-                    <span>速度: <strong>6.0</strong></span>
-                    <span>跳躍: <strong>9.5</strong></span>
-                    <span>性格: <strong>奇行種</strong></span>
+                    <span>速度: <strong>5.6</strong></span>
+                    <span>跳躍: <strong>13.5</strong></span>
+                    <span>性格: <strong>活力滿點</strong></span>
                   </div>
-                  <p class="character-desc">剝皮一半的金黃香蕉兔，頭上豎著香蕉皮耳。動作極度搞怪過面，喜歡發出「烏拉 (Ura!)」奇妙叫聲。</p>
+                  <p class="character-desc">小鎮最具活力的兔族夥伴，身手矯健，擅長在複雜地形中極速穿梭。</p>
                   <div class="character-skill-box">
-                    <span class="skill-title">🍌 專屬天賦：烏拉二段旋風跳 (Ura Spin Jump)</span>
-                    <p class="skill-desc">具備全遊戲最高的二段跳躍高度，空中旋轉跳躍可直接越過巨型高牆與尖刺防線！</p>
+                    <span class="skill-title">專屬天賦：極限高空彈跳 (Super Leap)</span>
+                    <p class="skill-desc">具備全小鎮最強勁的彈跳高度，空中可直接越過巨型高牆與深淵防線。</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Card 3: 哈密瓜小八 -->
+              <!-- Card 3: 卡洛兒姐姐 -->
               <div class="character-card">
                 <div class="character-img-wrapper">
-                  <img src="./assets/images/char_melon_hachi.png" alt="哈密瓜小八" class="character-img" />
-                  <span class="character-tag">智慧型 🍈</span>
+                  <img src="./assets/images/characters/carol_v3.webp" alt="卡洛兒姐姐" class="character-img" />
+                  <span class="character-tag">均衡型</span>
                 </div>
                 <div class="character-info">
                   <div class="character-header">
-                    <h5 class="character-name">哈密瓜小八 (Melon Hachi)</h5>
+                    <h5 class="character-name">卡洛兒姐姐 (Carol)</h5>
                   </div>
                   <div class="character-stats-row">
-                    <span>速度: <strong>6.5</strong></span>
-                    <span>跳躍: <strong>7.0</strong></span>
-                    <span>性格: <strong>智商擔當</strong></span>
+                    <span>速度: <strong>4.8</strong></span>
+                    <span>跳躍: <strong>13.0</strong></span>
+                    <span>性格: <strong>溫柔沉著</strong></span>
                   </div>
-                  <p class="character-desc">綠色網紋哈密瓜貓貓，帶著甜甜笑臉與雙色貓耳。個性溫暖睿智，最懂得在最陰險的位置佈置陷阱。</p>
+                  <p class="character-desc">小鎮大家庭的守護者，兼具優雅與智慧，最懂得平穩應對各種未知突發考驗。</p>
                   <div class="character-skill-box">
-                    <span class="skill-title">🍈 專屬天賦：陷阱隱蔽大師 (Hidden Trap Master)</span>
-                    <p class="skill-desc">每輪佈置陷阱時額外獲得 1 次擬態機會，可將陷阱偽裝成一般方塊，出其不意坑害對手！</p>
+                    <span class="skill-title">專屬天賦：穩健跑酷步伐 (Steady Steps)</span>
+                    <p class="skill-desc">步伐扎實，在光滑冰面或窄橋平台不易打滑，大幅提升跑酷容錯率。</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Card 4: 水桃栗饅頭 -->
+              <!-- Card 4: 科學家卡洛特 -->
               <div class="character-card">
                 <div class="character-img-wrapper">
-                  <img src="./assets/images/char_peach_kuriman.png" alt="水桃栗饅頭" class="character-img" />
-                  <span class="character-tag">重裝型 🍑</span>
+                  <img src="./assets/images/characters/mr_carrot_sci.webp" alt="科學家卡洛特" class="character-img" />
+                  <span class="character-tag">重裝型</span>
                 </div>
                 <div class="character-info">
                   <div class="character-header">
-                    <h5 class="character-name">水桃栗饅頭 (Peach Kuriman)</h5>
+                    <h5 class="character-name">科學家卡洛特 (Carrot Scientist)</h5>
                   </div>
                   <div class="character-stats-row">
-                    <span>速度: <strong>5.5</strong></span>
-                    <span>跳躍: <strong>6.0</strong></span>
-                    <span>性格: <strong>老練大叔</strong></span>
+                    <span>速度: <strong>4.2</strong></span>
+                    <span>跳躍: <strong>12.0</strong></span>
+                    <span>性格: <strong>嚴謹理性</strong></span>
                   </div>
-                  <p class="character-desc">粉嫩水蜜桃配微醺紅潤小腮紅。性格無比沉穩，手裡總拿著一杯果汁，面對各類陷阱臨危不亂。</p>
+                  <p class="character-desc">隨身佩戴護目鏡與發明工具箱的博學者，擅長分析機關結構與物理特性。</p>
                   <div class="character-skill-box">
-                    <span class="skill-title">🍑 專屬天賦：哈哼防禦霸體 (Ha-Heng Armor)</span>
-                    <p class="skill-desc">受到第一次輕微障礙（如香蕉皮或黏液）時不產生硬直，直接霸體穩定通過！</p>
+                    <span class="skill-title">專屬天賦：重裝護甲霸體 (Iron Armor)</span>
+                    <p class="skill-desc">受到第一次輕微障礙（如黏液或小衝擊）時不產生硬直，直接霸體穩定通過。</p>
                   </div>
                 </div>
               </div>
 
-              <!-- Card 5: 飛天葡萄飛鼠 -->
+              <!-- Card 5: 琳達喵 -->
               <div class="character-card">
                 <div class="character-img-wrapper">
-                  <img src="./assets/images/char_grape_momonga.png" alt="飛天葡萄飛鼠" class="character-img" />
-                  <span class="character-tag">滑翔型 🍇</span>
+                  <img src="./assets/images/characters/linda_nyan.webp" alt="琳達喵" class="character-img" />
+                  <span class="character-tag">滑翔型</span>
                 </div>
                 <div class="character-info">
                   <div class="character-header">
-                    <h5 class="character-name">飛天葡萄飛鼠 (Grape Momonga)</h5>
+                    <h5 class="character-name">琳達喵 (Linda Nyan)</h5>
+                  </div>
+                  <div class="character-stats-row">
+                    <span>速度: <strong>5.4</strong></span>
+                    <span>跳躍: <strong>13.5</strong></span>
+                    <span>性格: <strong>靈巧自信</strong></span>
+                  </div>
+                  <p class="character-desc">身手如貓般敏捷優雅的小鎮夥伴，能在空中施展靈巧姿態輕盈滯空。</p>
+                  <div class="character-skill-box">
+                    <span class="skill-title">專屬天賦：輕盈踏空滑翔 (Glide Landing)</span>
+                    <p class="skill-desc">墜落時可維持低速滯空滑行，輕鬆跨越超遠距離斷崖並安全降落。</p>
+                  </div>
+                </div>
+              </div>
                   </div>
                   <div class="character-stats-row">
                     <span>速度: <strong>8.0</strong></span>

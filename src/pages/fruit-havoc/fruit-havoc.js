@@ -95,11 +95,11 @@ export async function renderFruitHavoc(container, params = {}) {
   const mode = params.mode || 'local'; // 'local' or 'online'
 
   const FRUIT_CHARACTERS = [
-    { id: 'strawberry', name: '金黃寶貝兔', icon: '🐰', img: './assets/images/kenney_jumper_hero.png', trait: '速度型 (靈活跳躍)', speed: 5.2, jump: -12.5, color: '#eab308' },
-    { id: 'banana', name: '草莓吉伊', icon: '🍓', img: './assets/images/char_strawberry_berry.png', trait: '高跳型 (超強衝刺)', speed: 4.8, jump: -13.5, color: '#ef4444' },
-    { id: 'melon', name: '哈密瓜小八', icon: '🍈', img: './assets/images/char_melon_hachi.png', trait: '均衡型 (穩健跳躍)', speed: 4.8, jump: -13.0, color: '#22c55e' },
-    { id: 'peach', name: '水桃栗饅頭', icon: '🍑', img: './assets/images/char_peach_kuriman.png', trait: '重裝型 (抗推霸體)', speed: 4.2, jump: -12.0, color: '#f97316' },
-    { id: 'grape', name: '飛天葡萄飛鼠', icon: '🍇', img: './assets/images/char_grape_momonga.png', trait: '滑翔型 (空中滯空)', speed: 5.6, jump: -13.5, color: '#a855f7' }
+    { id: 'strawberry', name: '魔法師卡洛特', icon: '', img: './assets/images/characters/mr_carrot_mage.webp', trait: '魔法型 (瞬步跳躍)', speed: 5.2, jump: -13.0, color: '#ea580c' },
+    { id: 'banana', name: '兔子波波', icon: '', img: './assets/images/characters/bobo_v3.webp', trait: '敏捷型 (極限衝刺)', speed: 5.6, jump: -13.5, color: '#3b82f6' },
+    { id: 'melon', name: '卡洛兒姐姐', icon: '', img: './assets/images/characters/carol_v3.webp', trait: '均衡型 (穩健跑酷)', speed: 4.8, jump: -13.0, color: '#10b981' },
+    { id: 'peach', name: '科學家卡洛特', icon: '', img: './assets/images/characters/mr_carrot_sci.webp', trait: '重裝型 (抗推霸體)', speed: 4.2, jump: -12.0, color: '#8b5cf6' },
+    { id: 'grape', name: '琳達喵', icon: '', img: './assets/images/characters/linda_nyan.webp', trait: '滑翔型 (空中滯空)', speed: 5.4, jump: -13.5, color: '#ec4899' }
   ];
 
   // Preload Character Sprites

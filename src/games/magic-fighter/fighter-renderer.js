@@ -19,10 +19,10 @@ import {
 export class FighterRenderer {
   constructor() {
     this.playerImg = new Image();
-    this.playerImg.src = './assets/images/player_fighter.png';
+    this.playerImg.src = './assets/images/characters/mr_carrot_mage.webp';
 
     this.enemyImg = new Image();
-    this.enemyImg.src = './assets/images/enemy_fighter.png';
+    this.enemyImg.src = './assets/images/characters/journey_magic_wolf.webp';
   }
 
   render(ctx, state, width, height) {

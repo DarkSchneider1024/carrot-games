@@ -3,7 +3,7 @@
  * Strategy: Network-First for HTML/JS/SW & Stale-While-Revalidate for Assets
  */
 
-const CACHE_NAME = 'carrot-games-v5-town';
+const CACHE_NAME = 'carrot-games-v6-family';
 const STATIC_ASSETS = [
   '/carrot-games/',
   '/carrot-games/index.html',

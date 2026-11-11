@@ -65,8 +65,9 @@
 }
 
 .player-avatar {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,6 +76,37 @@
   font-size: 1.25rem;
   font-weight: bold;
   border: 2px solid transparent;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-piece-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-chess);
+  font-size: 11px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.avatar-red .avatar-piece-badge {
+  background: #dc2626;
+  color: #fff;
+  border: 1px solid #fecaca;
+}
+
+.avatar-black .avatar-piece-badge {
+  background: #1e293b;
+  color: #f1f5f9;
+  border: 1px solid #64748b;
 }
 
 .avatar-red {

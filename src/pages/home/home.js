@@ -226,7 +226,7 @@ export async function renderHome(container) {
         <!-- Big Two 13 Cards Card -->
         <div class="game-card animate-fade-in-up stagger-1" id="card-big-two" data-category="board">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_bigtwo.png" alt="台灣大老二" class="game-card-img" />
+            <img src="./assets/images/cards/card_bigtwo.png" alt="台灣大老二" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">棋牌對戰</span>
             <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;">熱門爆發</span>
@@ -255,7 +255,7 @@ export async function renderHome(container) {
         <!-- Taiwan Mahjong 16 Card -->
         <div class="game-card animate-fade-in-up stagger-1" id="card-mahjong" data-category="board mahjong">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_mahjong.png" alt="台灣16張麻將" class="game-card-img" />
+            <img src="./assets/images/cards/card_mahjong.png" alt="台灣16張麻將" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">棋牌 / 麻將</span>
             <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#10b981,#047857);color:#fff;">傳統重磅</span>
@@ -284,7 +284,7 @@ export async function renderHome(container) {
         <!-- Chinese Chess Card -->
         <div class="game-card animate-fade-in-up stagger-2" id="card-xiangqi" data-category="board">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_xiangqi.png" alt="中國象棋" class="game-card-img" />
+            <img src="./assets/images/cards/card_xiangqi.png" alt="中國象棋" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">棋牌對戰</span>
             <span class="badge badge-success game-card-status">經典推廣</span>
@@ -313,7 +313,7 @@ export async function renderHome(container) {
         <!-- Tetris Battle Card -->
         <div class="game-card animate-fade-in-up stagger-3" id="card-tetris" data-category="party">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_gomoku.png" alt="俄羅斯方塊對戰" class="game-card-img" />
+            <img src="./assets/images/cards/card_tetris.png" alt="俄羅斯方塊對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">派對遊戲</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
@@ -342,7 +342,7 @@ export async function renderHome(container) {
         <!-- Poker Card -->
         <div class="game-card animate-fade-in-up stagger-4" id="card-poker" data-category="board">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_poker.png" alt="德州撲克" class="game-card-img" />
+            <img src="./assets/images/cards/card_poker.png" alt="德州撲克" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">棋牌對戰</span>
             <span class="badge badge-success game-card-status">熱門推薦</span>
@@ -369,7 +369,7 @@ export async function renderHome(container) {
         <!-- Magic Fighter Card -->
         <div class="game-card animate-fade-in-up stagger-5" id="card-magic-fighter" data-category="strategy">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_magic_fighter.png" alt="魔法對戰" class="game-card-img" />
+            <img src="./assets/images/cards/card_magic_fighter.png" alt="魔法對戰" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">戰略遊戲</span>
             <span class="badge badge-warning game-card-status">3D上市</span>
@@ -397,7 +397,7 @@ export async function renderHome(container) {
         <!-- Fruit Havoc Card -->
         <div class="game-card animate-fade-in-up stagger-6" id="card-fruit-havoc" data-category="party">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_fruit_havoc.png" alt="水果極限闖關" class="game-card-img" />
+            <img src="./assets/images/cards/card_fruit_havoc.png" alt="水果極限闖關" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">派對遊戲</span>
             <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ff7544,#ff70a6);color:#fff;">全新派對</span>
@@ -425,7 +425,7 @@ export async function renderHome(container) {
         <!-- Saturn Bomberman Card -->
         <div class="game-card animate-fade-in-up stagger-6" id="card-bomberman" data-category="strategy party">
           <div class="game-card-banner">
-            <img src="./assets/images/icon_bomberman.png" alt="土星炸彈人" class="game-card-img" />
+            <img src="./assets/images/cards/card_bomberman.png" alt="土星炸彈人" class="game-card-img" />
             <div class="game-card-overlay"></div>
             <span class="badge badge-category">戰略 / 派對</span>
             <span class="badge badge-warning game-card-status" style="background:linear-gradient(135deg,#ff7544,#e11d48);color:#fff;">Godot 4</span>
