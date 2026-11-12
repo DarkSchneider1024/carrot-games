@@ -408,7 +408,7 @@ export async function renderHome(container) {
             <div class="game-card-tags">
               <span class="tag">${SVG_ICONS.user} 單機同屏對戰</span>
               <span class="tag">${SVG_ICONS.globe} 20種陷阱道具</span>
-              <span class="tag">${SVG_ICONS.smartphone} 5位水果角色</span>
+              <span class="tag">${SVG_ICONS.smartphone} 6位家族角色</span>
             </div>
 
             <div class="game-card-actions">

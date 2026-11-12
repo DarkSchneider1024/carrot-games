@@ -95,11 +95,12 @@ export async function renderFruitHavoc(container, params = {}) {
   const mode = params.mode || 'local'; // 'local' or 'online'
 
   const FRUIT_CHARACTERS = [
-    { id: 'strawberry', name: '魔法師卡洛特', icon: '', img: './assets/images/characters/mr_carrot_mage.webp', trait: '魔法型 (瞬步跳躍)', speed: 5.2, jump: -13.0, color: '#ea580c' },
-    { id: 'banana', name: '兔子波波', icon: '', img: './assets/images/characters/bobo_v3.webp', trait: '敏捷型 (極限衝刺)', speed: 5.6, jump: -13.5, color: '#3b82f6' },
-    { id: 'melon', name: '卡洛兒姐姐', icon: '', img: './assets/images/characters/carol_v3.webp', trait: '均衡型 (穩健跑酷)', speed: 4.8, jump: -13.0, color: '#10b981' },
-    { id: 'peach', name: '科學家卡洛特', icon: '', img: './assets/images/characters/mr_carrot_sci.webp', trait: '重裝型 (抗推霸體)', speed: 4.2, jump: -12.0, color: '#8b5cf6' },
-    { id: 'grape', name: '琳達喵', icon: '', img: './assets/images/characters/linda_nyan.webp', trait: '滑翔型 (空中滯空)', speed: 5.4, jump: -13.5, color: '#ec4899' }
+    { id: 'carrot', name: '新卡洛特', icon: '🥕', img: './assets/images/characters/live2d_carrot.png', trait: '魔法型 (瞬步跳躍)', speed: 5.2, jump: -13.0, color: '#ea580c' },
+    { id: 'bobo', name: '兔子波波', icon: '🐰', img: './assets/images/characters/live2d_bobo.png', trait: '敏捷型 (極限衝刺)', speed: 5.6, jump: -13.5, color: '#38bdf8' },
+    { id: 'carol', name: '新卡洛兒', icon: '🎀', img: './assets/images/characters/live2d_carol.png', trait: '均衡型 (穩健跑酷)', speed: 4.8, jump: -13.0, color: '#ec4899' },
+    { id: 'aubergine', name: '新歐蓓樂希', icon: '🔮', img: './assets/images/characters/live2d_aubergine.png', trait: '星象型 (重力掌控)', speed: 4.5, jump: -12.5, color: '#8b5cf6' },
+    { id: 'frenchie', name: '可頌', icon: '🥐', img: './assets/images/characters/live2d_frenchie.png', trait: '重裝型 (抗推霸體)', speed: 4.2, jump: -12.0, color: '#f59e0b' },
+    { id: 'kiwi', name: '奇異貓', icon: '🐱', img: './assets/images/characters/live2d_kiwi.png', trait: '滑翔型 (空中滯空)', speed: 5.4, jump: -13.5, color: '#10b981' }
   ];
 
   // Preload Character Sprites
@@ -971,7 +972,7 @@ export async function renderFruitHavoc(container, params = {}) {
   const bgFairylandImg = new Image();
   bgFairylandImg.src = './assets/images/town/town.webp';
   const goalCastleImg = new Image();
-  goalCastleImg.src = './assets/images/characters/mr_carrot_mage.webp';
+  goalCastleImg.src = './assets/images/characters/live2d_carrot.png';
   const kenneyPlatformImg = new Image();
   kenneyPlatformImg.src = './assets/images/town/interior.webp';
 
