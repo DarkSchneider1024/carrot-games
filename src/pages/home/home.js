@@ -183,7 +183,7 @@ export async function renderHome(container) {
       <div class="home-filter-section animate-fade-in-up">
         <div class="home-filter-title">
           <span>遊戲庫分類</span>
-          <span class="home-filter-count" id="filter-count">共 7 款遊戲</span>
+          <span class="home-filter-count" id="filter-count">共 9 款遊戲</span>
         </div>
         <div class="home-filter-pills" id="home-filter-pills">
           <button class="filter-pill active" data-filter="all">全部遊戲</button>
@@ -680,36 +680,47 @@ export async function renderHome(container) {
     });
   }
 
-  // Category Filter Pills Listener
+  // Category Filter Pills Listener & Dynamic Count Calculation
   const filterPills = document.querySelectorAll('#home-filter-pills .filter-pill');
+  const updateGameFilter = (selectedFilter) => {
+    filterPills.forEach(p => {
+      if (p.getAttribute('data-filter') === selectedFilter) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    });
+
+    const gameCards = document.querySelectorAll('#home-games-grid .game-card');
+    let visibleCount = 0;
+
+    gameCards.forEach(card => {
+      const category = card.getAttribute('data-category') || '';
+      if (selectedFilter === 'all' || category.includes(selectedFilter)) {
+        card.style.display = 'flex';
+        card.classList.remove('filter-hidden');
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+        card.classList.add('filter-hidden');
+      }
+    });
+
+    const countEl = document.getElementById('filter-count');
+    if (countEl) {
+      countEl.textContent = selectedFilter === 'all' ? `共 ${visibleCount} 款遊戲` : `已篩選 ${visibleCount} 款遊戲`;
+    }
+  };
+
   filterPills.forEach(pill => {
     pill.addEventListener('click', () => {
       const selectedFilter = pill.getAttribute('data-filter');
-      
-      filterPills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-
-      const gameCards = document.querySelectorAll('#home-games-grid .game-card');
-      let visibleCount = 0;
-
-      gameCards.forEach(card => {
-        const category = card.getAttribute('data-category') || '';
-        if (selectedFilter === 'all' || category.includes(selectedFilter)) {
-          card.style.display = 'flex';
-          card.classList.remove('filter-hidden');
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-          card.classList.add('filter-hidden');
-        }
-      });
-
-      const countEl = document.getElementById('filter-count');
-      if (countEl) {
-        countEl.textContent = selectedFilter === 'all' ? `共 ${visibleCount} 款遊戲` : `已篩選 ${visibleCount} 款遊戲`;
-      }
+      updateGameFilter(selectedFilter);
     });
   });
+
+  // 初始即刻計算目前已載入的卡片總數（共 9 款）
+  updateGameFilter('all');
 
   // Event handlers
   document.getElementById('btn-pwa-guide')?.addEventListener('click', () => navigate('/pwa-guide'));

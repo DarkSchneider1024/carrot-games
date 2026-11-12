@@ -56,7 +56,7 @@ export async function renderMagicFighter(container, params = {}) {
         <aside class="magic-panel-left ${activeTab === 'setup' ? 'mobile-visible' : 'mobile-hidden'}" id="panel-setup">
           <div class="panel-card">
             <h3 class="panel-subtitle">3D 經典波次戰務</h3>
-            <p class="panel-desc">比照 NES 紅白機坦克大戰！擊退 5 大波次敵方怪物軍團，可開火摧毀磚牆保護底部天空城堡主塔！</p>
+            <p class="panel-desc">比照 NES 紅白機坦克大戰！擊退 5 大波次童話壞人軍團（大灰狼、壞獵人、黑森林魔狼王），可開火摧毀磚牆保護底部天空城堡主塔！</p>
 
             <!-- Stats & Chips HUD Box -->
             <div class="hud-box">

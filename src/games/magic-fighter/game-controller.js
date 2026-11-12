@@ -671,26 +671,26 @@ export class MagicFighterGame {
           : 7;
         const spawnX = spawnCol * this.tileSize + this.tileSize / 2 - 17;
 
-        let type = 'bat';
+        let type = 'wolf';
         let hp = 2;
         let speed = 3.2;
 
         if (this.stage === 1) {
-          type = 'bat'; hp = 2; speed = 3.2;
+          type = 'wolf'; hp = 2; speed = 3.2;
         } else if (this.stage === 2) {
-          type = Math.random() < 0.4 ? 'griffin' : 'bat';
-          hp = type === 'griffin' ? 4 : 2;
-          speed = type === 'griffin' ? 4.0 : 3.2;
+          type = Math.random() < 0.4 ? 'hunter' : 'wolf';
+          hp = type === 'hunter' ? 4 : 2;
+          speed = type === 'hunter' ? 3.8 : 3.2;
         } else if (this.stage === 3) {
           const r = Math.random();
-          type = r < 0.35 ? 'dragon' : (r < 0.7 ? 'griffin' : 'bat');
-          hp = type === 'dragon' ? 8 : (type === 'griffin' ? 4 : 2);
-          speed = type === 'dragon' ? 2.0 : (type === 'griffin' ? 4.0 : 3.2);
+          type = r < 0.45 ? 'hunter' : 'wolf';
+          hp = type === 'hunter' ? 6 : 3;
+          speed = type === 'hunter' ? 3.6 : 3.4;
         } else {
           const r = Math.random();
-          type = r < 0.4 ? 'dragon' : (r < 0.75 ? 'griffin' : 'bat');
-          hp = type === 'dragon' ? 10 : (type === 'griffin' ? 5 : 3);
-          speed = type === 'dragon' ? 2.2 : (type === 'griffin' ? 4.2 : 3.5);
+          type = r < 0.5 ? 'hunter' : 'wolf';
+          hp = type === 'hunter' ? 8 : 4;
+          speed = type === 'hunter' ? 4.0 : 3.5;
         }
 
         this.enemyCreeps.push({
@@ -709,12 +709,12 @@ export class MagicFighterGame {
           isFriendly: false
         });
 
-        // 🔥 第 5 關最後登場 霸氣 Boss 烈焰火龍 (Red Dragon Boss)
+        // 🐺 第 5 關最後登場 霸氣童話大 Boss 黑森林魔狼王 (Magic Wolf King Boss)
         if (this.stage === 5 && this.enemiesRemaining === 0 && !this.hasSpawnedBoss) {
           this.hasSpawnedBoss = true;
           this.enemyCreeps.push({
-            id: 'boss_red_dragon_' + Date.now(),
-            type: 'red_dragon',
+            id: 'boss_magic_wolf_' + Date.now(),
+            type: 'magic_wolf',
             isBoss: true,
             x: 284,
             y: 30,

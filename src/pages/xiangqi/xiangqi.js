@@ -53,11 +53,11 @@ export async function renderXiangqi(container, params) {
         <div class="xiangqi-panel xiangqi-panel-left">
           <!-- Opponent Player Card -->
           <div class="player-info glass" id="player-top">
-            <div class="player-avatar avatar-black" id="avatar-top" style="background-image:url('./assets/images/characters/mr_carrot_sci.webp');background-size:cover;background-position:center;">
+            <div class="player-avatar avatar-black" id="avatar-top" style="background-image:url('./assets/images/characters/live2d_aubergine.png');background-size:cover;background-position:center 12%;">
               <span class="avatar-piece-badge">將</span>
             </div>
             <div class="player-details">
-              <span class="player-name" id="player-top-name">科學家卡洛特 (將)</span>
+              <span class="player-name" id="player-top-name">新歐蓓樂希 (將)</span>
               <span class="player-timer" id="timer-top">10:00</span>
             </div>
             <div class="player-turn-indicator" id="turn-top"></div>
@@ -74,11 +74,11 @@ export async function renderXiangqi(container, params) {
 
           <!-- Local Player Card -->
           <div class="player-info glass" id="player-bottom">
-            <div class="player-avatar avatar-red" id="avatar-bottom" style="background-image:url('./assets/images/characters/mr_carrot_mage.webp');background-size:cover;background-position:center;">
+            <div class="player-avatar avatar-red" id="avatar-bottom" style="background-image:url('./assets/images/characters/live2d_carrot.png');background-size:cover;background-position:center 12%;">
               <span class="avatar-piece-badge">帥</span>
             </div>
             <div class="player-details">
-              <span class="player-name" id="player-bottom-name">魔法師卡洛特 (你 ‧ 帥)</span>
+              <span class="player-name" id="player-bottom-name">新卡洛特 (你 ‧ 帥)</span>
               <span class="player-timer" id="timer-bottom">10:00</span>
             </div>
             <div class="player-turn-indicator active" id="turn-bottom"></div>
@@ -551,19 +551,19 @@ function _updateUI(state, game) {
     if (topIsBlack) {
       topTimer.textContent = formatTime(state.blackTime);
       bottomTimer.textContent = formatTime(state.redTime);
-      topName.textContent = state.mode === GAME_MODE.VS_AI ? '科學家卡洛特 (AI ‧ 將)' : '科學家卡洛特 (將)';
-      bottomName.textContent = '魔法師卡洛特 (你 ‧ 帥)';
-      if (avatarTop) avatarTop.style.backgroundImage = "url('./assets/images/characters/mr_carrot_sci.webp')";
-      if (avatarBottom) avatarBottom.style.backgroundImage = "url('./assets/images/characters/mr_carrot_mage.webp')";
+      topName.textContent = state.mode === GAME_MODE.VS_AI ? '新歐蓓樂希 (AI ‧ 將)' : '新歐蓓樂希 (將)';
+      bottomName.textContent = '新卡洛特 (你 ‧ 帥)';
+      if (avatarTop) avatarTop.style.backgroundImage = "url('./assets/images/characters/live2d_aubergine.png')";
+      if (avatarBottom) avatarBottom.style.backgroundImage = "url('./assets/images/characters/live2d_carrot.png')";
       turnTop.className = `player-turn-indicator ${state.currentTurn === BLACK ? 'active' : ''}`;
       turnBottom.className = `player-turn-indicator ${state.currentTurn === RED ? 'active' : ''}`;
     } else {
       topTimer.textContent = formatTime(state.redTime);
       bottomTimer.textContent = formatTime(state.blackTime);
-      topName.textContent = state.mode === GAME_MODE.VS_AI ? '魔法師卡洛特 (AI ‧ 帥)' : '魔法師卡洛特 (帥)';
-      bottomName.textContent = '科學家卡洛特 (你 ‧ 將)';
-      if (avatarTop) avatarTop.style.backgroundImage = "url('./assets/images/characters/mr_carrot_mage.webp')";
-      if (avatarBottom) avatarBottom.style.backgroundImage = "url('./assets/images/characters/mr_carrot_sci.webp')";
+      topName.textContent = state.mode === GAME_MODE.VS_AI ? '新卡洛特 (AI ‧ 帥)' : '新卡洛特 (帥)';
+      bottomName.textContent = '新歐蓓樂希 (你 ‧ 將)';
+      if (avatarTop) avatarTop.style.backgroundImage = "url('./assets/images/characters/live2d_carrot.png')";
+      if (avatarBottom) avatarBottom.style.backgroundImage = "url('./assets/images/characters/live2d_aubergine.png')";
       turnTop.className = `player-turn-indicator ${state.currentTurn === RED ? 'active' : ''}`;
       turnBottom.className = `player-turn-indicator ${state.currentTurn === BLACK ? 'active' : ''}`;
     }

@@ -13,12 +13,22 @@ import './big-two.css';
 
 const CHAR_DIR = './assets/images/characters/';
 
+// Live2D 角色庫 (Card & Board Games 專屬)
+export const LIVE2D_ROSTER = {
+  carrot: { id: 'carrot', name: '新卡洛特', img: 'live2d_carrot.png', intro: '卡洛特學院的首席魔法學者' },
+  carol: { id: 'carol', name: '新卡洛兒', img: 'live2d_carol.png', intro: '活潑甜美的卡洛特家族守護者' },
+  aubergine: { id: 'aubergine', name: '新歐蓓樂希', img: 'live2d_aubergine.png', intro: '精通古代星象與牌理的黑髮教授' },
+  bobo: { id: 'bobo', name: '兔子波波', img: 'live2d_bobo.png', intro: '軟萌敏捷的小小冒險家' },
+  frenchie: { id: 'frenchie', name: '可頌', img: 'live2d_frenchie.png', intro: '沉著冷靜的法式鬥牛犬紳士' },
+  kiwi: { id: 'kiwi', name: '奇異貓', img: 'live2d_kiwi.png', intro: '圍著胡蘿蔔圍巾的機靈小美短' }
+};
+
 // Engine seat order: 0 = you (bottom), 1 = right, 2 = top, 3 = left
 const SEATS = [
-  { slot: 'bottom', name: '魔法師卡洛特', img: 'mr_carrot_mage.webp' },
-  { slot: 'right', name: '兔子波波', img: 'bobo_v3.webp' },
-  { slot: 'top', name: '科學家卡洛特', img: 'mr_carrot_sci.webp' },
-  { slot: 'left', name: '卡洛兒姐姐', img: 'carol_v3.webp' }
+  { slot: 'bottom', name: LIVE2D_ROSTER.carrot.name, img: LIVE2D_ROSTER.carrot.img },
+  { slot: 'right', name: LIVE2D_ROSTER.bobo.name, img: LIVE2D_ROSTER.bobo.img },
+  { slot: 'top', name: LIVE2D_ROSTER.aubergine.name, img: LIVE2D_ROSTER.aubergine.img },
+  { slot: 'left', name: LIVE2D_ROSTER.carol.name, img: LIVE2D_ROSTER.carol.img }
 ];
 
 const QUICK_PHRASES = [

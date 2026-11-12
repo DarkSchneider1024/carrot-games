@@ -65,6 +65,12 @@ export class FighterRenderer3D {
 
     container.appendChild(this.renderer.domElement);
 
+    // 🐺 Fairy Tale Villains Texture Loader (童話壞人貼圖材質快取)
+    this.textureLoader = new THREE.TextureLoader();
+    this.wolfTex = this.textureLoader.load('./assets/images/characters/wolf.webp');
+    this.hunterTex = this.textureLoader.load('./assets/images/characters/hunter.webp');
+    this.magicWolfTex = this.textureLoader.load('./assets/images/characters/journey_magic_wolf.webp');
+
     // Static Shared Geometries & Materials
     const tileSize = 40;
     // 🏰 Medieval Stone Wall Materials (中世紀石灰岩城牆)
@@ -525,6 +531,230 @@ export class FighterRenderer3D {
 
   _createMonsterMesh(type = 'bat', isFriendly = false) {
     const monsterGroup = new THREE.Group();
+
+    // 🐺 童話故事角色壞人重畫 (Fairy Tale Villains: 大灰狼 / 壞獵人 / 黑森林魔狼王)
+    if (!isFriendly || type === 'wolf' || type === 'hunter' || type === 'magic_wolf') {
+      const isBoss = type === 'magic_wolf' || type === 'red_dragon';
+      const isHunter = type === 'hunter' || type === 'griffin';
+
+      if (isBoss) {
+        // 🐺👑 童話大反派：黑森林魔狼王 (Magic Wolf King Boss)
+        const bossMat = new THREE.MeshStandardMaterial({
+          color: 0x1e1b4b,
+          emissive: 0x6b21a8,
+          emissiveIntensity: 0.5,
+          roughness: 0.35
+        });
+        const spikeMat = new THREE.MeshStandardMaterial({
+          color: 0xa855f7,
+          emissive: 0xc084fc,
+          emissiveIntensity: 0.7,
+          metalness: 0.6
+        });
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+
+        // 巨型魔狼體魄
+        const bodyMesh = new THREE.Mesh(new THREE.CylinderGeometry(15, 18, 48, 16), bossMat);
+        bodyMesh.rotation.x = Math.PI / 2;
+        monsterGroup.add(bodyMesh);
+
+        // 巨型魔狼首與長吻
+        const headMesh = new THREE.Mesh(new THREE.ConeGeometry(15, 26, 12), bossMat);
+        headMesh.rotation.x = -Math.PI / 2;
+        headMesh.position.set(0, 8, -26);
+        monsterGroup.add(headMesh);
+
+        // 背部 6 根暗黑魔晶尖棘
+        [-10, 0, 10].forEach(xOff => {
+          [-10, 10].forEach(zOff => {
+            const spike = new THREE.Mesh(new THREE.ConeGeometry(3.5, 18, 6), spikeMat);
+            spike.rotation.x = 0.3;
+            spike.position.set(xOff, 20, zOff);
+            monsterGroup.add(spike);
+          });
+        });
+
+        // 狼首尖耳
+        [-9, 9].forEach(xOff => {
+          const ear = new THREE.Mesh(new THREE.ConeGeometry(4, 14, 6), bossMat);
+          ear.position.set(xOff, 20, -18);
+          monsterGroup.add(ear);
+        });
+
+        // 猩紅魔狼雙眼
+        [-5, 5].forEach(xOff => {
+          const eye = new THREE.Mesh(new THREE.SphereGeometry(2.5, 8, 8), eyeMat);
+          eye.position.set(xOff, 12, -28);
+          monsterGroup.add(eye);
+        });
+
+        // 童話黑森林魔狼王立繪 Billboard Sprite
+        if (this.magicWolfTex) {
+          const spriteMat = new THREE.SpriteMaterial({ map: this.magicWolfTex, transparent: true });
+          const sprite = new THREE.Sprite(spriteMat);
+          sprite.scale.set(46, 46, 1);
+          sprite.position.set(0, 26, 0);
+          monsterGroup.add(sprite);
+        }
+
+        // 紫黑暗影光環
+        const darkLight = new THREE.PointLight(0xa855f7, 4.0, 180);
+        darkLight.position.set(0, 25, 0);
+        monsterGroup.add(darkLight);
+
+        monsterGroup.userData = {
+          bodyMesh: headMesh,
+          bodyMat: bossMat,
+          monsterType: 'magic_wolf'
+        };
+        monsterGroup.scale.set(1.5, 1.5, 1.5);
+      } else if (isHunter) {
+        // 🏹 童話反派：壞獵人 (Grim Hunter)
+        const coatMat = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.5 }); // 深綠風衣
+        const beltMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.6 }); // 皮革腰帶
+        const gunMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.2 }); // 雙管獵槍金屬
+        const woodMat = new THREE.MeshStandardMaterial({ color: 0x92400e, roughness: 0.7 }); // 槍托胡桃木
+
+        // 獵人風衣軀幹
+        const bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(16, 20, 12), coatMat);
+        bodyMesh.position.set(0, 10, 0);
+        monsterGroup.add(bodyMesh);
+
+        // 皮革腰帶與金扣
+        const beltMesh = new THREE.Mesh(new THREE.BoxGeometry(16.5, 4, 12.5), beltMat);
+        beltMesh.position.set(0, 8, 0);
+        monsterGroup.add(beltMesh);
+
+        // 獵人頭部與綠簷羽毛帽
+        const headMesh = new THREE.Mesh(new THREE.SphereGeometry(7, 12, 12), new THREE.MeshStandardMaterial({ color: 0xfbbf24 }));
+        headMesh.position.set(0, 22, 0);
+        monsterGroup.add(headMesh);
+
+        const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(11, 11, 1.5, 16), coatMat);
+        hatBrim.position.set(0, 25, 0);
+        monsterGroup.add(hatBrim);
+
+        const hatTop = new THREE.Mesh(new THREE.ConeGeometry(7, 8, 12), coatMat);
+        hatTop.position.set(0, 29, 0);
+        monsterGroup.add(hatTop);
+
+        // 紅色羽毛
+        const feather = new THREE.Mesh(new THREE.ConeGeometry(1.5, 9, 6), new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+        feather.rotation.z = 0.5;
+        feather.position.set(6, 29, 0);
+        monsterGroup.add(feather);
+
+        // 雙管金屬獵槍 (端在身前)
+        [-2, 2].forEach(xOff => {
+          const barrel = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 26, 8), gunMat);
+          barrel.rotation.x = Math.PI / 2;
+          barrel.position.set(xOff, 11, 14);
+          monsterGroup.add(barrel);
+        });
+        const stock = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 10), woodMat);
+        stock.position.set(0, 9, 2);
+        monsterGroup.add(stock);
+
+        // 童話壞獵人立繪 Billboard Sprite
+        if (this.hunterTex) {
+          const spriteMat = new THREE.SpriteMaterial({ map: this.hunterTex, transparent: true });
+          const sprite = new THREE.Sprite(spriteMat);
+          sprite.scale.set(30, 30, 1);
+          sprite.position.set(0, 18, 0);
+          monsterGroup.add(sprite);
+        }
+
+        monsterGroup.userData = {
+          bodyMesh: headMesh,
+          bodyMat: coatMat,
+          monsterType: 'hunter'
+        };
+      } else {
+        // 🐺 童話反派：大灰狼 (Big Bad Wolf)
+        const wolfMat = new THREE.MeshStandardMaterial({ color: 0x4b5563, roughness: 0.6 }); // 灰黑毛皮
+        const chestMat = new THREE.MeshStandardMaterial({ color: 0x9ca3af, roughness: 0.7 }); // 灰白胸毛
+        const snoutMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.5 }); // 狼吻
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 }); // 兇悍金黃雙眼
+        const earInnerMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e }); // 粉紅耳內
+
+        // 狼身軀幹
+        const bodyMesh = new THREE.Mesh(new THREE.CylinderGeometry(8, 10, 22, 12), wolfMat);
+        bodyMesh.rotation.x = Math.PI / 2;
+        bodyMesh.position.set(0, 10, 0);
+        monsterGroup.add(bodyMesh);
+
+        // 灰白胸毛
+        const chestMesh = new THREE.Mesh(new THREE.BoxGeometry(10, 12, 6), chestMat);
+        chestMesh.position.set(0, 10, 4);
+        monsterGroup.add(chestMesh);
+
+        // 狼首
+        const headMesh = new THREE.Mesh(new THREE.SphereGeometry(8, 12, 12), wolfMat);
+        headMesh.position.set(0, 15, -10);
+        monsterGroup.add(headMesh);
+
+        // 尖突狼吻與獠牙
+        const snout = new THREE.Mesh(new THREE.ConeGeometry(5, 12, 8), snoutMat);
+        snout.rotation.x = -Math.PI / 2;
+        snout.position.set(0, 13, -17);
+        monsterGroup.add(snout);
+
+        // 雙耳
+        [-6, 6].forEach(xOff => {
+          const ear = new THREE.Mesh(new THREE.ConeGeometry(3, 8, 6), wolfMat);
+          ear.position.set(xOff, 22, -10);
+          ear.rotation.z = xOff > 0 ? -0.2 : 0.2;
+          monsterGroup.add(ear);
+
+          const inner = new THREE.Mesh(new THREE.ConeGeometry(1.8, 6, 4), earInnerMat);
+          inner.position.set(xOff, 22, -9);
+          monsterGroup.add(inner);
+        });
+
+        // 狼眼
+        [-3.5, 3.5].forEach(xOff => {
+          const eye = new THREE.Mesh(new THREE.SphereGeometry(1.5, 6, 6), eyeMat);
+          eye.position.set(xOff, 16, -14);
+          monsterGroup.add(eye);
+        });
+
+        // 蓬鬆微翹大狼尾巴
+        const tail = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 1.5, 18, 8), wolfMat);
+        tail.rotation.x = 0.8;
+        tail.position.set(0, 12, 16);
+        monsterGroup.add(tail);
+
+        // 童話大灰狼立繪 Billboard Sprite
+        if (this.wolfTex) {
+          const spriteMat = new THREE.SpriteMaterial({ map: this.wolfTex, transparent: true });
+          const sprite = new THREE.Sprite(spriteMat);
+          sprite.scale.set(28, 28, 1);
+          sprite.position.set(0, 16, 0);
+          monsterGroup.add(sprite);
+        }
+
+        monsterGroup.userData = {
+          bodyMesh: headMesh,
+          bodyMat: wolfMat,
+          tail,
+          monsterType: 'wolf'
+        };
+      }
+
+      // 🔴 敵方深紅光環與警示光源
+      const ringGeo = new THREE.TorusGeometry(18, 1.8, 8, 16);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+      const teamRing = new THREE.Mesh(ringGeo, ringMat);
+      teamRing.rotation.x = Math.PI / 2;
+      teamRing.position.set(0, 0.5, 0);
+      monsterGroup.add(teamRing);
+
+      const teamLight = new THREE.PointLight(0xef4444, 2.5, 45);
+      teamLight.position.set(0, 8, 0);
+      monsterGroup.add(teamLight);
+
+      return monsterGroup;
+    }
 
     if (type === 'red_dragon') {
       // 🔥 巨型 Boss 烈焰火龍 (Red Dragon Boss 3D Model)
@@ -1216,6 +1446,10 @@ export class FighterRenderer3D {
           data.bodyMat.emissive.setHex(isFriendly ? 0x0284c7 : 0x3b0764);
           data.bodyMat.emissiveIntensity = 0.25;
         }
+      }
+
+      if (data.tail) {
+        data.tail.rotation.y = Math.sin(now * 0.015) * 0.35;
       }
 
       if (data.leftWing && data.rightWing) {

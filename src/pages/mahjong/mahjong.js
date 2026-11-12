@@ -13,12 +13,22 @@ import './mahjong.css';
 
 const CHAR_DIR = './assets/images/characters/';
 
+// Live2D 角色庫 (Card & Board Games 專屬)
+export const LIVE2D_ROSTER = {
+  carrot: { id: 'carrot', name: '新卡洛特', img: 'live2d_carrot.png' },
+  carol: { id: 'carol', name: '新卡洛兒', img: 'live2d_carol.png' },
+  aubergine: { id: 'aubergine', name: '新歐蓓樂希', img: 'live2d_aubergine.png' },
+  bobo: { id: 'bobo', name: '兔子波波', img: 'live2d_bobo.png' },
+  frenchie: { id: 'frenchie', name: '可頌', img: 'live2d_frenchie.png' },
+  kiwi: { id: 'kiwi', name: '奇異貓', img: 'live2d_kiwi.png' }
+};
+
 // Engine seat order: 0 = you (bottom), 1 = right, 2 = top, 3 = left
 const SEATS = [
-  { slot: 'bottom', name: '魔法師卡洛特', img: 'mr_carrot_mage.webp' },
-  { slot: 'right', name: '琳達喵', img: 'linda_nyan.webp' },
-  { slot: 'top', name: '科學家卡洛特', img: 'mr_carrot_sci.webp' },
-  { slot: 'left', name: '兔子波波', img: 'bobo_v3.webp' }
+  { slot: 'bottom', name: LIVE2D_ROSTER.carrot.name, img: LIVE2D_ROSTER.carrot.img },
+  { slot: 'right', name: LIVE2D_ROSTER.kiwi.name, img: LIVE2D_ROSTER.kiwi.img },
+  { slot: 'top', name: LIVE2D_ROSTER.frenchie.name, img: LIVE2D_ROSTER.frenchie.img },
+  { slot: 'left', name: LIVE2D_ROSTER.carol.name, img: LIVE2D_ROSTER.carol.img }
 ];
 
 const QUICK_PHRASES = [

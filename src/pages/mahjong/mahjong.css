@@ -174,7 +174,7 @@
   flex-shrink: 0;
   border-radius: 50%;
   background-size: cover;
-  background-position: center center;
+  background-position: center 12%;
   background-repeat: no-repeat;
   background-color: #064e3b;
   border: 2.5px solid #10b981;

@@ -19,10 +19,16 @@ import {
 export class FighterRenderer {
   constructor() {
     this.playerImg = new Image();
-    this.playerImg.src = './assets/images/characters/mr_carrot_mage.webp';
+    this.playerImg.src = './assets/images/characters/live2d_carrot.png';
 
-    this.enemyImg = new Image();
-    this.enemyImg.src = './assets/images/characters/journey_magic_wolf.webp';
+    this.wolfImg = new Image();
+    this.wolfImg.src = './assets/images/characters/wolf.webp';
+
+    this.hunterImg = new Image();
+    this.hunterImg.src = './assets/images/characters/hunter.webp';
+
+    this.bossImg = new Image();
+    this.bossImg.src = './assets/images/characters/journey_magic_wolf.webp';
   }
 
   render(ctx, state, width, height) {
@@ -126,8 +132,12 @@ export class FighterRenderer {
       else if (e.direction === 'LEFT') ctx.rotate(Math.PI / 2);
       else if (e.direction === 'RIGHT') ctx.rotate(-Math.PI / 2);
 
-      if (this.enemyImg.complete && this.enemyImg.naturalWidth !== 0) {
-        ctx.drawImage(this.enemyImg, -e.width / 2, -e.height / 2, e.width, e.height);
+      let currentImg = this.wolfImg;
+      if (e.type === 'hunter') currentImg = this.hunterImg;
+      else if (e.type === 'magic_wolf' || e.isBoss) currentImg = this.bossImg;
+
+      if (currentImg && currentImg.complete && currentImg.naturalWidth !== 0) {
+        ctx.drawImage(currentImg, -e.width / 2, -e.height / 2, e.width, e.height);
       } else {
         // Fallback Enemy Triangle
         ctx.fillStyle = e.isHeavy ? '#a855f7' : '#ef4444';
