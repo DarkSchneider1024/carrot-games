@@ -9,6 +9,7 @@ import { MahjongEngine, TILE_NAMES, BASE_POINTS, POINTS_PER_TAI } from '../../ga
 import { SVG_ICONS } from '../../components/icons.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../../components/toast.js';
+import { Live2dAvatar, LIVE2D_CHARACTERS } from '../../components/live2d-avatar/live2d-avatar.js';
 import './mahjong.css';
 
 const CHAR_DIR = './assets/images/characters/';
@@ -25,10 +26,10 @@ export const LIVE2D_ROSTER = {
 
 // Engine seat order: 0 = you (bottom), 1 = right, 2 = top, 3 = left
 const SEATS = [
-  { slot: 'bottom', name: LIVE2D_ROSTER.carrot.name, img: LIVE2D_ROSTER.carrot.img },
-  { slot: 'right', name: LIVE2D_ROSTER.kiwi.name, img: LIVE2D_ROSTER.kiwi.img },
-  { slot: 'top', name: LIVE2D_ROSTER.frenchie.name, img: LIVE2D_ROSTER.frenchie.img },
-  { slot: 'left', name: LIVE2D_ROSTER.carol.name, img: LIVE2D_ROSTER.carol.img }
+  { slot: 'bottom', charId: 'carrot', name: LIVE2D_ROSTER.carrot.name, img: LIVE2D_ROSTER.carrot.img },
+  { slot: 'right', charId: 'kiwi', name: LIVE2D_ROSTER.kiwi.name, img: LIVE2D_ROSTER.kiwi.img },
+  { slot: 'top', charId: 'frenchie', name: LIVE2D_ROSTER.frenchie.name, img: LIVE2D_ROSTER.frenchie.img },
+  { slot: 'left', charId: 'carol', name: LIVE2D_ROSTER.carol.name, img: LIVE2D_ROSTER.carol.img }
 ];
 
 const QUICK_PHRASES = [
@@ -78,9 +79,8 @@ export async function renderMahjong(container, params = {}) {
     return `
       <div class="player-slot player-slot-${s.slot}" id="seat-p${n}">
         <div class="character-avatar-card">
-          <div class="char-avatar-img joy" style="background-image:url('${CHAR_DIR}${s.img}');"></div>
+          <div class="l2d-slot" id="l2d-slot-p${n}"></div>
           <div class="char-info-name">
-            <span class="char-name">${s.name}</span>
             <span class="mj-seat-meta" id="p${n}-meta"></span>
           </div>
         </div>
@@ -89,7 +89,6 @@ export async function renderMahjong(container, params = {}) {
           <div class="mj-melds" id="p${n}-melds"></div>
           <div class="mj-flower-count" id="p${n}-flowers"></div>
         </div>
-        <div class="speech-bubble bubble-${s.slot}" id="bubble-p${n}"></div>
       </div>`;
   };
 
@@ -152,8 +151,7 @@ export async function renderMahjong(container, params = {}) {
 
           <div class="mj-hand-footer">
             <div class="player-p1-avatar-bar" id="seat-p1">
-              <div class="char-avatar-img small joy" style="background-image:url('${CHAR_DIR}${SEATS[0].img}');"></div>
-              <span class="p1-name">${SEATS[0].name} (你)</span>
+              <div class="l2d-slot" id="l2d-slot-p1"></div>
               <span class="mj-seat-meta" id="p1-meta"></span>
               <span class="mj-my-flowers" id="p1-flowers"></span>
             </div>
@@ -234,14 +232,17 @@ export async function renderMahjong(container, params = {}) {
   const $ = (sel) => container.querySelector(sel);
   const handBox = $('#p1-hand-tiles');
 
-  // Helper: Speech Bubble
-  const triggerSpeechBubble = (playerIdx, text) => {
-    const bubbleEl = $(`#bubble-p${playerIdx + 1}`);
-    if (!bubbleEl) return;
-    bubbleEl.textContent = text;
-    bubbleEl.classList.add('active');
-    clearTimeout(bubbleTimers.get(playerIdx));
-    bubbleTimers.set(playerIdx, setTimeout(() => bubbleEl.classList.remove('active'), 2600));
+  // 初始化 4 位麻將牌友的 Live2D 神來也動態立繪舞台
+  const avatars = [
+    new Live2dAvatar({ container: $('#l2d-slot-p1'), characterId: SEATS[0].charId, name: `${SEATS[0].name} (你)`, bubblePos: 'bottom', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-p2'), characterId: SEATS[1].charId, name: SEATS[1].name, bubblePos: 'right', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-p3'), characterId: SEATS[2].charId, name: SEATS[2].name, bubblePos: 'top', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-p4'), characterId: SEATS[3].charId, name: SEATS[3].name, bubblePos: 'left', size: 'sm' })
+  ];
+
+  // Helper: Speech Bubble & Emotion
+  const triggerSpeechBubble = (playerIdx, text, emotion = 'strike') => {
+    avatars[playerIdx]?.setEmotion(emotion, text);
   };
 
   // Helper: Chat Log
@@ -448,7 +449,9 @@ export async function renderMahjong(container, params = {}) {
 
     s.players.forEach((p, idx) => {
       const n = idx + 1;
-      $(`#seat-p${n}`)?.classList.toggle('is-turn', s.phase !== 'GAME_OVER' && s.currentTurn === idx);
+      const isTurn = s.phase !== 'GAME_OVER' && s.currentTurn === idx;
+      $(`#seat-p${n}`)?.classList.toggle('is-turn', isTurn);
+      avatars[idx]?.setTurn(isTurn);
       $(`#p${n}-meta`).textContent = `${p.seatWind}${idx === s.dealer ? '·莊' : ''} · ${p.score}`;
       $(`#p${n}-melds`).innerHTML = p.melds.map(meldHtml).join('');
       if (idx === 0) {
@@ -546,13 +549,21 @@ export async function renderMahjong(container, params = {}) {
           <div class="settle-row total"><span>合計（每家付 ${BASE_POINTS} + ${r.totalTai}×${POINTS_PER_TAI}）</span><strong>${r.totalTai} 台</strong></div>
         </div>
         ${scoresHtml(s, r)}`;
-      triggerSpeechBubble(r.winnerIdx, r.isSelfDraw ? '自摸！胡啦！' : '胡啦！');
+      avatars.forEach((av, i) => {
+        if (i === r.winnerIdx) av.setEmotion('win', r.isSelfDraw ? '🎉 自摸！胡啦！' : '🎉 胡啦！自摸大滿貫！');
+        else if (!r.isSelfDraw && i === r.fromIdx) av.setEmotion('lose', '😱 放槍了！嗚嗚...');
+        else av.setEmotion('pass', '這把失手了...');
+      });
     }
     $('#mj-settlement-modal').style.display = 'flex';
   };
 
   engine.onUpdate = (evt) => {
-    if (evt.type === 'claim' && evt.playerIdx !== 0) triggerSpeechBubble(evt.playerIdx, CLAIM_SHOUT[evt.claim]);
+    if (evt.type === 'claim') {
+      avatars[evt.playerIdx]?.setEmotion('strike', CLAIM_SHOUT[evt.claim] || '碰！');
+    } else if (evt.type === 'discard') {
+      if (Math.random() < 0.2) avatars[evt.playerIdx]?.setEmotion('strike');
+    }
     renderUI();
     if (evt.type === 'gameOver') setTimeout(showSettlement, 450);
   };

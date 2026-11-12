@@ -4,6 +4,7 @@
 
 @import './variables.css';
 @import './animations.css';
+@import '../components/live2d-avatar/live2d-avatar.css';
 
 /* ── Reset ── */
 *,

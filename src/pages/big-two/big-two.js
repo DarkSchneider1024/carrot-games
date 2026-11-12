@@ -9,6 +9,7 @@ import { SVG_ICONS } from '../../components/icons.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../../components/toast.js';
 import { updateUserChips, getUserProfile } from '../../network/auth-manager.js';
+import { Live2dAvatar, LIVE2D_CHARACTERS } from '../../components/live2d-avatar/live2d-avatar.js';
 import './big-two.css';
 
 const CHAR_DIR = './assets/images/characters/';
@@ -25,10 +26,10 @@ export const LIVE2D_ROSTER = {
 
 // Engine seat order: 0 = you (bottom), 1 = right, 2 = top, 3 = left
 const SEATS = [
-  { slot: 'bottom', name: LIVE2D_ROSTER.carrot.name, img: LIVE2D_ROSTER.carrot.img },
-  { slot: 'right', name: LIVE2D_ROSTER.bobo.name, img: LIVE2D_ROSTER.bobo.img },
-  { slot: 'top', name: LIVE2D_ROSTER.aubergine.name, img: LIVE2D_ROSTER.aubergine.img },
-  { slot: 'left', name: LIVE2D_ROSTER.carol.name, img: LIVE2D_ROSTER.carol.img }
+  { slot: 'bottom', charId: 'carrot', name: LIVE2D_ROSTER.carrot.name, img: LIVE2D_ROSTER.carrot.img },
+  { slot: 'right', charId: 'bobo', name: LIVE2D_ROSTER.bobo.name, img: LIVE2D_ROSTER.bobo.img },
+  { slot: 'top', charId: 'aubergine', name: LIVE2D_ROSTER.aubergine.name, img: LIVE2D_ROSTER.aubergine.img },
+  { slot: 'left', charId: 'carol', name: LIVE2D_ROSTER.carol.name, img: LIVE2D_ROSTER.carol.img }
 ];
 
 const QUICK_PHRASES = [
@@ -63,15 +64,13 @@ export async function renderBigTwo(container, params = {}) {
     return `
       <div class="player-slot player-slot-${s.slot}" id="seat-p${idx + 1}">
         <div class="character-avatar-card">
-          <div class="char-avatar-img joy" id="avatar-img-p${idx + 1}" style="background-image:url('${CHAR_DIR}${s.img}');"></div>
+          <div class="l2d-slot" id="l2d-slot-p${idx + 1}"></div>
           <div class="char-info-name">
-            <span class="char-name">${s.name}</span>
             <span class="card-count-badge" id="p${idx + 1}-card-count">13張</span>
           </div>
           <span class="seat-action-badge" id="p${idx + 1}-action"></span>
         </div>
         <div class="opp-cards" id="p${idx + 1}-cards-row"></div>
-        <div class="speech-bubble bubble-${s.slot}" id="bubble-p${idx + 1}"></div>
       </div>`;
   };
 
@@ -124,12 +123,10 @@ export async function renderBigTwo(container, params = {}) {
 
         <!-- Bottom Player Hand Zone (P1 - 魔法師卡洛特) -->
         <div class="bigtwo-player-hand">
-          <div class="speech-bubble bubble-bottom" id="bubble-p1"></div>
           <div class="cards-hand-row" id="p1-hand-cards"></div>
           <div class="bt-hand-footer">
             <div class="player-p1-avatar-bar" id="seat-p1">
-              <div class="char-avatar-img small joy" id="avatar-img-p1" style="background-image:url('${CHAR_DIR}${SEATS[0].img}');"></div>
-              <span class="p1-name">${SEATS[0].name} (你)</span>
+              <div class="l2d-slot" id="l2d-slot-p1"></div>
               <span class="card-count-badge" id="p1-card-count">13張</span>
             </div>
             <div class="bigtwo-actions-bar">
@@ -199,23 +196,23 @@ export async function renderBigTwo(container, params = {}) {
 
   const $ = (sel) => container.querySelector(sel);
 
+  // 初始化 4 位玩家的 Live2D 神來也動態立繪舞台
+  const avatars = [
+    new Live2dAvatar({ container: $('#l2d-slot-p1'), characterId: SEATS[0].charId, name: `${SEATS[0].name} (你)`, bubblePos: 'bottom', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-p2'), characterId: SEATS[1].charId, name: SEATS[1].name, bubblePos: 'right', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-p3'), characterId: SEATS[2].charId, name: SEATS[2].name, bubblePos: 'top', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-p4'), characterId: SEATS[3].charId, name: SEATS[3].name, bubblePos: 'left', size: 'sm' })
+  ];
+
   // Set Player Emotion
-  const setEmotion = (playerIdx, emotion) => {
-    const el = $(`#avatar-img-p${playerIdx + 1}`);
-    if (el) el.className = `char-avatar-img ${playerIdx === 0 ? 'small' : ''} ${emotion}`;
+  const setEmotion = (playerIdx, emotion, customText = null) => {
+    const emoMap = { joy: 'strike', happy: 'win', sad: 'lose', angry: 'strike', pass: 'pass', thinking: 'thinking' };
+    const mapped = emoMap[emotion] || emotion;
+    avatars[playerIdx]?.setEmotion(mapped, customText);
   };
 
-  const triggerSpeechBubble = (playerIdx, text, emotion = 'joy') => {
-    setEmotion(playerIdx, emotion);
-    const bubbleEl = $(`#bubble-p${playerIdx + 1}`);
-    if (!bubbleEl) return;
-    bubbleEl.textContent = text;
-    bubbleEl.classList.add('active');
-    clearTimeout(bubbleTimers.get(playerIdx));
-    bubbleTimers.set(playerIdx, setTimeout(() => {
-      bubbleEl.classList.remove('active');
-      if (engine.gamePhase === 'PLAY') setEmotion(playerIdx, 'joy');
-    }, 2800));
+  const triggerSpeechBubble = (playerIdx, text, emotion = 'strike') => {
+    setEmotion(playerIdx, emotion, text);
   };
 
   const addChatLog = (senderName, text) => {
@@ -356,7 +353,9 @@ export async function renderBigTwo(container, params = {}) {
       const n = idx + 1;
       const countEl = $(`#p${n}-card-count`);
       if (countEl) countEl.textContent = p.isFinished ? `🏁 第${p.rank}名` : `${p.cardCount}張`;
-      $(`#seat-p${n}`)?.classList.toggle('is-turn', state.gamePhase === 'PLAY' && state.currentTurn === idx);
+      const isCur = state.gamePhase === 'PLAY' && state.currentTurn === idx;
+      $(`#seat-p${n}`)?.classList.toggle('is-turn', isCur);
+      avatars[idx]?.setTurn(isCur);
       const badge = $(`#p${n}-action`);
       if (badge) {
         const passed = state.lastActions[idx]?.type === 'pass';
@@ -427,7 +426,7 @@ export async function renderBigTwo(container, params = {}) {
         </div>`).join('');
     }
 
-    [0, 1, 2, 3].forEach(i => setEmotion(i, i === s.winnerIdx ? 'happy' : 'sad'));
+    [0, 1, 2, 3].forEach(i => avatars[i]?.setEmotion(i === s.winnerIdx ? 'win' : 'lose'));
     const modal = $('#bt-settlement-modal');
     if (modal) modal.style.display = 'flex';
 
@@ -442,13 +441,14 @@ export async function renderBigTwo(container, params = {}) {
   };
 
   engine.onUpdate = (evt) => {
-    if (evt.type === 'play' && evt.playerIdx !== 0) {
+    if (evt.type === 'play') {
       const left = engine.players[evt.playerIdx].hand.length;
-      if (left === 1) triggerSpeechBubble(evt.playerIdx, '只剩最後一張啦！', 'happy');
-      else if (evt.combo.type >= HAND_TYPES.STRAIGHT) triggerSpeechBubble(evt.playerIdx, `看我的${HAND_TYPE_NAMES[evt.combo.type]}！`, 'joy');
-      else if (evt.combo.keyVal >= 15) triggerSpeechBubble(evt.playerIdx, '老二壓陣！', 'angry');
-    } else if (evt.type === 'pass' && evt.playerIdx !== 0 && Math.random() < 0.25) {
-      triggerSpeechBubble(evt.playerIdx, '這牌太大了… PASS', 'sad');
+      if (left === 1) avatars[evt.playerIdx]?.setEmotion('urgent', '只剩最後一張啦！');
+      else if (evt.combo.type >= HAND_TYPES.STRAIGHT) avatars[evt.playerIdx]?.setEmotion('strike', `看我的${HAND_TYPE_NAMES[evt.combo.type]}！`);
+      else if (evt.combo.keyVal >= 15) avatars[evt.playerIdx]?.setEmotion('strike', '老二壓陣！');
+      else avatars[evt.playerIdx]?.setEmotion('strike');
+    } else if (evt.type === 'pass') {
+      avatars[evt.playerIdx]?.setEmotion('pass');
     }
     renderUI();
     if (evt.type === 'gameOver') showSettlement();

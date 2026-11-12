@@ -12,6 +12,7 @@ import { showToast } from '../../components/toast.js';
 import { showModal, closeModal } from '../../components/modal.js';
 import { SVG_ICONS } from '../../components/icons.js';
 import { initAuth, getUserProfile, updateUserChips, updateUserStats, getCurrentUser } from '../../network/auth-manager.js';
+import { Live2dAvatar } from '../../components/live2d-avatar/live2d-avatar.js';
 
 const STAGE_LABELS = {
   PREFLOP: 'PRE-FLOP 翻牌前',
@@ -23,9 +24,9 @@ const STAGE_LABELS = {
 const VAL_MAP = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
 
 const AI_SEATS = [
-  { idx: 1, cls: 'seat-top-left', img: 'live2d_bobo.png', alt: '兔子波波', id: 'p1', name: '兔子波波 (AI)' },
-  { idx: 2, cls: 'seat-top-center', img: 'live2d_kiwi.png', alt: '奇異貓', id: 'p2', name: '奇異貓 (AI)' },
-  { idx: 3, cls: 'seat-top-right', img: 'live2d_aubergine.png', alt: '新歐蓓樂希', id: 'p3', name: '新歐蓓樂希 (AI)' }
+  { idx: 1, cls: 'seat-top-left', charId: 'bobo', img: 'live2d_bobo.png', alt: '兔子波波', id: 'p1', name: '兔子波波 (AI)' },
+  { idx: 2, cls: 'seat-top-center', charId: 'kiwi', img: 'live2d_kiwi.png', alt: '奇異貓', id: 'p2', name: '奇異貓 (AI)' },
+  { idx: 3, cls: 'seat-top-right', charId: 'aubergine', img: 'live2d_aubergine.png', alt: '新歐蓓樂希', id: 'p3', name: '新歐蓓樂希 (AI)' }
 ];
 
 const cardHtml = (card, extra = '') => {
@@ -61,7 +62,7 @@ export async function renderPoker(container, params) {
       <div class="action-bubble" id="bubble-${idx}"></div>
       <div class="seat-badges" id="badges-${idx}"></div>
       <div class="poker-avatar ${idx === 0 ? 'avatar-user' : ''}">
-        <img src="./assets/images/characters/${img}" alt="${alt}" class="poker-avatar-img" />
+        <div class="l2d-slot" id="l2d-slot-poker-${idx}"></div>
       </div>
       <div class="seat-info">
         <span class="seat-name">${name}</span>
@@ -170,6 +171,13 @@ export async function renderPoker(container, params) {
     }
   };
 
+  const avatars = [
+    new Live2dAvatar({ container: $('#l2d-slot-poker-0'), characterId: 'carrot', name: playerName, bubblePos: 'bottom', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-poker-1'), characterId: 'bobo', name: AI_SEATS[0].name, bubblePos: 'top', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-poker-2'), characterId: 'kiwi', name: AI_SEATS[1].name, bubblePos: 'top', size: 'sm' }),
+    new Live2dAvatar({ container: $('#l2d-slot-poker-3'), characterId: 'aubergine', name: AI_SEATS[2].name, bubblePos: 'top', size: 'sm' })
+  ];
+
   const renderUI = () => {
     const legal = engine.getLegalActions(0);
     const me = engine.players[0];
@@ -205,6 +213,15 @@ export async function renderPoker(container, params) {
       seatEl.classList.toggle('turn-active', isTurn);
       seatEl.classList.toggle('seat-winner', isWinner);
       seatEl.classList.toggle('seat-folded', p.folded);
+      avatars[idx]?.setTurn(isTurn);
+
+      if (isWinner) {
+        avatars[idx]?.setEmotion('win', '🎉 贏得底池！');
+      } else if (p.folded) {
+        avatars[idx]?.setEmotion('pass');
+      } else if (p.lastAction?.type === 'raise' || p.lastAction?.type === 'allin') {
+        avatars[idx]?.setEmotion('strike', p.lastAction.label);
+      }
 
       if (isTurn) {
         statusEl.innerHTML = `<span class="badge badge-warning turn-tag">${idx === 0 ? '💭 輪到你了' : '⏳ 思考中...'}</span>`;

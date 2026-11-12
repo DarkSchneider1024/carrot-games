@@ -11,6 +11,7 @@ import { showModal, closeModal } from '../../components/modal.js';
 import { storage } from '../../storage/storage-manager.js';
 import { SVG_ICONS } from '../../components/icons.js';
 import { initAuth, updateUserStats } from '../../network/auth-manager.js';
+import { Live2dAvatar } from '../../components/live2d-avatar/live2d-avatar.js';
 
 export async function renderXiangqi(container, params) {
   const mode = params.mode; // 'ai' or 'online'
@@ -53,9 +54,7 @@ export async function renderXiangqi(container, params) {
         <div class="xiangqi-panel xiangqi-panel-left">
           <!-- Opponent Player Card -->
           <div class="player-info glass" id="player-top">
-            <div class="player-avatar avatar-black" id="avatar-top" style="background-image:url('./assets/images/characters/live2d_aubergine.png');background-size:cover;background-position:center 12%;">
-              <span class="avatar-piece-badge">將</span>
-            </div>
+            <div class="l2d-slot" id="l2d-slot-xiangqi-top"></div>
             <div class="player-details">
               <span class="player-name" id="player-top-name">新歐蓓樂希 (將)</span>
               <span class="player-timer" id="timer-top">10:00</span>
@@ -74,9 +73,7 @@ export async function renderXiangqi(container, params) {
 
           <!-- Local Player Card -->
           <div class="player-info glass" id="player-bottom">
-            <div class="player-avatar avatar-red" id="avatar-bottom" style="background-image:url('./assets/images/characters/live2d_carrot.png');background-size:cover;background-position:center 12%;">
-              <span class="avatar-piece-badge">帥</span>
-            </div>
+            <div class="l2d-slot" id="l2d-slot-xiangqi-bottom"></div>
             <div class="player-details">
               <span class="player-name" id="player-bottom-name">新卡洛特 (你 ‧ 帥)</span>
               <span class="player-timer" id="timer-bottom">10:00</span>
@@ -126,9 +123,38 @@ export async function renderXiangqi(container, params) {
   // Initialize game controller
   game.init(canvas);
 
+  // Initialize Live2D Avatars for Xiangqi
+  const l2dTop = new Live2dAvatar({
+    container: document.getElementById('l2d-slot-xiangqi-top'),
+    characterId: 'aubergine',
+    name: '新歐蓓樂希 (將)',
+    bubblePos: 'left',
+    size: 'sm'
+  });
+  const l2dBottom = new Live2dAvatar({
+    container: document.getElementById('l2d-slot-xiangqi-bottom'),
+    characterId: 'carrot',
+    name: '新卡洛特 (帥)',
+    bubblePos: 'left',
+    size: 'sm'
+  });
+
   // Set up game callbacks
-  game.onStateChange = (state) => _updateUI(state, game);
-  game.onGameOver = (result) => _showGameOver(result);
+  game.onStateChange = (state) => _updateUI(state, game, l2dTop, l2dBottom);
+  game.onGameOver = (result) => {
+    _showGameOver(result);
+    const playerWon = (result.winner === game.playerSide);
+    if (result.winner === 'draw') {
+      l2dTop.setEmotion('pass', '和局收場，旗鼓相當。');
+      l2dBottom.setEmotion('pass', '這盤握手言和。');
+    } else if (playerWon) {
+      l2dBottom.setEmotion('win', '🎉 絕殺！妙著連環！');
+      l2dTop.setEmotion('lose', '怎會...這步妙手失算了！');
+    } else {
+      l2dTop.setEmotion('win', '🎉 殺局落定，勝負已分！');
+      l2dBottom.setEmotion('lose', '哎呀...大意失荊州！');
+    }
+  };
   game.onAIThinkingChange = (thinking) => {
     const el = document.getElementById('ai-thinking');
     if (el) el.style.display = thinking ? 'flex' : 'none';
@@ -527,7 +553,7 @@ function _setupOnlineMode(game, room, params) {
   });
 }
 
-function _updateUI(state, game) {
+function _updateUI(state, game, l2dTop, l2dBottom) {
   const formatTime = (s) => {
     const m = Math.floor(s / 60);
     const sec = s % 60;
@@ -544,28 +570,38 @@ function _updateUI(state, game) {
   const turnBottom = document.getElementById('turn-bottom');
   const moveCountBadge = document.getElementById('move-count-badge');
 
-  const avatarTop = document.getElementById('avatar-top');
-  const avatarBottom = document.getElementById('avatar-bottom');
-
   if (topTimer && bottomTimer) {
+    const isTopTurn = state.currentTurn === (topIsBlack ? BLACK : RED);
+    const isBottomTurn = !isTopTurn;
+
     if (topIsBlack) {
       topTimer.textContent = formatTime(state.blackTime);
       bottomTimer.textContent = formatTime(state.redTime);
       topName.textContent = state.mode === GAME_MODE.VS_AI ? '新歐蓓樂希 (AI ‧ 將)' : '新歐蓓樂希 (將)';
       bottomName.textContent = '新卡洛特 (你 ‧ 帥)';
-      if (avatarTop) avatarTop.style.backgroundImage = "url('./assets/images/characters/live2d_aubergine.png')";
-      if (avatarBottom) avatarBottom.style.backgroundImage = "url('./assets/images/characters/live2d_carrot.png')";
-      turnTop.className = `player-turn-indicator ${state.currentTurn === BLACK ? 'active' : ''}`;
-      turnBottom.className = `player-turn-indicator ${state.currentTurn === RED ? 'active' : ''}`;
     } else {
       topTimer.textContent = formatTime(state.redTime);
       bottomTimer.textContent = formatTime(state.blackTime);
       topName.textContent = state.mode === GAME_MODE.VS_AI ? '新卡洛特 (AI ‧ 帥)' : '新卡洛特 (帥)';
       bottomName.textContent = '新歐蓓樂希 (你 ‧ 將)';
-      if (avatarTop) avatarTop.style.backgroundImage = "url('./assets/images/characters/live2d_carrot.png')";
-      if (avatarBottom) avatarBottom.style.backgroundImage = "url('./assets/images/characters/live2d_aubergine.png')";
-      turnTop.className = `player-turn-indicator ${state.currentTurn === RED ? 'active' : ''}`;
-      turnBottom.className = `player-turn-indicator ${state.currentTurn === BLACK ? 'active' : ''}`;
+    }
+
+    turnTop.className = `player-turn-indicator ${isTopTurn ? 'active' : ''}`;
+    turnBottom.className = `player-turn-indicator ${isBottomTurn ? 'active' : ''}`;
+
+    if (l2dTop && l2dBottom) {
+      l2dTop.setTurn(isTopTurn && !state.gameOver);
+      l2dBottom.setTurn(isBottomTurn && !state.gameOver);
+
+      if (state.isCheck && !state.gameOver) {
+        if (isTopTurn) {
+          l2dTop.setEmotion('urgent', '😱 將軍！帥位危急！');
+          l2dBottom.setEmotion('strike', '⚔️ 將軍！看你往哪逃！');
+        } else {
+          l2dBottom.setEmotion('urgent', '😱 告急！速解將軍！');
+          l2dTop.setEmotion('strike', '⚔️ 將軍！伏兵已至！');
+        }
+      }
     }
   }
 
