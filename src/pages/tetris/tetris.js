@@ -421,7 +421,7 @@ function _renderAIPanel() {
     <div class="action-panel glass">
       <div class="tetris-character-matchup">
         <div class="tetris-char-card player">
-          <img src="./assets/images/characters/bobo_v3.webp" alt="兔子波波" class="tetris-char-avatar" />
+          <img src="./assets/images/characters/live2d_bobo.png" alt="兔子波波" class="tetris-char-avatar" />
           <div class="tetris-char-info">
             <span class="tetris-char-name">兔子波波 (你)</span>
             <span class="tetris-char-tag">敏捷消除</span>
@@ -429,9 +429,9 @@ function _renderAIPanel() {
         </div>
         <div class="tetris-matchup-vs">VS</div>
         <div class="tetris-char-card opponent">
-          <img src="./assets/images/characters/carol_v3.webp" alt="卡洛兒姐姐" class="tetris-char-avatar" />
+          <img src="./assets/images/characters/live2d_carol.png" alt="新卡洛兒" class="tetris-char-avatar" />
           <div class="tetris-char-info">
-            <span class="tetris-char-name">卡洛兒姐姐 (AI)</span>
+            <span class="tetris-char-name">新卡洛兒 (AI)</span>
             <span class="tetris-char-tag">冷靜策略</span>
           </div>
         </div>
@@ -468,7 +468,7 @@ function _renderOnlinePanel() {
     <div class="action-panel glass">
       <div class="tetris-character-matchup">
         <div class="tetris-char-card player">
-          <img src="./assets/images/characters/bobo_v3.webp" alt="兔子波波" class="tetris-char-avatar" />
+          <img src="./assets/images/characters/live2d_bobo.png" alt="兔子波波" class="tetris-char-avatar" />
           <div class="tetris-char-info">
             <span class="tetris-char-name">兔子波波 (你)</span>
             <span class="tetris-char-tag">HOST</span>
@@ -476,9 +476,9 @@ function _renderOnlinePanel() {
         </div>
         <div class="tetris-matchup-vs">VS</div>
         <div class="tetris-char-card opponent">
-          <img src="./assets/images/characters/carol_v3.webp" alt="卡洛兒姐姐" class="tetris-char-avatar" />
+          <img src="./assets/images/characters/live2d_carol.png" alt="新卡洛兒" class="tetris-char-avatar" />
           <div class="tetris-char-info">
-            <span class="tetris-char-name">卡洛特小鎮對手</span>
+            <span class="tetris-char-name">新卡洛兒 (小鎮對手)</span>
             <span class="tetris-char-tag">GUEST</span>
           </div>
         </div>

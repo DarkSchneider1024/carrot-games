@@ -99,7 +99,7 @@ export async function renderBomberman(container, params = {}) {
         content: `
           <div style="line-height:1.7;color:var(--color-text-primary);">
             <h4 style="margin-bottom:0.5rem;color:#ea580c;">核心目標</h4>
-            <p>與科學家卡洛特和陶藝師一同進入迷宮實驗室！炸開石塊、消滅所有敵方機關怪獸，尋找隱藏於方塊底下的傳送出口並成功逃脫過關！</p>
+            <p>與新卡洛特、兔子波波、新卡洛兒和新歐蓓樂希一同進入小鎮迷宮！放置胡蘿蔔魔法炸彈、消滅所有敵方機關怪獸，尋找隱藏於方塊底下的傳送出口並成功逃脫過關！</p>
 
             <h4 style="margin-top:1rem;margin-bottom:0.5rem;color:#ea580c;">小鎮守護坐騎系統（特色）</h4>
             <ul style="padding-left:1.2rem;margin-bottom:1rem;">

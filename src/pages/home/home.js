@@ -432,7 +432,7 @@ export async function renderHome(container) {
           </div>
           <div class="game-card-content">
             <h3>卡洛特炸彈人大作戰 (CARROT BOMBERMAN)</h3>
-            <p>小鎮實驗室經典網格炸彈！科學家卡洛特與陶藝師的機關爆破，支援 1-4 人同樂與坐騎系統！</p>
+            <p>小鎮實驗室經典網格炸彈！新卡洛特與兔子波波的胡蘿蔔魔法爆破，支援 1-4 人同樂與坐騎系統！</p>
 
             <div class="game-card-tags">
               <span class="tag">${SVG_ICONS.cpu} 1-4 人同樂</span>
