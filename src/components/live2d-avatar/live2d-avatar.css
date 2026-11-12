@@ -30,29 +30,29 @@
 .live2d-stage {
   position: relative;
   width: 76px;
-  height: 92px;
+  height: 94px;
   border-radius: 14px;
-  background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
-  border: 2px solid rgba(245, 158, 11, 0.4);
+  background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
+  border: 2px solid rgba(245, 158, 11, 0.45);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), inset 0 0 12px rgba(0, 0, 0, 0.6);
   overflow: hidden;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: flex-start; /* 關鍵：頂部對齊，確保頭部與耳朵露出 */
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* 較小尺寸 (適合擁擠螢幕或麻將側家) */
 .live2d-stage.stage-sm {
   width: 62px;
-  height: 76px;
+  height: 78px;
   border-radius: 11px;
 }
 
 /* 較大尺寸 (玩家自己或象棋大頭) */
 .live2d-stage.stage-lg {
   width: 90px;
-  height: 110px;
+  height: 112px;
   border-radius: 16px;
 }
 
@@ -68,28 +68,32 @@
 
 /* 角色繪畫外層包裝 (負責 3D 呼吸、擺動、點頭微動) */
 .live2d-char-wrap {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  transform-origin: center 85%;
+  align-items: flex-start; /* 關鍵：頂部對齊，露出完整頭部與耳朵 */
+  padding-top: 3px; /* 頭頂預留 3px 空間，避免帽子/兔耳貼緊邊框 */
+  transform-origin: center 25%;
   transform-style: preserve-3d;
   will-change: transform, filter;
   z-index: 2;
   transition: filter 0.3s ease;
 }
 
-/* 角色高畫質立繪 */
+/* 角色高畫質立繪 (半身構圖：頭部、五官、胸膛與腰部) */
 .live2d-char-img {
-  width: 115%;
-  height: 135%;
+  width: auto;
+  height: 185%; /* 剛好讓半身 (頭部、表情、肩膀到腰部) 充滿畫面，下半身自然延伸至外框被裁切 */
+  max-width: 145%;
   object-fit: cover;
-  object-position: center 8%;
+  object-position: center top; /* 水平居中、垂直置頂對齊頭部 */
   pointer-events: none;
-  transform-origin: center bottom;
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+  transform-origin: center 25%;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -503,3 +507,4 @@
 .live2d-speech-bubble.type-thinking::after {
   border-color: #38bdf8 transparent transparent;
 }
+
