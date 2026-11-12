@@ -213,6 +213,72 @@
 .animate-glow { animation: glowPulse 2s infinite; }
 .animate-spin { animation: spin 1s linear infinite; }
 
+/* ── 2X Visual Quality Boost Animations (精緻度提升專屬) ── */
+
+/* 1. Live2D 自然微呼吸感 (Breathing Idle) */
+@keyframes live2dBreath {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.025);
+    filter: brightness(1.06);
+  }
+}
+
+/* 2. 當前出牌回合金色粒子光環脈衝 (Turn Pulse) */
+@keyframes turnGoldPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.75), 0 0 20px rgba(245, 158, 11, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(234, 88, 12, 0.9), 0 0 32px rgba(245, 158, 11, 0.8), inset 0 0 14px rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* 3. 遊戲卡片 45度金屬流光微掠 (Sheen Sweep) */
+@keyframes cardSheen {
+  0% { transform: translateX(-150%) skewX(-20deg); opacity: 0; }
+  20% { opacity: 0.65; }
+  60% { transform: translateX(250%) skewX(-20deg); opacity: 0; }
+  100% { transform: translateX(250%) skewX(-20deg); opacity: 0; }
+}
+
+/* 4. 打擊感微震屏 (Screen Shake) */
+@keyframes screenShakeMild {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 2px); }
+  40% { transform: translate(3px, -2px); }
+  60% { transform: translate(-2px, -1px); }
+  80% { transform: translate(2px, 1px); }
+}
+
+/* 5. 吃碰胡 / 鐵支同花 衝擊大字爆裂 */
+@keyframes impactPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-6deg);
+    filter: blur(8px) brightness(2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15) rotate(2deg);
+    filter: blur(0px) brightness(1.3);
+  }
+  75% {
+    transform: scale(0.96) rotate(0deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-live2d-breath { animation: live2dBreath 3.5s ease-in-out infinite; }
+.animate-turn-pulse { animation: turnGoldPulse 1.8s ease-in-out infinite; }
+.animate-shake { animation: screenShakeMild 0.35s ease-in-out; }
+.animate-impact-pop { animation: impactPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
 /* Stagger delays */
 .stagger-1 { animation-delay: 0.1s; }
 .stagger-2 { animation-delay: 0.2s; }

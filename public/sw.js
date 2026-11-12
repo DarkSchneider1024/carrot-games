@@ -3,7 +3,7 @@
  * Strategy: Network-First for HTML/JS/SW & Stale-While-Revalidate for Assets
  */
 
-const CACHE_NAME = 'carrot-games-v10-live2d-villains';
+const CACHE_NAME = 'carrot-games-v11-2x-quality';
 const STATIC_ASSETS = [
   '/carrot-games/',
   '/carrot-games/index.html',

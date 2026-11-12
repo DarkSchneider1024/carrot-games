@@ -45,12 +45,13 @@
 }
 
 .home-logo-img {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-accent-primary);
-  box-shadow: var(--shadow-glow-orange);
+  border: 1.5px solid var(--color-accent-primary);
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.35);
   object-fit: cover;
+  animation: live2dBreath 3.5s ease-in-out infinite;
 }
 
 .home-header-actions {
@@ -326,7 +327,20 @@
 }
 
 .game-card:hover .game-card-img {
-  transform: scale(1.05);
+  transform: scale(1.08) translateY(-2px);
+  filter: contrast(1.05) saturate(1.08);
+}
+
+.game-card .tag {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(234, 88, 12, 0.15);
+  transition: all 0.2s ease;
+}
+
+.game-card:hover .tag {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.1);
 }
 
 .game-card-overlay {

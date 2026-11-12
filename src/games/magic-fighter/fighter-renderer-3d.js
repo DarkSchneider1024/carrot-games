@@ -121,26 +121,34 @@ export class FighterRenderer3D {
       metalness: 0.1
     });
 
-    this.bulletGeo = new THREE.SphereGeometry(6, 8, 8);
-    this.bulletPlayerMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
-    this.bulletPlayerPiercingMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
-    this.bulletEnemyMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    this.bulletGeo = new THREE.SphereGeometry(6, 12, 12);
+    this.bulletPlayerMat = new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 0.8, roughness: 0.2 });
+    this.bulletPlayerPiercingMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.9, roughness: 0.2 });
+    this.bulletEnemyMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xd97706, emissiveIntensity: 0.7, roughness: 0.2 });
 
     this.powerupGeo = new THREE.OctahedronGeometry(14, 0);
 
-    // Bright Sky Sunlight Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.8);
+    // 🌟 2X Visual Boost: 天空自然半球光 + 柔和動態日光陰影
+    const hemiLight = new THREE.HemisphereLight(0xbae6fd, 0x166534, 1.2);
+    this.scene.add(hemiLight);
+
+    const ambientLight = new THREE.AmbientLight(0xfff7ed, 1.0);
     this.scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.5);
-    sunLight.position.set(320, 750, 450);
+    const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.6);
+    sunLight.position.set(340, 800, 480);
     sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 1024;
-    sunLight.shadow.mapSize.height = 1024;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 100;
+    sunLight.shadow.camera.far = 1600;
+    sunLight.shadow.camera.left = -400;
+    sunLight.shadow.camera.right = 400;
+    sunLight.shadow.camera.top = 400;
+    sunLight.shadow.camera.bottom = -400;
+    sunLight.shadow.bias = -0.0005;
+    sunLight.shadow.radius = 2.0;
     this.scene.add(sunLight);
-
-    const hemiLight = new THREE.HemisphereLight(0xbae6fd, 0x0284c7, 1.2);
-    this.scene.add(hemiLight);
 
     // Aerial Sky Platform Floor
     const floorGeo = new THREE.PlaneGeometry(640, 640);
